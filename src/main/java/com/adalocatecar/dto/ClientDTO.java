@@ -6,9 +6,6 @@ public class ClientDTO {
     private String type;
     private String contactInfo;
 
-    public ClientDTO() {
-    }
-
     public ClientDTO(String id, String name, String type, String contactInfo) {
         this.id = id;
         this.name = name;
@@ -46,5 +43,15 @@ public class ClientDTO {
 
     public void setContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
+    }
+
+    @Override
+    public String toString() {
+        return "ClientDTO{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", contactInfo='" + contactInfo + '\'' +
+                '}';
     }
 }

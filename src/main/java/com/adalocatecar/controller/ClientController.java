@@ -2,6 +2,8 @@ package com.adalocatecar.controller;
 
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.service.ClientService;
+import com.adalocatecar.utility.ValidationResponse;
+
 import java.util.List;
 import java.util.Scanner;
 
@@ -40,6 +42,7 @@ public class ClientController {
                     listClients();
                     break;
                 case 5:
+                    System.out.println("Exiting Client Management...");
                     return;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -56,45 +59,53 @@ public class ClientController {
         String type = scanner.nextLine();
         System.out.print("ID (CPF or CNPJ): ");
         String id = scanner.nextLine();
+        System.out.print("Contact Information: ");
+        String contactInfo = scanner.nextLine();
 
-        ClientDTO clientDTO = new ClientDTO();
+        ClientDTO clientDTO = new ClientDTO(id, name, type, contactInfo);
+        clientDTO.setId(id);
         clientDTO.setName(name);
         clientDTO.setType(type);
-        clientDTO.setId(id);
-        clientService.registerClient(clientDTO);
-        System.out.println("Client registered successfully.");
+        clientDTO.setContactInfo(contactInfo);
+
+        ValidationResponse response = clientService.registerClient(clientDTO);
+
+        System.out.println(response.getMessage());
     }
 
-    public void updateClient(Scanner scanner) {
-        try {
-            System.out.println("Enter the ID (CPF/CNPJ) of the client to update:");
-            String id = scanner.nextLine();
+    private void updateClient(Scanner scanner) {
+        System.out.println("Enter the ID (CPF/CNPJ) of the client to update:");
+        String id = scanner.nextLine();
+        System.out.println("Enter new name (leave blank to not change):");
+        String name = scanner.nextLine();
+        System.out.println("Enter new type (Individual or Corporate, leave blank to not change):");
+        String type = scanner.nextLine();
 
-            System.out.println("Enter new name (leave blank to not change):");
-            String name = scanner.nextLine();
-            System.out.println("Enter new type (Individual or Corporate, leave blank to not change):");
-            String type = scanner.nextLine();
+        ClientDTO clientDTO = new ClientDTO();
+        clientDTO.setId(id);
+        if (!name.isEmpty()) clientDTO.setName(name);
+        if (!type.isEmpty()) clientDTO.setType(type);
 
-            ClientDTO clientDTO = new ClientDTO();
-            clientDTO.setId(id);
-            clientDTO.setName(name.isEmpty() ? null : name);
-            clientDTO.setType(type.isEmpty() ? null : type);
-            clientService.updateClient(clientDTO);
-            System.out.println("Client updated successfully.");
-        } catch (Exception e) {
-            System.out.println("Failed to update client: " + e.getMessage());
-        }
+        ValidationResponse response = clientService.updateClient(clientDTO);
+
+        System.out.println(response.getMessage());
     }
 
     private void deleteClient(Scanner scanner) {
         System.out.println("Enter client ID to delete:");
         String id = scanner.nextLine();
-        clientService.deleteClient(id);
-        System.out.println("Client deleted successfully.");
+
+        ValidationResponse response = clientService.deleteClient(id);
+
+        System.out.println(response.getMessage());
     }
 
     private void listClients() {
         List<ClientDTO> clients = clientService.findAllClients();
-        clients.forEach(client -> System.out.println(client.toString()));
+        if(clients.isEmpty()) {
+            System.out.println("No clients found.");
+        } else {
+            clients.forEach(System.out::println);
+        }
     }
 }

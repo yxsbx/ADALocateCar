@@ -2,23 +2,28 @@ package com.adalocatecar;
 
 import com.adalocatecar.controller.VehicleController;
 import com.adalocatecar.controller.ClientController;
-import com.adalocatecar.service.VehicleService;
-import com.adalocatecar.service.ClientService;
+import com.adalocatecar.repository.impl.ClientRepositoryImpl;
 import com.adalocatecar.service.impl.VehicleServiceImpl;
 import com.adalocatecar.service.impl.ClientServiceImpl;
+import com.adalocatecar.service.VehicleService;
+import com.adalocatecar.service.ClientService;
 
 import java.util.Scanner;
 
 public class MainApplication {
-
-    private static final VehicleService vehicleService = new VehicleServiceImpl();
-    private static final ClientService clientService = new ClientServiceImpl();
-    private static final VehicleController vehicleController = new VehicleController(vehicleService);
-    private static final ClientController clientController = new ClientController(clientService);
-
     public static void main(String[] args) {
+
         try (Scanner scanner = new Scanner(System.in)) {
-            while (true) {
+
+            ClientRepositoryImpl clientRepository = new ClientRepositoryImpl();
+            ClientService clientService = new ClientServiceImpl(clientRepository);
+            VehicleService vehicleService = new VehicleServiceImpl();
+
+            VehicleController vehicleController = new VehicleController(vehicleService);
+            ClientController clientController = new ClientController(clientService);
+
+            boolean running = true;
+            while (running) {
                 System.out.println("\nWelcome to ADA LocateCar System");
                 System.out.println("1. Manage Vehicles");
                 System.out.println("2. Manage Clients");
@@ -37,7 +42,8 @@ public class MainApplication {
                         break;
                     case 3:
                         System.out.println("Thank you for using ADA LocateCar System. Goodbye!");
-                        return;
+                        running = false;
+                        break;
                     default:
                         System.out.println("Invalid option. Please try again.");
                         break;
@@ -45,6 +51,9 @@ public class MainApplication {
             }
         } catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
+
+
