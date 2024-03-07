@@ -6,6 +6,9 @@ public class ClientDTO {
     private String type;
     private String contactInfo;
 
+    public ClientDTO() {
+    }
+
     public ClientDTO(String id, String name, String type, String contactInfo) {
         this.id = id;
         this.name = name;
