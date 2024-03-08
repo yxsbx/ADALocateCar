@@ -2,7 +2,7 @@ package com.adalocatecar.controller;
 
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.service.ClientService;
-import com.adalocatecar.utility.ValidationResponse;
+import com.adalocatecar.utility.ValidationMessages;
 
 import java.io.IOException;
 import java.util.List;
@@ -59,7 +59,7 @@ public class ClientController {
         String id = scanner.nextLine();
 
         ClientDTO clientDTO = new ClientDTO(id, name, null);
-        ValidationResponse response = clientService.createClient(clientDTO);
+        ValidationMessages response = clientService.createClient(clientDTO);
         System.out.println(response.getMessage());
     }
 
@@ -73,7 +73,7 @@ public class ClientController {
         String type = scanner.nextLine();
 
         ClientDTO clientDTO = new ClientDTO(id, name, type);
-        ValidationResponse response = clientService.updateClient(clientDTO);
+        ValidationMessages response = clientService.updateClient(clientDTO);
         System.out.println(response.getMessage());
     }
 
@@ -81,7 +81,7 @@ public class ClientController {
         System.out.println("Enter client the CPF or CNPJ to delete:");
         String id = scanner.nextLine();
 
-        ValidationResponse response = clientService.deleteClient(id);
+        ValidationMessages response = clientService.deleteClient(id);
         System.out.println(response.getMessage());
     }
 

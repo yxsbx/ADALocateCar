@@ -1,6 +1,6 @@
 package com.adalocatecar.utility;
 
-public class ValidationResponse {
+public class ValidationMessages {
     public static final String SUCCESS = "Success.";
     public static final String FAILURE = "Validation failed.";
     public static final String CLIENT_ALREADY_EXISTS = "Client with this ID already exists.";
@@ -10,18 +10,18 @@ public class ValidationResponse {
     public static final String INVALID_NAME_FORMAT = "Invalid name format. Name must have at least 4 alphabetical characters.";
 
 
-    public static ValidationResponse error(String errorMessage) {
-        return new ValidationResponse(false, errorMessage);
+    public static ValidationMessages error(String errorMessage) {
+        return new ValidationMessages(false, errorMessage);
     }
 
-    public static ValidationResponse ok() {
-        return new ValidationResponse(true, SUCCESS);
+    public static ValidationMessages ok() {
+        return new ValidationMessages(true, SUCCESS);
     }
 
     private final boolean success;
     private final String message;
 
-    private ValidationResponse(boolean success, String message) {
+    private ValidationMessages(boolean success, String message) {
         this.success = success;
         this.message = message;
     }

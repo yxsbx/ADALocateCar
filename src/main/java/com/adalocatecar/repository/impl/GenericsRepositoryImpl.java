@@ -1,9 +1,7 @@
 package com.adalocatecar.repository.impl;
 
-import com.adalocatecar.model.Client;
 import com.adalocatecar.repository.GenericsRepository;
 import com.adalocatecar.utility.FileHandler;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,14 +14,14 @@ import java.util.stream.Collectors;
 
 public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepository <T, ID>{
 
-    private static final Logger logger = Logger.getLogger(ClientRepositoryImpl.class.getName());
-    private final String filePath = "clients.txt";
+    private static final Logger logger = Logger.getLogger(GenericsRepositoryImpl.class.getName());
+    File filePath;
 
-    public GenericsRepositoryImpl() {
-        File file = new File(filePath);
+    public GenericsRepositoryImpl(File filePath) {
+        this.filePath = filePath;
         try {
-            if (file.createNewFile()) {
-                logger.info("File created: " + file.getName());
+            if (filePath.createNewFile()) {
+                logger.info("File created: " + filePath.getName());
             } else {
                 logger.info("File already exists.");
             }
@@ -46,12 +44,12 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     @Override
-    public void update(Client client) {
+    public void update(T object) {
         try {
-            if (isUniqueClientId(client.getId())) {
-                replaceClientInFile(client);
+            if (isUniqueObjectId(getId(object))) {
+                replaceObjectInFile(object);
             } else {
-                logger.warning("Client with ID " + client.getId() + " already exists.");
+                logger.warning("Client with ID " + getId(object) + " already exists.");
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "An error occurred while updating a client.", e);
@@ -59,10 +57,10 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     @Override
-    public boolean delete(String id) {
+    public boolean delete(ID id) {
         try {
-            List<Client> clients = findAll();
-            boolean removed = clients.removeIf(c -> c.getId().equals(id));
+            List<T> clients = findAll();
+            boolean removed = clients.removeIf(c -> getId(c).equals(id));
             if (removed) {
                 rewriteFile(clients);
             }
@@ -74,10 +72,10 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     @Override
-    public Optional<Client> findById(String id) {
+    public Optional<T> findById(ID id) {
         try {
             return findAll().stream()
-                    .filter(client -> client.getId().equals(id))
+                    .filter(obj -> getId(obj).equals(id))
                     .findFirst();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "An error occurred while finding a client by ID.", e);
@@ -86,69 +84,45 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     @Override
-    public List<Client> findAll() throws IOException {
-        List<Client> clients = new ArrayList<>();
-        List<String> lines = FileHandler.readFromFile(filePath);
+    public List<T> findAll() throws IOException {
+        List<T> objects = new ArrayList<>();
+        List<String> lines = FileHandler.readFromFile(filePath.getAbsolutePath());
         for (String line : lines) {
-            clients.add(stringToClient(line));
+            objects.add(stringToObject(line));
         }
-        return clients;
+        return objects;
     }
 
-    private void rewriteFile(List<Client> clients) throws IOException {
+    private void rewriteFile(List<T> objects) throws IOException {
         List<String> lines = new ArrayList<>();
-        for (Client client : clients) {
-            lines.add(clientToString(client));
+        for (T object : objects) {
+            lines.add(objectToString(object));
         }
-        FileHandler.writeToFile(lines, filePath);
-    }
-
-    private String clientToString(Client client) {
-        return String.join(",", client.getId(), client.getName(), client.getType());
-    }
-
-    private Client stringToClient(String str) {
-        String[] parts = str.split(",");
-        String id = parts[0];
-        String name = parts[1];
-        String type = parts[2];
-        return new Client(id, name, type);
-    }
-
-    @Override
-    public boolean hasRentedCars(String id) {
-        List<String> lines = FileHandler.readFromFile(filePath);
-        for (String line : lines) {
-            String[] parts = line.split(",");
-            String clientId = parts[0];
-            if (clientId.equals(id)) {
-                return true;
-            }
-        }
-        return false;
+        FileHandler.writeToFile(lines, filePath.getAbsolutePath());
     }
 
     private boolean isUniqueObjectId(ID id) throws IOException {
-        List<Client> clients = findAll();
-        for (Client client : clients) {
-            if (client.getId().equals(id)) {
+        List<T> clients = findAll();
+        for (T object : clients) {
+            if (getId(object).equals(id)) {
                 return false;
             }
         }
         return true;
     }
 
-    private void appendClientToFile(T client) throws IOException {
-        FileHandler.writeToFile(Collections.singletonList(clientToString(client)), filePath);
+    private void appendClientToFile(T object) throws IOException {
+        FileHandler.writeToFile(Collections.singletonList(objectToString(object)), filePath.getAbsolutePath());
     }
 
-    private void replaceClientInFile(Client client) throws IOException {
-        List<Client> clients = findAll();
-        List<Client> updatedClients = clients.stream()
-                .map(c -> c.getId().equals(client.getId()) ? client : c)
+    private void replaceObjectInFile(T object) throws IOException {
+        List<T> objects = findAll();
+        List<T> updatedObjects = objects.stream()
+                .map(c -> getId(c).equals(getId(object)) ? object : c)
                 .collect(Collectors.toList());
-        rewriteFile(updatedClients);
+        rewriteFile(updatedObjects);
     }
-
+    protected abstract T stringToObject(String str);
+    protected abstract String objectToString(T object);
     protected abstract ID getId(T entity);
 }

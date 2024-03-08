@@ -2,7 +2,7 @@ package com.adalocatecar.controller;
 
 import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.service.VehicleService;
-import com.adalocatecar.utility.ValidationResponse;
+import com.adalocatecar.utility.ValidationMessages;
 
 import java.util.List;
 import java.util.Scanner;
@@ -61,7 +61,7 @@ public class VehicleController {
         scanner.nextLine();
 
         VehicleDTO vehicleDTO = new VehicleDTO(licensePlate,brand, model, type, year);
-        ValidationResponse response = vehicleService.registerVehicle(vehicleDTO);
+        ValidationMessages response = vehicleService.registerVehicle(vehicleDTO);
         System.out.println(response.getMessage());
     }
 

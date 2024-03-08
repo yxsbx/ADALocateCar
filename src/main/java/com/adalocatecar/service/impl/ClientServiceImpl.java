@@ -6,7 +6,7 @@ import com.adalocatecar.repository.ClientRepository;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.utility.Converter;
 import com.adalocatecar.utility.Validation;
-import com.adalocatecar.utility.ValidationResponse;
+import com.adalocatecar.utility.ValidationMessages;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,34 +21,34 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ValidationResponse createClient(ClientDTO clientDTO) {
+    public ValidationMessages createClient(ClientDTO clientDTO) {
         return processClientUpdate(clientDTO, true);
     }
 
     @Override
-    public ValidationResponse updateClient(ClientDTO clientDTO) {
+    public ValidationMessages updateClient(ClientDTO clientDTO) {
         return processClientUpdate(clientDTO, false);
     }
 
     @Override
-    public ValidationResponse deleteClient(String id) {
-        ValidationResponse requiredFieldValidation = Validation.validateRequiredField(id, "ID");
+    public ValidationMessages deleteClient(String id) {
+        ValidationMessages requiredFieldValidation = Validation.validateRequiredField(id, "ID");
         if (!requiredFieldValidation.isSuccess()) {
             return requiredFieldValidation;
         }
 
-        ValidationResponse idValidation = Validation.validateCPFOrCNPJ(id);
+        ValidationMessages idValidation = Validation.validateCPFOrCNPJ(id);
         if (!idValidation.isSuccess()) {
             return idValidation;
         }
 
         boolean hasRentedCars = clientRepository.hasRentedCars(id);
         if (hasRentedCars) {
-            return ValidationResponse.error("The client cannot be deleted because they have rented cars.");
+            return ValidationMessages.error("The client cannot be deleted because they have rented cars.");
         }
 
         boolean removed = clientRepository.delete(id);
-        return removed ? ValidationResponse.ok() : ValidationResponse.error(ValidationResponse.CLIENT_NOT_FOUND);
+        return removed ? ValidationMessages.ok() : ValidationMessages.error(ValidationMessages.CLIENT_NOT_FOUND);
     }
 
     @Override
@@ -63,20 +63,20 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ValidationResponse findClientById(String id) {
-        ValidationResponse requiredFieldValidation = Validation.validateRequiredField(id, "ID");
+    public ValidationMessages findClientById(String id) {
+        ValidationMessages requiredFieldValidation = Validation.validateRequiredField(id, "ID");
         if (!requiredFieldValidation.isSuccess()) {
             return requiredFieldValidation;
         }
 
         Optional<Client> client = clientRepository.findById(id);
-        return client.map(c -> ValidationResponse.ok())
-                .orElse(ValidationResponse.error(ValidationResponse.CLIENT_NOT_FOUND));
+        return client.map(c -> ValidationMessages.ok())
+                .orElse(ValidationMessages.error(ValidationMessages.CLIENT_NOT_FOUND));
     }
 
     @Override
     public List<ClientDTO> findClientsByName(String name) throws IOException {
-        ValidationResponse requiredFieldValidation = Validation.validateRequiredField(name, "Name");
+        ValidationMessages requiredFieldValidation = Validation.validateRequiredField(name, "Name");
         if (!requiredFieldValidation.isSuccess()) {
             return new ArrayList<>();
         }
@@ -100,13 +100,13 @@ public class ClientServiceImpl implements ClientService {
         return ids.toArray(new String[0]);
     }
 
-    private ValidationResponse processClientUpdate(ClientDTO clientDTO, boolean isNewClient) {
-        ValidationResponse nameValidation = Validation.validateName(clientDTO.getName());
+    private ValidationMessages processClientUpdate(ClientDTO clientDTO, boolean isNewClient) {
+        ValidationMessages nameValidation = Validation.validateName(clientDTO.getName());
         if (!nameValidation.isSuccess()) {
             return nameValidation;
         }
 
-        ValidationResponse idValidation = Validation.validateCPFOrCNPJ(clientDTO.getId());
+        ValidationMessages idValidation = Validation.validateCPFOrCNPJ(clientDTO.getId());
         if (!idValidation.isSuccess()) {
             return idValidation;
         }
@@ -114,18 +114,18 @@ public class ClientServiceImpl implements ClientService {
         if (!isNewClient) {
             Optional<Client> existingClient = clientRepository.findById(clientDTO.getId());
             if (existingClient.isEmpty()) {
-                return ValidationResponse.error(ValidationResponse.CLIENT_NOT_FOUND);
+                return ValidationMessages.error(ValidationMessages.CLIENT_NOT_FOUND);
             }
         }
 
         try {
             String[] existingIds = getAllClientIdsFromRepository();
-            ValidationResponse uniqueFieldValidation = Validation.validateUniqueField(clientDTO.getId(), existingIds, "ID");
+            ValidationMessages uniqueFieldValidation = Validation.validateUniqueField(clientDTO.getId(), existingIds, "ID");
             if (!uniqueFieldValidation.isSuccess()) {
                 return uniqueFieldValidation;
             }
         } catch (IOException e) {
-            return ValidationResponse.error("An error occurred while retrieving existing client IDs.");
+            return ValidationMessages.error("An error occurred while retrieving existing client IDs.");
         }
 
         String type = (clientDTO.getId().length() == 11) ? "Individual" : "Corporate";
@@ -137,6 +137,6 @@ public class ClientServiceImpl implements ClientService {
             clientRepository.update(clientToUpdate);
         }
 
-        return ValidationResponse.ok();
+        return ValidationMessages.ok();
     }
 }

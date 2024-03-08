@@ -2,7 +2,7 @@ package com.adalocatecar.service.impl;
 
 import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.service.VehicleService;
-import com.adalocatecar.utility.ValidationResponse;
+import com.adalocatecar.utility.ValidationMessages;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class VehicleServiceImpl implements VehicleService {
     private final List<VehicleDTO> vehicles = new ArrayList<>();
 
     @Override
-    public ValidationResponse registerVehicle(VehicleDTO vehicleDTO) {
+    public ValidationMessages registerVehicle(VehicleDTO vehicleDTO) {
         System.out.println("Vehicle registered successfully.Não implementou nada só tá enrolando :D");
         return null;
     }
