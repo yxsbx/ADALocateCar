@@ -1,0 +1,2 @@
+12345678911234,Henrique,Corporate
+12345678911,Daniel,Individual

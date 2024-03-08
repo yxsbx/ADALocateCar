@@ -1,12 +1,13 @@
 package com.adalocatecar.service;
 
 import com.adalocatecar.dto.VehicleDTO;
+import com.adalocatecar.utility.ValidationResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface VehicleService {
-    void registerVehicle(VehicleDTO vehicleDTO);
+    ValidationResponse registerVehicle(VehicleDTO vehicleDTO);
     void updateVehicle(VehicleDTO vehicleDTO);
     void deleteVehicle(String licensePlate);
     List<VehicleDTO> findAllVehicles();

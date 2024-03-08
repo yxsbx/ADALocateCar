@@ -2,13 +2,15 @@ package com.adalocatecar.model;
 
 public class Vehicle {
     private String licensePlate;
+    private String brand;
     private String model;
     private String type;
     private int year;
     private boolean isAvailable;
 
-    public Vehicle(String licensePlate, String model, String type, int year) {
+    public Vehicle(String licensePlate,String brand, String model, String type, int year) {
         this.licensePlate = licensePlate;
+        this.brand = brand;
         this.model = model;
         this.type = type;
         this.year = year;
@@ -54,4 +56,8 @@ public class Vehicle {
     public void setAvailable(boolean available) {
         isAvailable = available;
     }
+
+    public String getBrand() {return brand;}
+
+    public void setBrand(String brand) {this.brand = brand;}
 }

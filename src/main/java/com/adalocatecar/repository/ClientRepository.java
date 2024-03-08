@@ -6,11 +6,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-public interface ClientRepository {
-    void create(Client client);
-    void update(Client client);
-    boolean delete(String id);
-    Optional<Client> findById(String id);
-    List<Client> findAll() throws IOException;
+public interface ClientRepository extends GenericsRepository<Client, String> {
     boolean hasRentedCars(String id);
 }
