@@ -4,53 +4,44 @@ import java.util.regex.Pattern;
 
 public class Validation {
 
-    public static ValidationMessages validateRequiredField(String value, String fieldName) {
-        if (isRequired(value)) {
-            return ValidationMessages.ok();
-        } else {
-            return ValidationMessages.error(String.format("The %s is required.", fieldName));
-        }
+    public static final String SUCCESS = "Success.";
+    public static final String INVALID_ID_FORMAT = "Invalid ID format. Must be either a CPF with 11 digits or a CNPJ with 14 digits.";
+    public static final String CLIENT_NOT_FOUND = "Client not found.";
+    public static final String ERROR_CREATING_CLIENT = "An error occurred while creating the client.";
+    public static final String ERROR_UPDATING_CLIENT = "An error occurred while updating the client.";
+    public static final String ERROR_DELETING_CLIENT = "The client cannot be deleted because they have rented cars.";
+    public static final String ERROR_FINDING_CLIENTS_BY_NAME = "An error occurred while finding clients by name: %s";
+
+    public static Validation validateRequiredField(String value, String fieldName) {
+        return isRequired(value) ? ok() : error("The %s is required.", fieldName);
     }
 
     private static boolean isRequired(String value) {
         return value != null && !value.trim().isEmpty();
     }
 
+    public static Validation validateFormat(String value, String regex, String fieldName) {
+        return isValidFormat(value, regex) ? ok() : error("Invalid format for %s.", fieldName);
+    }
+
     private static boolean isValidFormat(String value, String regex) {
-        if (value == null) return false;
-        return Pattern.matches(regex, value);
+        return value != null && Pattern.matches(regex, value);
     }
 
-    public static ValidationMessages validateFormat(String value, String regex, String fieldName) {
-        if (isValidFormat(value, regex)) {
-            return ValidationMessages.ok();
-        } else {
-            return ValidationMessages.error(ValidationMessages.INVALID_ID_FORMAT);
-        }
-    }
-
-    public static ValidationMessages validateCPFOrCNPJ(String id) {
+    public static Validation validateCPFOrCNPJ(String id) {
         return validateFormat(id, "\\d{11}|\\d{14}", "ID");
     }
 
-    public static ValidationMessages validateName(String name) {
-        if (isValidName(name)) {
-            return ValidationMessages.ok();
-        } else {
-            return ValidationMessages.error(ValidationMessages.INVALID_NAME_FORMAT);
-        }
+    public static Validation validateName(String name) {
+        return isValidName(name) ? ok() : error("Invalid name format. Name must have at least 4 alphabetical characters.");
     }
 
     private static boolean isValidName(String name) {
         return name != null && name.matches("[a-zA-Z]{3,}");
     }
 
-    public static ValidationMessages validateUniqueField(String value, String[] existingValues, String fieldName) {
-        if (isUniqueField(value, existingValues)) {
-            return ValidationMessages.ok();
-        } else {
-            return ValidationMessages.error(String.format("The %s is already in use.", fieldName));
-        }
+    public static Validation validateUniqueField(String value, String[] existingValues, String fieldName) {
+        return isUniqueField(value, existingValues) ? ok() : error("The %s is already in use.", fieldName);
     }
 
     private static boolean isUniqueField(String value, String[] existingValues) {
@@ -61,5 +52,70 @@ public class Validation {
             }
         }
         return true;
+    }
+
+    public static Validation validateClientName(String name) {
+        return isValidName(name) ? ok() : error("Invalid name format. Name must have at least 4 alphabetical characters.");
+    }
+
+    public static Validation validateClientId(String id) {
+        return isValidClientId(id) ? ok() : error(INVALID_ID_FORMAT);
+    }
+
+    public static Validation validateUniqueClientId(String id, boolean isNewClient, String[] existingIds) {
+        return (isNewClient || isUniqueClientId(id, existingIds)) ? ok() : error("Client with this ID already exists.");
+    }
+
+    public static Validation errorCreatingClient() {
+        return error(ERROR_CREATING_CLIENT);
+    }
+
+    public static Validation errorUpdatingClient() {
+        return error(ERROR_UPDATING_CLIENT);
+    }
+
+    public static Validation errorDeletingClient() {
+        return error(ERROR_DELETING_CLIENT);
+    }
+
+    public static Validation clientNotFound() {
+        return error(CLIENT_NOT_FOUND);
+    }
+
+    private static boolean isValidClientId(String id) {
+        return id != null && Pattern.matches("\\d{11}|\\d{14}", id);
+    }
+
+    private static boolean isUniqueClientId(String id, String[] existingIds) {
+        for (String existingId : existingIds) {
+            if (id.equals(existingId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private final boolean success;
+    private final String message;
+
+    private Validation(boolean success, String message) {
+        this.success = success;
+        this.message = message;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    private static Validation ok() {
+        return new Validation(true, SUCCESS);
+    }
+
+    private static Validation error(String errorMessage, Object... params) {
+        return new Validation(false, String.format(errorMessage, params));
     }
 }

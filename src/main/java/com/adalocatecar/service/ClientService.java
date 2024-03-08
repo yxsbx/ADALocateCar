@@ -1,22 +1,21 @@
 package com.adalocatecar.service;
 
 import com.adalocatecar.dto.ClientDTO;
-import com.adalocatecar.utility.ValidationMessages;
+import com.adalocatecar.utility.Validation;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface ClientService {
+    Validation createClient(ClientDTO clientDTO);
 
-    ValidationMessages createClient(ClientDTO clientDTO);
+    Validation updateClient(ClientDTO clientDTO);
 
-    ValidationMessages updateClient(ClientDTO clientDTO);
-
-    ValidationMessages deleteClient(String id);
+    Validation deleteClient(String id);
 
     List<ClientDTO> findAllClients() throws IOException;
 
-    ValidationMessages findClientById(String id);
+    ClientDTO findClientById(String id);
 
     List<ClientDTO> findClientsByName(String name) throws IOException;
 }

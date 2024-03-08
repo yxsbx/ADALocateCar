@@ -2,7 +2,6 @@ package com.adalocatecar.controller;
 
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.service.ClientService;
-import com.adalocatecar.utility.ValidationMessages;
 
 import java.io.IOException;
 import java.util.List;

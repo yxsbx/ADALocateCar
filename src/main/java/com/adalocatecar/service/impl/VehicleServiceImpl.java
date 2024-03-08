@@ -2,7 +2,6 @@ package com.adalocatecar.service.impl;
 
 import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.service.VehicleService;
-import com.adalocatecar.utility.ValidationMessages;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
