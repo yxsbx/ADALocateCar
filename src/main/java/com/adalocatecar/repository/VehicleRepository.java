@@ -2,14 +2,11 @@ package com.adalocatecar.repository;
 
 import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.model.Client;
+import com.adalocatecar.model.Vehicle;
 
 import java.util.List;
 
-public interface VehicleRepository {
-    void create(Client client);
-    void update(Client client);
-    boolean delete(String id);
-    List<VehicleDTO> findAll();
+public interface VehicleRepository extends GenericsRepository <Vehicle, String> {
     VehicleDTO findByLicensePlate(String licensePlate);
     List<VehicleDTO> findByType(String type);
     List<VehicleDTO> findByModel(String model);

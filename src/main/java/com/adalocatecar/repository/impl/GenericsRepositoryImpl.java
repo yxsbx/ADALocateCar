@@ -1,20 +1,25 @@
 package com.adalocatecar.repository.impl;
 
 import com.adalocatecar.model.Client;
-import com.adalocatecar.repository.ClientRepository;
+import com.adalocatecar.repository.GenericsRepository;
 import com.adalocatecar.utility.FileHandler;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.Logger;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class ClientRepositoryImpl implements ClientRepository {
+public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepository <T, ID>{
+
     private static final Logger logger = Logger.getLogger(ClientRepositoryImpl.class.getName());
     private final String filePath = "clients.txt";
 
-    public ClientRepositoryImpl() {
+    public GenericsRepositoryImpl() {
         File file = new File(filePath);
         try {
             if (file.createNewFile()) {
@@ -28,12 +33,12 @@ public class ClientRepositoryImpl implements ClientRepository {
     }
 
     @Override
-    public void create(Client client) {
+    public void create(T object) {
         try {
-            if (isUniqueClientId(client.getId())) {
-                appendClientToFile(client);
+            if (isUniqueObjectId(getId(object))) {
+                appendClientToFile(object);
             } else {
-                logger.warning("Client with ID " + client.getId() + " already exists.");
+                logger.warning("Client with ID " + getId(object) + " already exists.");
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "An error occurred while creating a client.", e);
@@ -123,7 +128,7 @@ public class ClientRepositoryImpl implements ClientRepository {
         return false;
     }
 
-    private boolean isUniqueClientId(String id) throws IOException {
+    private boolean isUniqueObjectId(ID id) throws IOException {
         List<Client> clients = findAll();
         for (Client client : clients) {
             if (client.getId().equals(id)) {
@@ -133,7 +138,7 @@ public class ClientRepositoryImpl implements ClientRepository {
         return true;
     }
 
-    private void appendClientToFile(Client client) throws IOException {
+    private void appendClientToFile(T client) throws IOException {
         FileHandler.writeToFile(Collections.singletonList(clientToString(client)), filePath);
     }
 
@@ -144,4 +149,6 @@ public class ClientRepositoryImpl implements ClientRepository {
                 .collect(Collectors.toList());
         rewriteFile(updatedClients);
     }
+
+    protected abstract ID getId(T entity);
 }
