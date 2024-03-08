@@ -3,8 +3,11 @@ package com.adalocatecar.utility;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FileHandler {
+    private static final Logger logger = Logger.getLogger(FileHandler.class.getName());
 
     public static void writeToFile(List<String> lines, String filename) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
@@ -13,7 +16,7 @@ public class FileHandler {
                 writer.newLine();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "An error occurred while writing to file: " + filename, e);
         }
     }
 
@@ -25,7 +28,7 @@ public class FileHandler {
                 lines.add(line);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "An error occurred while reading from file: " + filename, e);
         }
         return lines;
     }

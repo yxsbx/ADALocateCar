@@ -4,9 +4,11 @@ public class ValidationResponse {
     public static final String SUCCESS = "Success.";
     public static final String FAILURE = "Validation failed.";
     public static final String CLIENT_ALREADY_EXISTS = "Client with this ID already exists.";
-    public static final String INVALID_ID_FORMAT = "Invalid ID format.";
+    public static final String INVALID_ID_FORMAT = "Invalid ID format. Must be either a CPF with 11 digits or a CNPJ with 14 digits.";
     public static final String CLIENT_NOT_FOUND = "Client not found.";
     public static final String CLIENT_UPDATED = "Client information updated successfully.";
+    public static final String INVALID_NAME_FORMAT = "Invalid name format. Name must have at least 4 alphabetical characters.";
+
 
     public static ValidationResponse error(String errorMessage) {
         return new ValidationResponse(false, errorMessage);

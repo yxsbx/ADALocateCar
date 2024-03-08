@@ -2,91 +2,151 @@ package com.adalocatecar.repository.impl;
 
 import com.adalocatecar.model.Client;
 import com.adalocatecar.repository.ClientRepository;
+import com.adalocatecar.utility.FileHandler;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class ClientRepositoryImpl implements ClientRepository {
+    private static final Logger logger = Logger.getLogger(ClientRepositoryImpl.class.getName());
     private final String filePath = "clients.txt";
 
     public ClientRepositoryImpl() {
         File file = new File(filePath);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            if (file.createNewFile()) {
+                logger.info("File created: " + file.getName());
+            } else {
+                logger.info("File already exists.");
             }
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "An error occurred while creating the file.", e);
         }
     }
 
     @Override
     public void create(Client client) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            writer.write(clientToString(client));
-            writer.newLine();
+        try {
+            if (isUniqueClientId(client.getId())) {
+                appendClientToFile(client);
+            } else {
+                logger.warning("Client with ID " + client.getId() + " already exists.");
+            }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "An error occurred while creating a client.", e);
         }
     }
 
     @Override
     public void update(Client client) {
-        List<Client> clients = findAll().stream()
-                .map(c -> c.getId().equals(client.getId()) ? client : c)
-                .collect(Collectors.toList());
-        rewriteFile(clients);
+        try {
+            if (isUniqueClientId(client.getId())) {
+                replaceClientInFile(client);
+            } else {
+                logger.warning("Client with ID " + client.getId() + " already exists.");
+            }
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "An error occurred while updating a client.", e);
+        }
     }
 
     @Override
     public boolean delete(String id) {
-        List<Client> clients = findAll();
-        boolean removed = clients.removeIf(c -> c.getId().equals(id));
-        if (removed) {
-            rewriteFile(clients);
+        try {
+            List<Client> clients = findAll();
+            boolean removed = clients.removeIf(c -> c.getId().equals(id));
+            if (removed) {
+                rewriteFile(clients);
+            }
+            return removed;
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "An error occurred while deleting a client.", e);
+            return false;
         }
-        return removed;
     }
 
     @Override
     public Optional<Client> findById(String id) {
-        return findAll().stream()
-                .filter(client -> client.getId().equals(id))
-                .findFirst();
+        try {
+            return findAll().stream()
+                    .filter(client -> client.getId().equals(id))
+                    .findFirst();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "An error occurred while finding a client by ID.", e);
+            return Optional.empty();
+        }
     }
 
     @Override
-    public List<Client> findAll() {
+    public List<Client> findAll() throws IOException {
         List<Client> clients = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                clients.add(stringToClient(line));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<String> lines = FileHandler.readFromFile(filePath);
+        for (String line : lines) {
+            clients.add(stringToClient(line));
         }
         return clients;
     }
 
-    private void rewriteFile(List<Client> clients) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
-            for (Client client : clients) {
-                writer.write(clientToString(client));
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void rewriteFile(List<Client> clients) throws IOException {
+        List<String> lines = new ArrayList<>();
+        for (Client client : clients) {
+            lines.add(clientToString(client));
         }
+        FileHandler.writeToFile(lines, filePath);
     }
 
     private String clientToString(Client client) {
-        return String.join(",", client.getId(), client.getName(), client.getType(), client.getContactInfo());
+        return String.join(",", client.getId(), client.getName(), client.getType());
     }
 
     private Client stringToClient(String str) {
         String[] parts = str.split(",");
-        return new Client(parts[0], parts[1], parts[2], parts.length > 3 ? parts[3] : "");
+        String id = parts[0];
+        String name = parts[1];
+        String type = parts[2];
+        if (id.length() == 11) {
+            type = "Pessoa Jurídica";
+        } else if (id.length() == 14) {
+            type = "Pessoa Física";
+        }
+        return new Client(id, name, type);
+    }
+
+    @Override
+    public boolean hasRentedCars(String id) {
+        List<String> lines = FileHandler.readFromFile(filePath);
+        for (String line : lines) {
+            String[] parts = line.split(",");
+            String clientId = parts[0];
+            if (clientId.equals(id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isUniqueClientId(String id) throws IOException {
+        List<Client> clients = findAll();
+        for (Client client : clients) {
+            if (client.getId().equals(id)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void appendClientToFile(Client client) throws IOException {
+        FileHandler.writeToFile(Collections.singletonList(clientToString(client)), filePath);
+    }
+
+    private void replaceClientInFile(Client client) throws IOException {
+        List<Client> clients = findAll();
+        List<Client> updatedClients = clients.stream()
+                .map(c -> c.getId().equals(client.getId()) ? client : c)
+                .collect(Collectors.toList());
+        rewriteFile(updatedClients);
     }
 }

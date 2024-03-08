@@ -4,16 +4,11 @@ public class ClientDTO {
     private String id;
     private String name;
     private String type;
-    private String contactInfo;
 
-    public ClientDTO() {
-    }
-
-    public ClientDTO(String id, String name, String type, String contactInfo) {
+    public ClientDTO(String id, String name, String type) {
         this.id = id;
-        this.name = name;
+        this.setName(name);
         this.type = type;
-        this.contactInfo = contactInfo;
     }
 
     public String getId() {
@@ -40,21 +35,12 @@ public class ClientDTO {
         this.type = type;
     }
 
-    public String getContactInfo() {
-        return contactInfo;
-    }
-
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
-    }
-
     @Override
     public String toString() {
-        return "ClientDTO{" +
-                "id='" + id + '\'' +
+        return "Client{" +
+                "CPF/CNPJ='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
-                ", contactInfo='" + contactInfo + '\'' +
                 '}';
     }
 }

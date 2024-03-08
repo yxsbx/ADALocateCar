@@ -4,35 +4,20 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Rental {
-    private String licensePlate;
-    private String clientId;
+    private Vehicle vehicle;
+    private Client client;
     private LocalDateTime startDate;
     private LocalDateTime expectedEndDate;
     private LocalDateTime actualEndDate;
     private double totalCost;
 
-    public Rental(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate) {
-        this.licensePlate = licensePlate;
-        this.clientId = clientId;
+    public Rental(Vehicle vehicle, Client client, LocalDateTime startDate, LocalDateTime expectedEndDate) {
+        this.vehicle = vehicle;
+        this.client = client;
         this.startDate = startDate;
         this.expectedEndDate = expectedEndDate;
     }
 
-    public String getLicensePlate() {
-        return licensePlate;
-    }
-
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
 
     public LocalDateTime getStartDate() {
         return startDate;
@@ -76,6 +61,29 @@ public class Rental {
             this.totalCost = baseCostPerDay * daysRented;
         } else {
             throw new IllegalStateException("Rental has not been completed yet.");
+        }
+    }
+
+    private double getDailyRate(String vehicleType) {
+        switch (vehicleType) {
+            case "SMALL":
+                return 100.00;
+            case "MEDIUM":
+                return 150.00;
+            case "SUV":
+                return 200.00;
+            default:
+                throw new IllegalArgumentException("Invalid vehicle type");
+        }
+    }
+
+    private double getDiscount(Client customer, int durationDays) {
+        if (customer instanceof IndividualCustomer && durationDays > 5) {
+            return 0.95; // 5% discount for individual customers
+        } else if (customer instanceof BusinessCustomer && durationDays > 3) {
+            return 0.90; // 10% discount for business customers
+        } else {
+            return 1.0; // No discount
         }
     }
 }
