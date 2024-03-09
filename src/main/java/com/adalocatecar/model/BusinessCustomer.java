@@ -5,3 +5,4 @@ public class BusinessCustomer extends Client{
         super(id,name,type);
     }
 }
+

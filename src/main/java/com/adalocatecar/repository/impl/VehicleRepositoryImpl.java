@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, String> implements VehicleRepository {
 
     private static final File filePath = new File("src/data/vehicles.txt");
@@ -100,3 +101,4 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
         return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getBrand(), vehicle.getType(), vehicle.getYear());
     }
 }
+

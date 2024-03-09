@@ -45,4 +45,4 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String
         return entity.getId();
     }
 
-}
+

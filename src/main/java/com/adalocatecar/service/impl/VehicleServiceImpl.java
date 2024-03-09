@@ -175,17 +175,3 @@ public class VehicleServiceImpl implements VehicleService {
         }
         return matchingVehicles;
     }
-
-    private boolean isUniqueLicensePlate(String licensePlate) {
-        for (VehicleDTO vehicle : vehicles) {
-            if (vehicle.getLicensePlate().equals(licensePlate)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void setVehicleRepository(VehicleRepository vehicleRepository) {
-        this.vehicleRepository = vehicleRepository;
-    }
-}

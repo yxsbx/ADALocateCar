@@ -5,3 +5,4 @@ public class IndividualCustomer extends Client{
         super(id,name,type);
     }
 }
+
