@@ -9,7 +9,5 @@ public interface RentalService {
     void rentVehicle(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate);
     void returnVehicle(String licensePlate, LocalDateTime actualEndDate);
     List<RentalDTO> findAllRentals();
-    List<RentalDTO> findRentalByPartialName(String partialName);
-
-    RentalDTO findVehicleByPartialName(String partialName);
+    RentalDTO findRentalByClientId(String clientId);
 }

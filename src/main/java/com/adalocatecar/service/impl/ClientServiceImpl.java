@@ -104,7 +104,12 @@ public class ClientServiceImpl implements ClientService {
             return idFormatValidation;
         }
 
-        boolean hasRentedCars = clientRepository.hasRentedCars(id);
+        boolean hasRentedCars = false;
+        try {
+            hasRentedCars = clientRepository.hasRentedCars(id);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         if (hasRentedCars) {
             return Validation.error(Validation.ERROR_DELETING_CLIENT);
         }
@@ -123,24 +128,37 @@ public class ClientServiceImpl implements ClientService {
             }
             return clientDTOs;
         } catch (IOException e) {
+            System.err.printf(Validation.errorFindingAllClientsMessage(e.getMessage()));
             return new ArrayList<>();
         }
     }
 
+
     @Override
-    public ClientDTO findClientById(String id) {
+    public Validation<ClientDTO> findClientById(String id) {
         Validation idValidation = Validation.validateRequiredField(id, "ID");
         if (!idValidation.isSuccess()) {
-            throw new IllegalArgumentException("ID is required");
+            return Validation.error(idValidation.getMessage());
         }
 
         Validation idFormatValidation = Validation.validateCPFOrCNPJ(id);
         if (!idFormatValidation.isSuccess()) {
-            throw new IllegalArgumentException("Invalid ID format");
+            return Validation.error(idFormatValidation.getMessage());
         }
 
-        Optional<Client> client = clientRepository.findById(id);
-        return client.map(Converter::convertToDTO).orElse(null);
+        Optional<Client> clientOptional;
+        try {
+            clientOptional = clientRepository.findById(id);
+        } catch (IOException e) {
+            return Validation.error("Error while finding client by ID: " + e.getMessage());
+        }
+
+        if (clientOptional.isPresent()) {
+            ClientDTO clientDTO = Converter.convertToDTO(clientOptional.get());
+            return Validation.ok(clientDTO);
+        } else {
+            return Validation.error(Validation.CLIENT_NOT_FOUND);
+        }
     }
 
     @Override

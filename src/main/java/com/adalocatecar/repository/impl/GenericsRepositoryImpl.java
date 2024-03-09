@@ -2,6 +2,8 @@ package com.adalocatecar.repository.impl;
 
 import com.adalocatecar.repository.GenericsRepository;
 import com.adalocatecar.utility.FileHandler;
+import com.adalocatecar.utility.Validation;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,21 +14,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepository <T, ID>{
+public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepository<T, ID> {
 
     private static final Logger logger = Logger.getLogger(GenericsRepositoryImpl.class.getName());
     File filePath;
 
     public GenericsRepositoryImpl(File filePath) {
         this.filePath = filePath;
-        try {
-            if (filePath.createNewFile()) {
-                logger.info("File created: " + filePath.getName());
-            } else {
-                logger.info("File already exists.");
-            }
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "An error occurred while creating the file.", e);
+        if (Validation.fileExists(filePath)) {
+            logger.info(Validation.fileAlreadyExists(filePath.getName()));
+        } else {
+            logger.info(Validation.fileCreated(filePath.getName()));
         }
     }
 
@@ -34,12 +32,12 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     public void create(T object) {
         try {
             if (isUniqueObjectId(getId(object))) {
-                appendClientToFile(object);
+                appendObjectToFile(object);
             } else {
-                logger.warning("Client with ID " + getId(object) + " already exists.");
+                logger.warning(Validation.objectAlreadyExists(getId(object)));
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "An error occurred while creating a client.", e);
+            logger.log(Level.SEVERE, Validation.errorWhileCreatingObject(), e);
         }
     }
 
@@ -49,24 +47,24 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
             if (isUniqueObjectId(getId(object))) {
                 replaceObjectInFile(object);
             } else {
-                logger.warning("Client with ID " + getId(object) + " already exists.");
+                logger.warning(Validation.objectAlreadyExists(getId(object)));
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "An error occurred while updating a client.", e);
+            logger.log(Level.SEVERE, Validation.errorWhileUpdatingObject(), e);
         }
     }
 
     @Override
     public boolean delete(ID id) {
         try {
-            List<T> clients = findAll();
-            boolean removed = clients.removeIf(c -> getId(c).equals(id));
+            List<T> objects = findAll();
+            boolean removed = objects.removeIf(o -> getId(o).equals(id));
             if (removed) {
-                rewriteFile(clients);
+                rewriteFile(objects);
             }
             return removed;
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "An error occurred while deleting a client.", e);
+            logger.log(Level.SEVERE, Validation.errorWhileDeletingObject(), e);
             return false;
         }
     }
@@ -78,7 +76,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
                     .filter(obj -> getId(obj).equals(id))
                     .findFirst();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "An error occurred while finding a client by ID.", e);
+            logger.log(Level.SEVERE, Validation.errorWhileFindingObjectByID(), e);
             return Optional.empty();
         }
     }
@@ -102,8 +100,8 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     private boolean isUniqueObjectId(ID id) throws IOException {
-        List<T> clients = findAll();
-        for (T object : clients) {
+        List<T> objects = findAll();
+        for (T object : objects) {
             if (getId(object).equals(id)) {
                 return false;
             }
@@ -111,18 +109,23 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
         return true;
     }
 
-    private void appendClientToFile(T object) throws IOException {
+    private void appendObjectToFile(T object) throws IOException {
         FileHandler.writeToFile(Collections.singletonList(objectToString(object)), filePath.getAbsolutePath());
     }
 
     private void replaceObjectInFile(T object) throws IOException {
         List<T> objects = findAll();
         List<T> updatedObjects = objects.stream()
-                .map(c -> getId(c).equals(getId(object)) ? object : c)
+                .map(o -> getId(o).equals(getId(object)) ? object : o)
                 .collect(Collectors.toList());
         rewriteFile(updatedObjects);
     }
+
     protected abstract T stringToObject(String str);
+
     protected abstract String objectToString(T object);
+
     protected abstract ID getId(T entity);
+
+    protected abstract boolean hasRentedCars(ID id);
 }

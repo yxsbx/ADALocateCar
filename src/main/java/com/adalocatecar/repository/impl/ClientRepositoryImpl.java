@@ -2,31 +2,24 @@ package com.adalocatecar.repository.impl;
 
 import com.adalocatecar.model.Client;
 import com.adalocatecar.repository.ClientRepository;
-import com.adalocatecar.utility.FileHandler;
-import java.io.*;
-import java.util.*;
-import java.util.logging.Logger;
+import com.adalocatecar.repository.RentalRepository;
+import com.adalocatecar.model.Rental;
 
-public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String> implements ClientRepository {
-    private static final Logger logger = Logger.getLogger(ClientRepositoryImpl.class.getName());
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+public class ClientRepositoryImpl extends GenericsRepositoryImpl<Client, String> implements ClientRepository {
+
+    private final RentalRepository rentalRepository;
+
     private static final File filePath = new File("src/data/clients.txt");
 
-    public ClientRepositoryImpl() {
-     super(filePath);
+    public ClientRepositoryImpl(RentalRepository rentalRepository) {
+        super(filePath);
+        this.rentalRepository = rentalRepository;
     }
 
-
-    public boolean hasRentedCars(String id) {
-        List<String> lines = FileHandler.readFromFile(filePath.getAbsolutePath());
-        for (String line : lines) {
-            String[] parts = line.split(",");
-            String clientId = parts[0];
-            if (clientId.equals(id)) {
-                return true;
-            }
-        }
-        return false;
-    }
     @Override
     protected String objectToString(Client client) {
         return String.join(",", client.getId(), client.getName(), client.getType());
@@ -46,4 +39,9 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String
         return entity.getId();
     }
 
+    @Override
+    public boolean hasRentedCars(String id) {
+        List<Rental> rentalRecords = rentalRepository.findByClientId(id);
+        return !rentalRecords.isEmpty();
+    }
 }
