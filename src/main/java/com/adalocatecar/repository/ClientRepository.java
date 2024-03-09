@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClientRepository extends GenericsRepository<Client, String> {
-    boolean hasRentedCars(String id);
+    boolean hasRentedCars(String id) throws IOException;
 }

@@ -2,6 +2,7 @@ package com.adalocatecar.controller;
 
 import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.service.VehicleService;
+import com.adalocatecar.utility.Validation;
 
 import java.util.List;
 import java.util.Scanner;
@@ -49,7 +50,7 @@ public class VehicleController {
         System.out.println("Enter vehicle details:");
         System.out.print("License Plate: ");
         String licensePlate = scanner.nextLine();
-        System.out.println("Brand: ");
+        System.out.print("Brand: ");
         String brand = scanner.nextLine();
         System.out.print("Model: ");
         String model = scanner.nextLine();
@@ -59,15 +60,19 @@ public class VehicleController {
         int year = scanner.nextInt();
         scanner.nextLine();
 
-        VehicleDTO vehicleDTO = new VehicleDTO(licensePlate,brand, model, type, year);
-        ValidationMessages response = vehicleService.registerVehicle(vehicleDTO);
-        System.out.println(response.getMessage());
+        VehicleDTO vehicleDTO = new VehicleDTO(licensePlate, brand, model, type, year);
+        Validation response = vehicleService.registerVehicle(vehicleDTO);
+        if (response.isSuccess()) {
+            System.out.println("Vehicle registered successfully.");
+        } else {
+            System.out.println("Error: " + response.getMessage());
+        }
     }
 
     private void updateVehicle(Scanner scanner) {
         System.out.print("Enter the License Plate of the vehicle to update: ");
         String licensePlate = scanner.nextLine();
-        System.out.println("New Brand: ");
+        System.out.print("New Brand: ");
         String brand = scanner.nextLine();
         System.out.print("New Model: ");
         String model = scanner.nextLine();
@@ -87,12 +92,11 @@ public class VehicleController {
         vehicleDTO.setModel(model);
         vehicleDTO.setType(type);
         vehicleDTO.setYear(year);
-        vehicleService.updateVehicle(vehicleDTO);
-        System.out.println("Vehicle updated successfully.");
-    }
-
-    private void listAllVehicles() {
-        List<VehicleDTO> vehicles = vehicleService.findAllVehicles();
-        vehicles.forEach(System.out::println);
+        Validation response = vehicleService.updateVehicle(vehicleDTO);
+        if (response.isSuccess()) {
+            System.out.println("Vehicle updated successfully.");
+        } else {
+            System.out.println("Error: " + response.getMessage());
+        }
     }
 }

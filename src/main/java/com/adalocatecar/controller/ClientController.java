@@ -2,6 +2,7 @@ package com.adalocatecar.controller;
 
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.service.ClientService;
+import com.adalocatecar.utility.Validation;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,8 +59,12 @@ public class ClientController {
         String id = scanner.nextLine();
 
         ClientDTO clientDTO = new ClientDTO(id, name, null);
-        ValidationMessages response = clientService.createClient(clientDTO);
-        System.out.println(response.getMessage());
+        Validation response = clientService.createClient(clientDTO);
+        if (response.isSuccess()) {
+            System.out.println("Client registered successfully.");
+        } else {
+            System.out.println("Failed to register client: " + response.getMessage());
+        }
     }
 
     private void updateClient(Scanner scanner) {
@@ -72,16 +77,24 @@ public class ClientController {
         String type = scanner.nextLine();
 
         ClientDTO clientDTO = new ClientDTO(id, name, type);
-        ValidationMessages response = clientService.updateClient(clientDTO);
-        System.out.println(response.getMessage());
+        Validation response = clientService.updateClient(clientDTO);
+        if (response.isSuccess()) {
+            System.out.println("Client information updated successfully.");
+        } else {
+            System.out.println("Failed to update client information: " + response.getMessage());
+        }
     }
 
     private void deleteClient(Scanner scanner) {
-        System.out.println("Enter client the CPF or CNPJ to delete:");
+        System.out.println("Enter the CPF or CNPJ of the client to delete:");
         String id = scanner.nextLine();
 
-        ValidationMessages response = clientService.deleteClient(id);
-        System.out.println(response.getMessage());
+        Validation response = clientService.deleteClient(id);
+        if (response.isSuccess()) {
+            System.out.println("Client deleted successfully.");
+        } else {
+            System.out.println("Failed to delete client: " + response.getMessage());
+        }
     }
 
     private void listClients() throws IOException {
