@@ -49,3 +49,4 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl <Vehicle, Stri
     return entity.getLicensePlate();
   }
 }
+
