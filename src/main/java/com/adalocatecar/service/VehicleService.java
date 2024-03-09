@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface VehicleService {
     Validation registerVehicle(VehicleDTO vehicleDTO);
-    void updateVehicle(VehicleDTO vehicleDTO);
+    Validation updateVehicle(VehicleDTO vehicleDTO);
     void deleteVehicle(String licensePlate);
     List<VehicleDTO> findAllVehicles();
     boolean isVehicleAvailable(String licensePlate, LocalDateTime startDate, LocalDateTime expectedEndDate);

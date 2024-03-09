@@ -5,10 +5,8 @@ import com.adalocatecar.repository.ClientRepository;
 import com.adalocatecar.utility.FileHandler;
 import java.io.*;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String> implements ClientRepository {
-    private static final Logger logger = Logger.getLogger(ClientRepositoryImpl.class.getName());
     private static final File filePath = new File("src/data/clients.txt");
 
     public ClientRepositoryImpl() {
@@ -27,6 +25,7 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String
         }
         return false;
     }
+
     @Override
     protected String objectToString(Client client) {
         return String.join(",", client.getId(), client.getName(), client.getType());

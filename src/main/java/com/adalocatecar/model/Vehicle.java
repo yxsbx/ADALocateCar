@@ -8,7 +8,7 @@ public class Vehicle {
     private int year;
     private boolean isAvailable;
 
-    public Vehicle(String licensePlate,String brand, String model, String type, int year) {
+    public Vehicle(String licensePlate, String brand, String model, int year) {
         this.licensePlate = licensePlate;
         this.brand = brand;
         this.model = model;

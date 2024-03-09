@@ -32,4 +32,7 @@ public class FileHandler {
         }
         return lines;
     }
+
+    public static void appendToFile(String s, String absolutePath) {
+    }
 }

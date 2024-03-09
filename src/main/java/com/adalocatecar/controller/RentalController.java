@@ -25,8 +25,13 @@ public class RentalController {
             System.out.println("4. Back to Main Menu");
             System.out.print("Choose an option: ");
 
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            int option;
+            try {
+                option = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                continue;
+            }
 
             switch (option) {
                 case 1:
@@ -39,6 +44,7 @@ public class RentalController {
                     listAllRentals();
                     break;
                 case 4:
+                    System.out.println("Exiting Rental Management...");
                     return;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -57,12 +63,16 @@ public class RentalController {
         System.out.println("Enter expected end date (yyyy-MM-dd HH:mm):");
         String endDateStr = scanner.nextLine();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime startDate = LocalDateTime.parse(startDateStr, formatter);
-        LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime startDate = LocalDateTime.parse(startDateStr, formatter);
+            LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
 
-        rentalService.rentVehicle(licensePlate, clientId, startDate, endDate);
-        System.out.println("Vehicle rented successfully.");
+            rentalService.rentVehicle(licensePlate, clientId, startDate, endDate);
+            System.out.println("Vehicle rented successfully.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     private void returnVehicle(Scanner scanner) {
@@ -71,15 +81,28 @@ public class RentalController {
         System.out.println("Enter actual end date (yyyy-MM-dd HH:mm):");
         String endDateStr = scanner.nextLine();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
 
-        rentalService.returnVehicle(licensePlate, endDate);
-        System.out.println("Vehicle returned successfully.");
+            rentalService.returnVehicle(licensePlate, endDate);
+            System.out.println("Vehicle returned successfully.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     private void listAllRentals() {
-        List<RentalDTO> rentals = rentalService.findAllRentals();
-        rentals.forEach(System.out::println);
+        try {
+            List<RentalDTO> rentals = rentalService.findAllRentals();
+            if (rentals.isEmpty()) {
+                System.out.println("No rentals found.");
+            } else {
+                System.out.println("All Rentals:");
+                rentals.forEach(System.out::println);
+            }
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 }

@@ -8,7 +8,7 @@ public class VehicleDTO {
     private int year;
     private boolean isAvailable;
 
-    public VehicleDTO() {
+    public VehicleDTO(String licensePlate, String brand, String type, int year) {
     }
 
     public VehicleDTO(String licensePlate,String brand, String model, String type, int year) {

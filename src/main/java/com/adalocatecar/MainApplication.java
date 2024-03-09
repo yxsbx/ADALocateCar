@@ -3,20 +3,27 @@ package com.adalocatecar;
 import com.adalocatecar.controller.VehicleController;
 import com.adalocatecar.controller.ClientController;
 import com.adalocatecar.repository.impl.ClientRepositoryImpl;
+import com.adalocatecar.repository.impl.VehicleRepositoryImpl;
 import com.adalocatecar.service.impl.VehicleServiceImpl;
 import com.adalocatecar.service.impl.ClientServiceImpl;
 import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.service.ClientService;
 
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MainApplication {
+    private static final Logger logger = Logger.getLogger(MainApplication.class.getName());
+
     public static void main(String[] args) {
 
         try (Scanner scanner = new Scanner(System.in)) {
 
             ClientRepositoryImpl clientRepository = new ClientRepositoryImpl();
             ClientService clientService = new ClientServiceImpl(clientRepository);
+
+            VehicleRepositoryImpl vehicleRepository = new VehicleRepositoryImpl();
             VehicleService vehicleService = new VehicleServiceImpl();
 
             VehicleController vehicleController = new VehicleController(vehicleService);
@@ -50,10 +57,8 @@ public class MainApplication {
                 }
             }
         } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "An error occurred: " + e.getMessage(), e);
+            System.out.println("An unexpected error occurred. Please check the log for details.");
         }
     }
 }
-
-

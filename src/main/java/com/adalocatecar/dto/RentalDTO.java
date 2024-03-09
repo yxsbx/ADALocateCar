@@ -9,8 +9,7 @@ public class RentalDTO {
     private LocalDateTime expectedEndDate;
     private LocalDateTime actualEndDate;
     private double totalCost;
-
-    public RentalDTO() {
+    public RentalDTO(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate, LocalDateTime actualEndDate, double totalCost) {
     }
 
     public RentalDTO(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate) {

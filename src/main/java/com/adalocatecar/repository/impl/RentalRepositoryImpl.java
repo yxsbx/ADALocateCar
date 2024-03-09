@@ -4,6 +4,7 @@ import com.adalocatecar.model.Rental;
 import com.adalocatecar.repository.RentalRepository;
 
 import java.io.File;
+import java.util.List;
 
 public class RentalRepositoryImpl extends GenericsRepositoryImpl <Rental, String> implements RentalRepository {
   private static final File filePath = new File("src/data/rentals.txt");
@@ -24,6 +25,11 @@ public class RentalRepositoryImpl extends GenericsRepositoryImpl <Rental, String
 
   @Override
   protected String getId(Rental entity) {
+    return null;
+  }
+
+  @Override
+  public List<Rental> findByClientId(String clientId) {
     return null;
   }
 }

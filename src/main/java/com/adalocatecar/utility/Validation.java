@@ -15,46 +15,40 @@ public class Validation {
     private static boolean success;
     private String message;
 
-    private Validation(boolean success, String message) {
-        Validation.success = success;
+    public Validation(boolean success, String message) {
+        this.success = success;
+        this.message = message;
     }
 
     public static Validation createValidation(boolean success, String message) {
         return new Validation(success, message);
     }
 
+    public static boolean isValidCPFOrCNPJ(String id) {
+        if (id == null || id.isEmpty()) {
+            return false;
+        }
+
+        String cleanId = id.replaceAll("\\D", "");
+
+        return cleanId.length() == 11 || cleanId.length() == 14;
+    }
+
+
     public boolean isSuccess() {
         return success;
     }
 
-    public static boolean isRequired(String value) {
-        return value != null && !value.trim().isEmpty();
-    }
-
-    public static boolean isValidFormat(String value, String regex) {
-        return value != null && Pattern.matches(regex, value);
-    }
-
-    public static boolean isValidName(String name) {
-        return name != null && name.matches("[a-zA-Z]{3,}");
-    }
-
-    public static boolean isUniqueField(String value, String[] existingValues) {
-        if (value == null) return true;
-        for (String existingValue : existingValues) {
-            if (value.equals(existingValue)) {
-                return false;
-            }
-        }
-        return true;
+    public String getMessage() {
+        return message;
     }
 
     public static Validation validateRequiredField(String value, String fieldName) {
-        return isRequired(value) ? ok() : error("The %s is required.", fieldName);
+        return isRequired(value) ? ok("Vehicle rented successfully.") : error("The %s is required.", fieldName);
     }
 
     public static Validation validateFormat(String value, String regex, String fieldName) {
-        return isValidFormat(value, regex) ? ok() : error("Invalid format for %s.", fieldName);
+        return isValidFormat(value, regex) ? ok("Vehicle rented successfully.") : error("Invalid format for %s.", fieldName);
     }
 
     public static Validation validateCPFOrCNPJ(String id) {
@@ -62,36 +56,11 @@ public class Validation {
     }
 
     public static Validation validateName(String name) {
-        return isValidName(name) ? ok() : error("Invalid name format. Name must have at least 4 alphabetical characters.");
-    }
-
-    public static Validation validateUniqueField(String value, String[] existingValues, String fieldName) {
-        return isUniqueField(value, existingValues) ? ok() : error("The %s is already in use.", fieldName);
-    }
-
-    public static boolean isValidClientId(String id) {
-        return id != null && Pattern.matches("\\d{11}|\\d{14}", id);
-    }
-
-    public static boolean isUniqueClientId(String id, String[] existingIds) {
-        for (String existingId : existingIds) {
-            if (id.equals(existingId)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static Validation validateClientName(String name) {
-        return isValidName(name) ? ok() : error("Invalid name format. Name must have at least 4 alphabetical characters.");
-    }
-
-    public static Validation validateClientId(String id) {
-        return isValidClientId(id) ? ok() : error(INVALID_ID_FORMAT);
+        return isValidName(name) ? ok("Vehicle rented successfully.") : error("Invalid name format. Name must have at least 4 alphabetical characters.");
     }
 
     public static Validation validateUniqueClientId(String id, boolean isNewClient, String[] existingIds) {
-        return (isNewClient || isUniqueClientId(id, existingIds)) ? ok() : error("Client with this ID already exists.");
+        return (isNewClient || isUniqueClientId(id, existingIds)) ? ok("Vehicle rented successfully.") : error("Client with this ID already exists.");
     }
 
     public static Validation errorCreatingClient() {
@@ -106,15 +75,50 @@ public class Validation {
         return error(ERROR_DELETING_CLIENT);
     }
 
-    public static Validation clientNotFound() {
-        return error(CLIENT_NOT_FOUND);
-    }
-
-    public static Validation ok() {
+    public static Validation ok(String s) {
         return createValidation(true, SUCCESS);
     }
 
     public static Validation error(String errorMessage, Object... params) {
         return createValidation(false, String.format(errorMessage, params));
+    }
+
+    private static boolean isRequired(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+
+    private static boolean isValidFormat(String value, String regex) {
+        return value != null && Pattern.matches(regex, value);
+    }
+
+    private static boolean isValidName(String name) {
+        return name != null && name.matches("[a-zA-Z]{3,}");
+    }
+
+    private static boolean isUniqueClientId(String id, String[] existingIds) {
+        if (id == null) return true;
+        for (String existingId : existingIds) {
+            if (id.equals(existingId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean validateLicensePlate(String licensePlate) {
+        String regex = "[A-Z]{3}-\\d{4}";
+        return Pattern.matches(regex, licensePlate);
+    }
+
+    public static boolean validateBrand(String brand) {
+        return !brand.isEmpty();
+    }
+
+    public static boolean validateType(String type) {
+        return !type.isEmpty();
+    }
+
+    public static Validation validateVehicleYear(int year) {
+        return year > 0;
     }
 }
