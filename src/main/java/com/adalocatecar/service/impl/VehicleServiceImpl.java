@@ -4,7 +4,6 @@ import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.model.Rental;
 import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.VehicleRepository;
-import com.adalocatecar.repository.impl.VehicleRepositoryImpl;
 import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.utility.Validation;
 
@@ -16,44 +15,46 @@ public class VehicleServiceImpl implements VehicleService {
 
     private final List<VehicleDTO> vehicles = new ArrayList<>();
     private VehicleRepository vehicleRepository;
+    private final Rental[] rentals;
 
-    public VehicleServiceImpl() {
+    public VehicleServiceImpl(Rental[] rentals) {
+        this.rentals = rentals;
     }
 
     @Override
-    public Validation registerVehicle(VehicleDTO vehicleDTO) {
+    public Object registerVehicle(VehicleDTO vehicleDTO) {
         Validation validLicensePlate = Validation.validateFormat(vehicleDTO.getLicensePlate(), "[A-Z]{3}-\\d{4}", "License Plate");
         if (!validLicensePlate.isSuccess()) {
-            return validLicensePlate;
+            return validLicensePlate.isSuccess();
         }
 
         if (!isUniqueLicensePlate(vehicleDTO.getLicensePlate())) {
-            return Validation.error("License plate already exists.");
+            return Validation.error("License plate already exists.").isSuccess();
         }
 
         Validation validBrand = Validation.validateRequiredField(vehicleDTO.getBrand(), "Brand");
         if (!validBrand.isSuccess()) {
-            return validBrand;
+            return validBrand.isSuccess();
         }
 
         Validation validType = Validation.validateRequiredField(vehicleDTO.getType(), "Type");
         if (!validType.isSuccess()) {
-            return validType;
+            return validType.isSuccess();
         }
 
-        Validation validYear = Validation.validateVehicleYear(vehicleDTO.getYear());
-        if (!validYear.isSuccess()) {
+        boolean validYear = Validation.validateVehicleYear(vehicleDTO.getYear());
+        if (!validYear) {
             return validYear;
         }
 
         vehicles.add(vehicleDTO);
         System.out.println("Vehicle registered successfully.");
-        return Validation.ok("Vehicle rented successfully.");
+        return Validation.ok("Vehicle rented successfully.").isSuccess();
     }
 
 
     @Override
-    public Validation updateVehicle(VehicleDTO vehicleDTO) {
+    public Object updateVehicle(VehicleDTO vehicleDTO) {
         VehicleDTO existingVehicle = findVehicleByLicensePlate(vehicleDTO.getLicensePlate());
         if (existingVehicle != null) {
             Validation validBrand = Validation.validateRequiredField(vehicleDTO.getBrand(), "Brand");
@@ -66,8 +67,8 @@ public class VehicleServiceImpl implements VehicleService {
                 return validType;
             }
 
-            Validation validYear = Validation.validateVehicleYear(vehicleDTO.getYear());
-            if (!validYear.isSuccess()) {
+            boolean validYear = Validation.validateVehicleYear(vehicleDTO.getYear());
+            if (!validYear) {
                 return validYear;
             }
 

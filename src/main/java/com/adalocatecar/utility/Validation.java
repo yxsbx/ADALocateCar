@@ -118,7 +118,7 @@ public class Validation {
         return !type.isEmpty();
     }
 
-    public static Validation validateVehicleYear(int year) {
+    public static boolean validateVehicleYear(int year) {
         return year > 0;
     }
 }

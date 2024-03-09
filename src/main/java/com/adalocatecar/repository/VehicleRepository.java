@@ -11,4 +11,6 @@ public interface VehicleRepository extends GenericsRepository <Vehicle, String> 
     List<VehicleDTO> findByType(String type);
     List<VehicleDTO> findByModel(String model);
     List<VehicleDTO> findByYear(int year);
+
+    Vehicle findVehicleByLicensePlate(String licensePlate);
 }
