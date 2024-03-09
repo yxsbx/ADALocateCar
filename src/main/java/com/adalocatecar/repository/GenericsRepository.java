@@ -1,13 +1,12 @@
 package com.adalocatecar.repository;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-public interface GenericsRepository<T, ID> {
-    void create(T object) throws IOException;
-    void update(T object) throws IOException;
-    boolean delete(ID id) throws IOException;
-    Optional<T> findById(ID id) throws IOException;
+public interface GenericsRepository <T, ID>{
+    void create(T client);
+    void update(T client);
+    boolean delete(ID id);
+    Optional<T> findById(ID id);
     List<T> findAll() throws IOException;
 }

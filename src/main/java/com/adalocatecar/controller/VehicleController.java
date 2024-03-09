@@ -24,8 +24,13 @@ public class VehicleController {
             System.out.println("4. Back to Main Menu");
             System.out.print("Choose an option: ");
 
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            int option;
+            try {
+                option = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                continue;
+            }
 
             switch (option) {
                 case 1:
@@ -46,6 +51,18 @@ public class VehicleController {
         }
     }
 
+    private void listAllVehicles() {
+        List<VehicleDTO> vehicles = vehicleService.findAllVehicles();
+        if (vehicles.isEmpty()) {
+            System.out.println("No vehicles found.");
+        } else {
+            System.out.println("All Vehicles:");
+            for (VehicleDTO vehicle : vehicles) {
+                System.out.println(vehicle);
+            }
+        }
+    }
+
     private void registerVehicle(Scanner scanner) {
         System.out.println("Enter vehicle details:");
         System.out.print("License Plate: ");
@@ -56,9 +73,14 @@ public class VehicleController {
         String model = scanner.nextLine();
         System.out.print("Type: ");
         String type = scanner.nextLine();
-        System.out.print("Year: ");
-        int year = scanner.nextInt();
-        scanner.nextLine();
+        int year;
+        try {
+            System.out.print("Year: ");
+            year = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid year.");
+            return;
+        }
 
         VehicleDTO vehicleDTO = new VehicleDTO(licensePlate, brand, model, type, year);
         Validation response = vehicleService.registerVehicle(vehicleDTO);
@@ -78,9 +100,14 @@ public class VehicleController {
         String model = scanner.nextLine();
         System.out.print("New Type: ");
         String type = scanner.nextLine();
-        System.out.print("New Year: ");
-        int year = scanner.nextInt();
-        scanner.nextLine();
+        int year;
+        try {
+            System.out.print("New Year: ");
+            year = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid year.");
+            return;
+        }
 
         VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
         if (vehicleDTO == null) {

@@ -31,5 +31,4 @@ public class FileHandler {
             logger.log(Level.SEVERE, "An error occurred while reading from file: " + filename, e);
         }
         return lines;
-    }
-}
+

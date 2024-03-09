@@ -21,75 +21,12 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Validation createClient(ClientDTO clientDTO) {
-        String id = clientDTO.getId();
-        Validation idValidation = Validation.validateRequiredField(id, "ID");
-        if (!idValidation.isSuccess()) {
-            return idValidation;
-        }
-
-        Validation idFormatValidation = Validation.validateCPFOrCNPJ(id);
-        if (!idFormatValidation.isSuccess()) {
-            return idFormatValidation;
-        }
-
-        String[] existingIds;
-        try {
-            existingIds = getAllClientIdsFromRepository();
-        } catch (IOException e) {
-            return Validation.errorCreatingClient();
-        }
-
-        Validation uniqueIdValidation = Validation.validateUniqueClientId(id, true, existingIds);
-        if (!uniqueIdValidation.isSuccess()) {
-            return uniqueIdValidation;
-        }
-
-        Validation nameValidation = Validation.validateName(clientDTO.getName());
-        if (!nameValidation.isSuccess()) {
-            return nameValidation;
-        }
-
-        clientDTO.setType(determineClientType(id));
-        try {
-            clientRepository.update(Converter.convertToEntity(clientDTO));
-            return Validation.ok();
-        } catch (Exception e) {
-            return Validation.errorCreatingClient();
-        }
+        return saveClient(clientDTO, true);
     }
 
     @Override
     public Validation updateClient(ClientDTO clientDTO) {
-        String id = clientDTO.getId();
-        Validation idValidation = Validation.validateCPFOrCNPJ(id);
-        if (!idValidation.isSuccess()) {
-            return idValidation;
-        }
-
-        String[] existingIds;
-        try {
-            existingIds = getAllClientIdsFromRepository();
-        } catch (IOException e) {
-            return Validation.errorUpdatingClient();
-        }
-
-        Validation uniqueIdValidation = Validation.validateUniqueClientId(id, false, existingIds);
-        if (!uniqueIdValidation.isSuccess()) {
-            return uniqueIdValidation;
-        }
-
-        Validation nameValidation = Validation.validateName(clientDTO.getName());
-        if (!nameValidation.isSuccess()) {
-            return nameValidation;
-        }
-
-        clientDTO.setType(determineClientType(id));
-        try {
-            clientRepository.update(Converter.convertToEntity(clientDTO));
-            return Validation.ok();
-        } catch (Exception e) {
-            return Validation.errorUpdatingClient();
-        }
+        return saveClient(clientDTO, false);
     }
 
     @Override
@@ -104,18 +41,19 @@ public class ClientServiceImpl implements ClientService {
             return idFormatValidation;
         }
 
-        boolean hasRentedCars = false;
+        boolean hasRentedCars;
         try {
             hasRentedCars = clientRepository.hasRentedCars(id);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return Validation.errorDeletingClient();
         }
+
         if (hasRentedCars) {
-            return Validation.error(Validation.ERROR_DELETING_CLIENT);
+            return Validation.error("Cannot delete client with rented cars");
         }
 
         boolean removed = clientRepository.delete(id);
-        return removed ? Validation.ok() : Validation.error(Validation.CLIENT_NOT_FOUND);
+        return removed ? Validation.ok("Vehicle rented successfully.") : Validation.error(Validation.CLIENT_NOT_FOUND);
     }
 
     @Override
@@ -128,37 +66,24 @@ public class ClientServiceImpl implements ClientService {
             }
             return clientDTOs;
         } catch (IOException e) {
-            System.err.printf(Validation.errorFindingAllClientsMessage(e.getMessage()));
             return new ArrayList<>();
         }
     }
 
-
     @Override
-    public Validation<ClientDTO> findClientById(String id) {
+    public ClientDTO findClientById(String id) {
         Validation idValidation = Validation.validateRequiredField(id, "ID");
         if (!idValidation.isSuccess()) {
-            return Validation.error(idValidation.getMessage());
+            throw new IllegalArgumentException("ID is required");
         }
 
         Validation idFormatValidation = Validation.validateCPFOrCNPJ(id);
         if (!idFormatValidation.isSuccess()) {
-            return Validation.error(idFormatValidation.getMessage());
+            throw new IllegalArgumentException("Invalid ID format");
         }
 
-        Optional<Client> clientOptional;
-        try {
-            clientOptional = clientRepository.findById(id);
-        } catch (IOException e) {
-            return Validation.error("Error while finding client by ID: " + e.getMessage());
-        }
-
-        if (clientOptional.isPresent()) {
-            ClientDTO clientDTO = Converter.convertToDTO(clientOptional.get());
-            return Validation.ok(clientDTO);
-        } else {
-            return Validation.error(Validation.CLIENT_NOT_FOUND);
-        }
+        Optional<Client> client = clientRepository.findById(id);
+        return client.map(Converter::convertToDTO).orElse(null);
     }
 
     @Override
@@ -181,6 +106,50 @@ public class ClientServiceImpl implements ClientService {
             return new ArrayList<>();
         }
         return matchingClients;
+    }
+
+    private Validation saveClient(ClientDTO clientDTO, boolean isNewClient) {
+        String id = clientDTO.getId();
+        Validation idValidation = Validation.validateRequiredField(id, "ID");
+        if (!idValidation.isSuccess()) {
+            return idValidation;
+        }
+
+        Validation idFormatValidation = Validation.validateCPFOrCNPJ(id);
+        if (!idFormatValidation.isSuccess()) {
+            return idFormatValidation;
+        }
+
+        if (Validation.isValidCPFOrCNPJ(id)) {
+            return Validation.error("Invalid CPF or CNPJ");
+        }
+
+        String[] existingIds;
+        try {
+            existingIds = getAllClientIdsFromRepository();
+        } catch (IOException e) {
+            return isNewClient ? Validation.errorCreatingClient() : Validation.errorUpdatingClient();
+        }
+
+        Validation uniqueIdValidation = Validation.validateUniqueClientId(id, isNewClient, existingIds);
+        if (!uniqueIdValidation.isSuccess()) {
+            return uniqueIdValidation;
+        }
+
+        Validation nameValidation = Validation.validateName(clientDTO.getName());
+        if (!nameValidation.isSuccess()) {
+            return nameValidation;
+        }
+
+        String clientType = determineClientType(id);
+        clientDTO.setType(clientType);
+
+        try {
+            clientRepository.update(Converter.convertToEntity(clientDTO));
+            return Validation.ok("Vehicle rented successfully.");
+        } catch (Exception e) {
+            return isNewClient ? Validation.errorCreatingClient() : Validation.errorUpdatingClient();
+        }
     }
 
     private String[] getAllClientIdsFromRepository() throws IOException {

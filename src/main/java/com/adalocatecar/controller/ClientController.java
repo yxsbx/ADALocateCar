@@ -15,7 +15,7 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    public void manageClients(Scanner scanner) throws IOException {
+    public void manageClients(Scanner scanner) {
         while (true) {
             System.out.println("\nClient Management");
             System.out.println("1. Register Client");
@@ -25,8 +25,13 @@ public class ClientController {
             System.out.println("5. Back to Main Menu");
             System.out.print("Choose an option: ");
 
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            int option;
+            try {
+                option = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                continue;
+            }
 
             switch (option) {
                 case 1:
@@ -97,12 +102,17 @@ public class ClientController {
         }
     }
 
-    private void listClients() throws IOException {
-        List<ClientDTO> clients = clientService.findAllClients();
-        if (clients.isEmpty()) {
-            System.out.println("No clients found.");
-        } else {
-            clients.forEach(client -> System.out.println(client.toString()));
+    private void listClients() {
+        try {
+            List<ClientDTO> clients = clientService.findAllClients();
+            if (clients.isEmpty()) {
+                System.out.println("No clients found.");
+            } else {
+                System.out.println("All Clients:");
+                clients.forEach(client -> System.out.println(client.toString()));
+            }
+        } catch (IOException e) {
+            System.out.println("Error occurred while listing clients: " + e.getMessage());
         }
     }
 }
