@@ -10,7 +10,7 @@ public class FileHandler {
     private static final Logger logger = Logger.getLogger(FileHandler.class.getName());
 
     public static void writeToFile(List<String> lines, String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename,true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
             for (String line : lines) {
                 writer.write(line);
                 writer.newLine();
@@ -31,4 +31,6 @@ public class FileHandler {
             logger.log(Level.SEVERE, "An error occurred while reading from file: " + filename, e);
         }
         return lines;
+    }
+}
 

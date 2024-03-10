@@ -4,174 +4,158 @@ import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.model.Rental;
 import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.VehicleRepository;
+import com.adalocatecar.service.RentalService;
 import com.adalocatecar.service.VehicleService;
-import com.adalocatecar.utility.Validation;
+import com.adalocatecar.utility.Converter;
+import com.adalocatecar.utility.ValidationVehicle;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VehicleServiceImpl implements VehicleService {
 
-    private final List<VehicleDTO> vehicles = new ArrayList<>();
-    private VehicleRepository vehicleRepository;
-    private final Rental[] rentals;
+    private final VehicleRepository vehicleRepository;
+    private final RentalService rentalService;
 
-    public VehicleServiceImpl(Rental[] rentals) {
-        this.rentals = rentals;
+    public VehicleServiceImpl(VehicleRepository vehicleRepository, RentalService rentalService) {
+        this.vehicleRepository = vehicleRepository;
+        this.rentalService = rentalService;
     }
 
     @Override
-    public Object registerVehicle(VehicleDTO vehicleDTO) {
-        Validation validLicensePlate = Validation.validateFormat(vehicleDTO.getLicensePlate(), "[A-Z]{3}-\\d{4}", "License Plate");
-        if (!validLicensePlate.isSuccess()) {
-            return validLicensePlate.isSuccess();
-        }
-
-        if (!isUniqueLicensePlate(vehicleDTO.getLicensePlate())) {
-            return Validation.error("License plate already exists.").isSuccess();
-        }
-
-        Validation validBrand = Validation.validateRequiredField(vehicleDTO.getBrand(), "Brand");
-        if (!validBrand.isSuccess()) {
-            return validBrand.isSuccess();
-        }
-
-        Validation validType = Validation.validateRequiredField(vehicleDTO.getType(), "Type");
-        if (!validType.isSuccess()) {
-            return validType.isSuccess();
-        }
-
-        boolean validYear = Validation.validateVehicleYear(vehicleDTO.getYear());
-        if (!validYear) {
-            return validYear;
-        }
-
-        vehicles.add(vehicleDTO);
-        System.out.println("Vehicle registered successfully.");
-        return Validation.ok("Vehicle rented successfully.").isSuccess();
+    public String createVehicle(VehicleDTO vehicleDTO) throws IOException {
+        Vehicle vehicle = Converter.convertToEntity(vehicleDTO);
+        return saveVehicle(vehicle, ValidationVehicle.OperationType.CREATE);
     }
 
-
     @Override
-    public Object updateVehicle(VehicleDTO vehicleDTO) {
-        VehicleDTO existingVehicle = findVehicleByLicensePlate(vehicleDTO.getLicensePlate());
-        if (existingVehicle != null) {
-            Validation validBrand = Validation.validateRequiredField(vehicleDTO.getBrand(), "Brand");
-            if (!validBrand.isSuccess()) {
-                return validBrand;
-            }
-
-            Validation validType = Validation.validateRequiredField(vehicleDTO.getType(), "Type");
-            if (!validType.isSuccess()) {
-                return validType;
-            }
-
-            boolean validYear = Validation.validateVehicleYear(vehicleDTO.getYear());
-            if (!validYear) {
-                return validYear;
-            }
-
-            existingVehicle.setBrand(vehicleDTO.getBrand());
-            existingVehicle.setType(vehicleDTO.getType());
-            existingVehicle.setYear(vehicleDTO.getYear());
-            System.out.println("Vehicle updated successfully.");
-            return Validation.ok("Vehicle rented successfully.");
-        } else {
-            System.out.println("Vehicle not found for updating.");
-            return Validation.error("Vehicle not found for updating.");
+    public String updateVehicle(VehicleDTO vehicleDTO) throws IOException {
+        Vehicle existingVehicle = vehicleRepository.findByLicensePlate(vehicleDTO.getLicensePlate());
+        if (existingVehicle == null) {
+            return "Vehicle not found.";
         }
+
+        Vehicle updatedVehicle = Converter.convertToEntity(vehicleDTO);
+        updatedVehicle.setLicensePlate(existingVehicle.getLicensePlate());
+
+        return saveVehicle(updatedVehicle, ValidationVehicle.OperationType.UPDATE);
     }
 
     @Override
     public void deleteVehicle(String licensePlate) {
-        vehicles.removeIf(vehicle -> vehicle.getLicensePlate().equals(licensePlate));
-        System.out.println("Vehicle deleted successfully.");
+        vehicleRepository.delete(licensePlate);
     }
 
-    @Override
-    public List<VehicleDTO> findAllVehicles() {
-        return vehicles;
-    }
+    private String saveVehicle(Vehicle vehicle, ValidationVehicle.OperationType operationType) throws IOException {
+        String validationMessage = validateVehicle(vehicle, operationType);
+        if (!validationMessage.isEmpty()) {
+            return validationMessage;
+        }
 
-    @Override
-    public void markVehicleAsUnavailable(String licensePlate) {
-        Vehicle vehicle = vehicleRepository.findVehicleByLicensePlate(licensePlate);
-        if (vehicle != null) {
-            vehicle.setAvailable(false);
-            vehicleRepository.update(vehicle);
-            System.out.println("Vehicle with license plate " + licensePlate + " marked as unavailable.");
-        } else {
-            System.out.println("Vehicle not found with license plate " + licensePlate);
+        try {
+            if (operationType == ValidationVehicle.OperationType.CREATE) {
+                vehicleRepository.create(vehicle);
+            } else if (operationType == ValidationVehicle.OperationType.UPDATE) {
+                vehicleRepository.update(vehicle);
+            }
+            return ValidationVehicle.SUCCESS_MESSAGE;
+        } catch (Exception e) {
+            return "An error occurred while saving the vehicle.";
         }
     }
 
-    @Override
-    public void markVehicleAsAvailable(String licensePlate) {
-        Vehicle vehicle = vehicleRepository.findVehicleByLicensePlate(licensePlate);
-        if (vehicle != null) {
-            vehicle.setAvailable(true);
-            vehicleRepository.update(vehicle);
-            System.out.println("Vehicle with license plate " + licensePlate + " marked as available.");
-        } else {
-            System.out.println("Vehicle not found with license plate " + licensePlate);
+    private String validateVehicle(Vehicle vehicle, ValidationVehicle.OperationType operationType) throws IOException {
+        String typeValidation = ValidationVehicle.validateType(vehicle.getType());
+        if (!typeValidation.isEmpty()) {
+            return typeValidation;
         }
+
+        if (operationType == ValidationVehicle.OperationType.CREATE) {
+            String licensePlateValidation = ValidationVehicle.validateLicensePlate(vehicle.getLicensePlate());
+            if (!licensePlateValidation.isEmpty()) {
+                return licensePlateValidation;
+            }
+
+            List<String> existingLicensePlates = findAllLicensePlates();
+            String uniqueLicensePlateValidation = ValidationVehicle.validateUniqueLicensePlate(vehicle.getLicensePlate(), existingLicensePlates);
+            if (!uniqueLicensePlateValidation.isEmpty()) {
+                return uniqueLicensePlateValidation;
+            }
+        }
+
+        return "";
+    }
+
+    private List<String> findAllLicensePlates() throws IOException {
+        List<Vehicle> vehicles = vehicleRepository.findAll();
+        List<String> licensePlates = new ArrayList<>();
+        for (Vehicle vehicle : vehicles) {
+            licensePlates.add(vehicle.getLicensePlate());
+        }
+        return licensePlates;
+    }
+
+    @Override
+    public List<VehicleDTO> findAllVehicles() throws IOException {
+        return Converter.convertToDTOList(vehicleRepository.findAll());
     }
 
     @Override
     public boolean isVehicleAvailable(String licensePlate, LocalDateTime startDate, LocalDateTime expectedEndDate) {
+        List<Rental> rentals = rentalService.findRentalsByVehicleLicensePlate(licensePlate);
         for (Rental rental : rentals) {
-            if (rental.getLicensePlate().equals(licensePlate)) {
-                LocalDateTime rentalStartDate = rental.getStartDate();
-                LocalDateTime rentalEndDate = rental.getExpectedEndDate();
-                if (startDate.isBefore(rentalEndDate) && expectedEndDate.isAfter(rentalStartDate)) {
-                    return false;
-                }
+            LocalDateTime rentalStartDate = rental.getStartDate();
+            LocalDateTime rentalEndDate = rental.getExpectedEndDate();
+            if (startDate.isBefore(rentalEndDate) && expectedEndDate.isAfter(rentalStartDate)) {
+                return false;
             }
         }
         return true;
     }
 
+
     @Override
-    public VehicleDTO findVehicleByLicensePlate(String licensePlate) {
-        for (VehicleDTO vehicle : vehicles) {
-            if (vehicle.getLicensePlate().equals(licensePlate)) {
-                return vehicle;
-            }
+    public void markVehicleAsUnavailable(String licensePlate, LocalDateTime startDate, LocalDateTime expectedEndDate) {
+        Vehicle vehicle = vehicleRepository.findByLicensePlate(licensePlate);
+        if (vehicle != null) {
+            vehicle.setAvailable(false);
+            vehicleRepository.update(vehicle);
         }
-        return null;
+    }
+
+    @Override
+    public void markVehicleAsAvailable(String licensePlate) {
+        Vehicle vehicle = vehicleRepository.findByLicensePlate(licensePlate);
+        if (vehicle != null) {
+            vehicle.setAvailable(true);
+            vehicleRepository.update(vehicle);
+        }
+    }
+
+    @Override
+    public Vehicle findVehicleByLicensePlate(String licensePlate) {
+        return vehicleRepository.findByLicensePlate(licensePlate);
     }
 
     @Override
     public List<VehicleDTO> findVehiclesByType(String type) {
-        List<VehicleDTO> matchingVehicles = new ArrayList<>();
-        for (VehicleDTO vehicle : vehicles) {
-            if (vehicle.getType().equalsIgnoreCase(type)) {
-                matchingVehicles.add(vehicle);
-            }
-        }
-        return matchingVehicles;
+        List<Vehicle> vehicles = vehicleRepository.findByType(type);
+        return vehicles.stream().map(Converter::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<VehicleDTO> findVehiclesByModel(String model) {
-        List<VehicleDTO> matchingVehicles = new ArrayList<>();
-        for (VehicleDTO vehicle : vehicles) {
-            if (vehicle.getBrand().equalsIgnoreCase(model) || vehicle.getType().equalsIgnoreCase(model)) {
-                matchingVehicles.add(vehicle);
-            }
-        }
-        return matchingVehicles;
+        List<Vehicle> vehicles = vehicleRepository.findByModel(model);
+        return vehicles.stream()
+                .map(Converter::convertToDTO)
+                .collect(Collectors.toList());
     }
-
 
     @Override
-    public List<VehicleDTO> findVehiclesByYear(int year) {
-        List<VehicleDTO> matchingVehicles = new ArrayList<>();
-        for (VehicleDTO vehicle : vehicles) {
-            if (vehicle.getYear() == year) {
-                matchingVehicles.add(vehicle);
-            }
-        }
-        return matchingVehicles;
+    public LocalDateTime findRentalStartDateByLicensePlate(String licensePlate) {
+        return null;
     }
+}

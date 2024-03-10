@@ -1,21 +1,30 @@
 package com.adalocatecar.service;
 
 import com.adalocatecar.dto.ClientDTO;
-import com.adalocatecar.utility.Validation;
+import com.adalocatecar.model.Client;
+import com.adalocatecar.model.Vehicle;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface ClientService {
-    Validation createClient(ClientDTO clientDTO);
+    String createClient(ClientDTO clientDTO);
 
-    Validation updateClient(ClientDTO clientDTO);
+    String updateClient(ClientDTO clientDTO);
 
-    Validation deleteClient(String id);
+    String deleteClient(String id);
 
     List<ClientDTO> findAllClients() throws IOException;
 
-    ClientDTO findClientById(String id);
+    Optional<ClientDTO> findClientById(String id);
 
     List<ClientDTO> findClientsByName(String name) throws IOException;
+
+    Client findClientByVehicleLicensePlate(String licensePlate);
+
+    boolean returnVehicleFromClient(String licensePlate);
+
+    public boolean assignVehicleToClient(Vehicle vehicle, Optional<ClientDTO> client, LocalDateTime startDate, LocalDateTime endDate);
 }

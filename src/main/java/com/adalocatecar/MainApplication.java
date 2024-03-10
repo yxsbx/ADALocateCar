@@ -2,12 +2,17 @@ package com.adalocatecar;
 
 import com.adalocatecar.controller.VehicleController;
 import com.adalocatecar.controller.ClientController;
+import com.adalocatecar.controller.RentalController;
+import com.adalocatecar.repository.ClientRepository;
+import com.adalocatecar.repository.VehicleRepository;
 import com.adalocatecar.repository.impl.ClientRepositoryImpl;
 import com.adalocatecar.repository.impl.VehicleRepositoryImpl;
 import com.adalocatecar.service.impl.VehicleServiceImpl;
 import com.adalocatecar.service.impl.ClientServiceImpl;
+import com.adalocatecar.service.impl.RentalServiceImpl;
 import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.service.ClientService;
+import com.adalocatecar.service.RentalService;
 
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -17,24 +22,26 @@ public class MainApplication {
     private static final Logger logger = Logger.getLogger(MainApplication.class.getName());
 
     public static void main(String[] args) {
+        ClientRepository clientRepository = new ClientRepositoryImpl();
+        VehicleRepository vehicleRepository = new VehicleRepositoryImpl();
+
+        VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository);
+        ClientService clientService = new ClientServiceImpl(clientRepository);
+        RentalService rentalService = new RentalServiceImpl(clientService, vehicleService);
+
+
+        VehicleController vehicleController = new VehicleController(vehicleService);
+        ClientController clientController = new ClientController(clientService);
+        RentalController rentalController = new RentalController(rentalService);
 
         try (Scanner scanner = new Scanner(System.in)) {
-
-            ClientRepositoryImpl clientRepository = new ClientRepositoryImpl();
-            ClientService clientService = new ClientServiceImpl(clientRepository);
-
-            VehicleRepositoryImpl vehicleRepository = new VehicleRepositoryImpl();
-            VehicleService vehicleService = new VehicleServiceImpl();
-
-            VehicleController vehicleController = new VehicleController(vehicleService);
-            ClientController clientController = new ClientController(clientService);
-
             boolean running = true;
             while (running) {
                 System.out.println("\nWelcome to ADA LocateCar System");
                 System.out.println("1. Manage Vehicles");
                 System.out.println("2. Manage Clients");
-                System.out.println("3. Exit");
+                System.out.println("3. Manage Rentals");
+                System.out.println("4. Exit");
                 System.out.print("Choose an option: ");
 
                 int option = scanner.nextInt();
@@ -48,6 +55,9 @@ public class MainApplication {
                         clientController.manageClients(scanner);
                         break;
                     case 3:
+                        rentalController.manageRentals(scanner);
+                        break;
+                    case 4:
                         System.out.println("Thank you for using ADA LocateCar System. Goodbye!");
                         running = false;
                         break;

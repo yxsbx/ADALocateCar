@@ -3,12 +3,12 @@ package com.adalocatecar.model;
 public class Client {
     private String id;
     private String name;
-    private String type;
+    private String clientType;
 
     public Client(String id, String name, String type) {
         this.id = id;
-        this.setName(name);
-        this.type = type;
+        this.name = name;
+        this.clientType = type;
     }
 
     public String getId() {
@@ -27,11 +27,15 @@ public class Client {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getClientType() {
+        return clientType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setClientType(String clientType) {
+        this.clientType = clientType;
+    }
+
+    public boolean hasRentedCars() {
+        return true;
     }
 }

@@ -2,22 +2,17 @@ package com.adalocatecar.dto;
 
 public class VehicleDTO {
     private String licensePlate;
-    private String brand;
     private String model;
     private String type;
     private int year;
-    private boolean isAvailable;
+    private boolean available;
 
-    public VehicleDTO(String licensePlate, String brand, String type, int year) {
-    }
-
-    public VehicleDTO(String licensePlate,String brand, String model, String type, int year) {
+    public VehicleDTO(String licensePlate, String model, String type, int year) {
         this.licensePlate = licensePlate;
-        this.brand = brand;
         this.model = model;
         this.type = type;
         this.year = year;
-        this.isAvailable = true;
+        this.available = true;
     }
 
     public String getLicensePlate() {
@@ -53,14 +48,14 @@ public class VehicleDTO {
     }
 
     public boolean isAvailable() {
-        return isAvailable;
+        return available;
     }
 
     public void setAvailable(boolean available) {
-        isAvailable = available;
+        this.available = available;
     }
 
-    public String getBrand() {return brand;}
-
-    public void setBrand(String brand) {this.brand = brand;}
+    public boolean checkAvailability() {
+        return available;
+    }
 }

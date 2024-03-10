@@ -2,8 +2,9 @@ package com.adalocatecar.controller;
 
 import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.service.VehicleService;
-import com.adalocatecar.utility.Validation;
+import com.adalocatecar.utility.ValidationVehicle;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -34,13 +35,13 @@ public class VehicleController {
 
             switch (option) {
                 case 1:
-                    registerVehicle(scanner);
+                    createVehicle(scanner);
                     break;
                 case 2:
                     updateVehicle(scanner);
                     break;
                 case 3:
-                    listAllVehicles();
+                    readAllVehicles();
                     break;
                 case 4:
                     return;
@@ -51,79 +52,113 @@ public class VehicleController {
         }
     }
 
-    private void listAllVehicles() {
-        List<VehicleDTO> vehicles = vehicleService.findAllVehicles();
-        if (vehicles.isEmpty()) {
-            System.out.println("No vehicles found.");
-        } else {
-            System.out.println("All Vehicles:");
-            for (VehicleDTO vehicle : vehicles) {
-                System.out.println(vehicle);
-            }
-        }
+    private void createVehicle(Scanner scanner) {
+        saveVehicle(scanner, false);
     }
 
-    private void registerVehicle(Scanner scanner) {
-        System.out.println("Enter vehicle details:");
-        System.out.print("License Plate: ");
-        String licensePlate = scanner.nextLine();
-        System.out.print("Brand: ");
-        String brand = scanner.nextLine();
-        System.out.print("Model: ");
-        String model = scanner.nextLine();
-        System.out.print("Type: ");
-        String type = scanner.nextLine();
-        int year;
+    private void readAllVehicles() {
         try {
-            System.out.print("Year: ");
-            year = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid year.");
-            return;
-        }
-
-        VehicleDTO vehicleDTO = new VehicleDTO(licensePlate, brand, model, type, year);
-        Validation response = vehicleService.registerVehicle(vehicleDTO);
-        if (response.isSuccess()) {
-            System.out.println("Vehicle registered successfully.");
-        } else {
-            System.out.println("Error: " + response.getMessage());
+            List<VehicleDTO> vehicles = vehicleService.findAllVehicles();
+            if (vehicles.isEmpty()) {
+                System.out.println("No vehicles found.");
+            } else {
+                System.out.println("All Vehicles:");
+                for (VehicleDTO vehicle : vehicles) {
+                    System.out.println(vehicle);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error occurred while retrieving vehicles: " + e.getMessage());
         }
     }
 
     private void updateVehicle(Scanner scanner) {
-        System.out.print("Enter the License Plate of the vehicle to update: ");
+        saveVehicle(scanner, true);
+    }
+
+    private void saveVehicle(Scanner scanner, boolean isUpdate) {
+        System.out.println("Enter vehicle details:");
+
+        System.out.print("License Plate: ");
         String licensePlate = scanner.nextLine();
-        System.out.print("New Brand: ");
-        String brand = scanner.nextLine();
-        System.out.print("New Model: ");
+
+        System.out.print("Model: ");
         String model = scanner.nextLine();
-        System.out.print("New Type: ");
+
+        System.out.print("Type: ");
         String type = scanner.nextLine();
+
+        System.out.print("Year: ");
         int year;
         try {
-            System.out.print("New Year: ");
             year = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
             System.out.println("Invalid input. Please enter a valid year.");
             return;
         }
 
+        String validationMessage = ValidationVehicle.validateLicensePlate(licensePlate);
+        if (!validationMessage.isEmpty()) {
+            System.out.println("Error: " + validationMessage);
+            return;
+        }
+
+        validationMessage = ValidationVehicle.validateModel(model);
+        if (!validationMessage.isEmpty()) {
+            System.out.println("Error: " + validationMessage);
+            return;
+        }
+
+        validationMessage = ValidationVehicle.validateType(type);
+        if (!validationMessage.isEmpty()) {
+            System.out.println("Error: " + validationMessage);
+            return;
+        }
+
+        validationMessage = ValidationVehicle.validateVehicleYear(year);
+        if (!validationMessage.isEmpty()) {
+            System.out.println("Error: " + validationMessage);
+            return;
+        }
+
         VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
-        if (vehicleDTO == null) {
+        if (isUpdate && vehicleDTO == null) {
             System.out.println("Vehicle not found.");
             return;
         }
 
-        vehicleDTO.setBrand(brand);
-        vehicleDTO.setModel(model);
-        vehicleDTO.setType(type);
-        vehicleDTO.setYear(year);
-        Validation response = vehicleService.updateVehicle(vehicleDTO);
-        if (response.isSuccess()) {
-            System.out.println("Vehicle updated successfully.");
+        if (vehicleDTO != null && !vehicleDTO.isAvailable()) {
+            System.out.println("Vehicle is not available for registration or update.");
+            return;
+        }
+
+        if (vehicleDTO == null) {
+            vehicleDTO = new VehicleDTO(licensePlate, model, type, year);
         } else {
-            System.out.println("Error: " + response.getMessage());
+            vehicleDTO.setModel(model);
+            vehicleDTO.setType(type);
+            vehicleDTO.setYear(year);
+        }
+
+        try {
+            String response;
+            if (isUpdate) {
+                response = (String) vehicleService.updateVehicle(vehicleDTO);
+            } else {
+                response = vehicleService.createVehicle(vehicleDTO);
+            }
+
+            if (response.equals(ValidationVehicle.SUCCESS_MESSAGE)) {
+                if (isUpdate) {
+                    System.out.println("Vehicle updated successfully.");
+                } else {
+                    System.out.println("Vehicle registered successfully.");
+                }
+            } else {
+                System.out.println("Error: " + response);
+            }
+        } catch (IOException e) {
+            System.out.println("Error occurred while saving vehicle: " + e.getMessage());
         }
     }
 }

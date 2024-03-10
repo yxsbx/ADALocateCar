@@ -5,13 +5,13 @@ import com.adalocatecar.service.RentalService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
 public class RentalController {
 
     private final RentalService rentalService;
-
     public RentalController(RentalService rentalService) {
         this.rentalService = rentalService;
     }
@@ -56,8 +56,10 @@ public class RentalController {
     private void rentVehicle(Scanner scanner) {
         System.out.println("Enter the license plate of the vehicle to rent:");
         String licensePlate = scanner.nextLine();
-        System.out.println("Enter the client ID:");
+        System.out.println("Enter the client document:");
         String clientId = scanner.nextLine();
+        System.out.println("Enter the location of rental agency:");
+        String agencyLocal = scanner.nextLine();
         System.out.println("Enter start date (yyyy-MM-dd HH:mm):");
         String startDateStr = scanner.nextLine();
         System.out.println("Enter expected end date (yyyy-MM-dd HH:mm):");
@@ -68,12 +70,15 @@ public class RentalController {
             LocalDateTime startDate = LocalDateTime.parse(startDateStr, formatter);
             LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
 
-            rentalService.rentVehicle(licensePlate, clientId, startDate, endDate);
-            System.out.println("Vehicle rented successfully.");
+            String response = rentalService.rentVehicle(licensePlate, clientId, startDate, endDate, agencyLocal);
+            System.out.println(response);
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format. Please enter dates in the format yyyy-MM-dd HH:mm.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
+
 
     private void returnVehicle(Scanner scanner) {
         System.out.println("Enter the license plate of the vehicle to return:");

@@ -13,7 +13,6 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String
      super(filePath);
     }
 
-
     public boolean hasRentedCars(String id) {
         List<String> lines = FileHandler.readFromFile(filePath.getAbsolutePath());
         for (String line : lines) {
@@ -28,7 +27,7 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String
 
     @Override
     protected String objectToString(Client client) {
-        return String.join(",", client.getId(), client.getName(), client.getType());
+        return String.join(",", client.getId(), client.getName(), client.getClientType());
     }
 
     @Override
@@ -45,4 +44,6 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String
         return entity.getId();
     }
 
-
+    @Override
+    protected String getName(Client entity){ return  entity.getName();};
+}

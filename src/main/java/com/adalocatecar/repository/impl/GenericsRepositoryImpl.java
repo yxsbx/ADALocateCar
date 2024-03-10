@@ -1,7 +1,10 @@
 package com.adalocatecar.repository.impl;
 
+import com.adalocatecar.model.Client;
 import com.adalocatecar.repository.GenericsRepository;
 import com.adalocatecar.utility.FileHandler;
+import jdk.dynalink.beans.StaticClass;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,18 +76,13 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
 
     @Override
     public Optional<T> findById(ID id) {
-        try {
-            return findAll().stream()
-                    .filter(obj -> getId(obj).equals(id))
-                    .findFirst();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "An error occurred while finding a client by ID.", e);
-            return Optional.empty();
-        }
+        return findAll().stream()
+                .filter(obj -> getId(obj).equals(id))
+                .findFirst();
     }
 
     @Override
-    public List<T> findAll() throws IOException {
+    public List<T> findAll() {
         List<T> objects = new ArrayList<>();
         List<String> lines = FileHandler.readFromFile(filePath.getAbsolutePath());
         for (String line : lines) {
@@ -92,7 +90,13 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
         }
         return objects;
     }
-
+    @Override
+    public List<T> findByName(String name){
+        return findAll()
+                .stream()
+                .filter(a -> getName(a).equalsIgnoreCase(name))
+                .collect(Collectors.toList());
+    }
     private void rewriteFile(List<T> objects) throws IOException {
         List<String> lines = new ArrayList<>();
         for (T object : objects) {
@@ -125,4 +129,5 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     protected abstract T stringToObject(String str);
     protected abstract String objectToString(T object);
     protected abstract ID getId(T entity);
+    protected abstract String getName(T entity);
 }

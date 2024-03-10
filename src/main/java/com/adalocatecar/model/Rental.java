@@ -1,62 +1,50 @@
 package com.adalocatecar.model;
 
+import com.adalocatecar.dto.ClientDTO;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class Rental {
-    private String id;
-    private String clientId;
-    private String licensePlate;
-    private LocalDateTime startDate;
-    private LocalDateTime expectedEndDate;
+    private final Client clientWhoRented;
+    private List<Vehicle> rentedVehicles;
+    private final String agencyLocal;
+    private final LocalDateTime startDate;
+    private final LocalDateTime expectedEndDate;
     private LocalDateTime actualEndDate;
     private double totalCost;
+    private final StringBuilder invoice;
 
-    public Rental(String id, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate) {
-        this.id = id;
-        this.clientId = clientId;
-        this.licensePlate = licensePlate;
+    public Rental(Client clientWhoRented, LocalDateTime startDate, LocalDateTime expectedEndDate, String agencyLocal) {
+        this.clientWhoRented = clientWhoRented;
+        this.agencyLocal = agencyLocal;
         this.startDate = startDate;
         this.expectedEndDate = expectedEndDate;
+        this.rentedVehicles = new ArrayList<>();
+        this.invoice = new StringBuilder();
+        this.totalCost = 0.0;
     }
 
-    public String getId() {
-        return id;
+    public Client getClientWhoRented() {
+        return clientWhoRented;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public List<Vehicle> getRentedVehicles() {
+        return new ArrayList<>(rentedVehicles);
     }
 
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public String getLicensePlate() {
-        return licensePlate;
-    }
-
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
+    public String getAgencyLocal() {
+        return agencyLocal;
     }
 
     public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
     public LocalDateTime getExpectedEndDate() {
         return expectedEndDate;
-    }
-
-    public void setExpectedEndDate(LocalDateTime expectedEndDate) {
-        this.expectedEndDate = expectedEndDate;
     }
 
     public LocalDateTime getActualEndDate() {
@@ -73,5 +61,13 @@ public class Rental {
 
     public void setTotalCost(double totalCost) {
         this.totalCost = totalCost;
+    }
+
+    public String getInvoice() {
+        return invoice.toString();
+    }
+
+    public void addInvoice(String data) {
+        invoice.append(data);
     }
 }

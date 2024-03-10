@@ -7,11 +7,14 @@ import com.adalocatecar.repository.VehicleRepository;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, String> implements VehicleRepository {
 
     private static final File filePath = new File("src/data/vehicles.txt");
+    private static final Logger logger = Logger.getLogger(VehicleRepositoryImpl.class.getName());
     private final List<Vehicle> vehicles = new ArrayList<>();
 
     public VehicleRepositoryImpl() {
@@ -27,48 +30,48 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
                 vehicles.add(vehicle);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error loading entities from file", e);
         }
     }
 
     @Override
-    public VehicleDTO findByLicensePlate(String licensePlate) {
+    public Vehicle findByLicensePlate(String licensePlate) {
         for (Vehicle vehicle : vehicles) {
             if (vehicle.getLicensePlate().equals(licensePlate)) {
-                return convertToDTO(vehicle);
+                return vehicle;
             }
         }
         return null;
     }
 
     @Override
-    public List<VehicleDTO> findByType(String type) {
-        List<VehicleDTO> matchingVehicles = new ArrayList<>();
+    public List<Vehicle> findByType(String type) {
+        List<Vehicle> matchingVehicles = new ArrayList<>();
         for (Vehicle vehicle : vehicles) {
             if (vehicle.getType().equalsIgnoreCase(type)) {
-                matchingVehicles.add(convertToDTO(vehicle));
+                matchingVehicles.add(vehicle);
             }
         }
         return matchingVehicles;
     }
 
     @Override
-    public List<VehicleDTO> findByModel(String model) {
-        List<VehicleDTO> matchingVehicles = new ArrayList<>();
+    public List<Vehicle> findByModel(String model) {
+        List<Vehicle> matchingVehicles = new ArrayList<>();
         for (Vehicle vehicle : vehicles) {
-            if (vehicle.getBrand().equalsIgnoreCase(model) || vehicle.getType().equalsIgnoreCase(model)) {
-                matchingVehicles.add(convertToDTO(vehicle));
+            if (vehicle.getType().equalsIgnoreCase(model)) {
+                matchingVehicles.add(vehicle);
             }
         }
         return matchingVehicles;
     }
 
     @Override
-    public List<VehicleDTO> findByYear(int year) {
-        List<VehicleDTO> matchingVehicles = new ArrayList<>();
+    public List<Vehicle> findByYear(int year) {
+        List<Vehicle> matchingVehicles = new ArrayList<>();
         for (Vehicle vehicle : vehicles) {
             if (vehicle.getYear() == year) {
-                matchingVehicles.add(convertToDTO(vehicle));
+                matchingVehicles.add(vehicle);
             }
         }
         return matchingVehicles;
@@ -81,15 +84,15 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
             throw new IllegalArgumentException("Invalid string format for Vehicle object");
         }
         String licensePlate = parts[0];
-        String brand = parts[1];
+        String model = parts[1];
         String type = parts[2];
         int year = Integer.parseInt(parts[3]);
-        return new Vehicle(licensePlate, brand, type, year);
+        return new Vehicle(licensePlate, model, type, year);
     }
 
     @Override
     protected String objectToString(Vehicle object) {
-        return String.join(",", object.getLicensePlate(), object.getBrand(), object.getType(), String.valueOf(object.getYear()));
+        return String.join(",", object.getLicensePlate(), object.getType(), String.valueOf(object.getYear()));
     }
 
     @Override
@@ -98,7 +101,10 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     }
 
     private VehicleDTO convertToDTO(Vehicle vehicle) {
-        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getBrand(), vehicle.getType(), vehicle.getYear());
+        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getModel(), vehicle.getType(), vehicle.getYear());
     }
+
+    @Override
+    protected String getName(Vehicle entity){ return  entity.getModel();};
 }
 

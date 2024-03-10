@@ -4,19 +4,21 @@ import java.time.LocalDateTime;
 
 public class RentalDTO {
     private String licensePlate;
-    private String clientId;
+    private String vehicleType;
     private LocalDateTime startDate;
     private LocalDateTime expectedEndDate;
     private LocalDateTime actualEndDate;
+    private String agencyLocal;
     private double totalCost;
-    public RentalDTO(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate, LocalDateTime actualEndDate, double totalCost) {
-    }
 
-    public RentalDTO(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate) {
+    public RentalDTO(String licensePlate, String vehicleType, LocalDateTime startDate, LocalDateTime expectedEndDate, LocalDateTime actualEndDate, String agencyLocal, double totalCost) {
         this.licensePlate = licensePlate;
-        this.clientId = clientId;
+        this.vehicleType = vehicleType;
         this.startDate = startDate;
         this.expectedEndDate = expectedEndDate;
+        this.actualEndDate = actualEndDate;
+        this.agencyLocal = agencyLocal;
+        this.totalCost = totalCost;
     }
 
     public String getLicensePlate() {
@@ -27,12 +29,12 @@ public class RentalDTO {
         this.licensePlate = licensePlate;
     }
 
-    public String getClientId() {
-        return clientId;
+    public String getVehicleType() {
+        return vehicleType;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
+    public void setVehicleType(String vehicleType) {
+        this.vehicleType = vehicleType;
     }
 
     public LocalDateTime getStartDate() {
@@ -57,6 +59,14 @@ public class RentalDTO {
 
     public void setActualEndDate(LocalDateTime actualEndDate) {
         this.actualEndDate = actualEndDate;
+    }
+
+    public String getAgencyLocal() {
+        return agencyLocal;
+    }
+
+    public void setAgencyLocal(String agencyLocal) {
+        this.agencyLocal = agencyLocal;
     }
 
     public double getTotalCost() {

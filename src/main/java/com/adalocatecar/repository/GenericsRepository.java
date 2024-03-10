@@ -8,5 +8,6 @@ public interface GenericsRepository <T, ID>{
     void update(T client);
     boolean delete(ID id);
     Optional<T> findById(ID id);
+    List<T> findByName(String name);
     List<T> findAll() throws IOException;
 }
