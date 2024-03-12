@@ -25,8 +25,9 @@ public class MainApplication {
         ClientRepository clientRepository = new ClientRepositoryImpl();
         VehicleRepository vehicleRepository = new VehicleRepositoryImpl();
 
-        VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository);
+        
         ClientService clientService = new ClientServiceImpl(clientRepository);
+        VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository);
         RentalService rentalService = new RentalServiceImpl(clientService, vehicleService);
 
 

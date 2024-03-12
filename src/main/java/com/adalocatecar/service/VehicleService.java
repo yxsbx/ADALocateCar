@@ -12,10 +12,10 @@ public interface VehicleService {
     Object updateVehicle(VehicleDTO vehicleDTO) throws IOException;
     void deleteVehicle(String licensePlate);
     List<VehicleDTO> findAllVehicles() throws IOException;
-    boolean isVehicleAvailable(String licensePlate, LocalDateTime startDate, LocalDateTime expectedEndDate);
+    boolean isVehicleAvailable(String licensePlate);
     void markVehicleAsUnavailable(String licensePlate, LocalDateTime startDate, LocalDateTime expectedEndDate);
     void markVehicleAsAvailable(String licensePlate);
-    Vehicle findVehicleByLicensePlate(String licensePlate);
+    VehicleDTO findVehicleByLicensePlate(String licensePlate);
     List<VehicleDTO> findVehiclesByType(String type);
     List<VehicleDTO> findVehiclesByModel(String model);
 

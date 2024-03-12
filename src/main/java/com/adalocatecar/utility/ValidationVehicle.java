@@ -7,10 +7,8 @@ public class ValidationVehicle {
 
     public static final String ERROR_FINDING_VEHICLES_BY_NAME = "An error occurred while finding vehicles by license plate: %s.";
     public static final String SUCCESS_MESSAGE = "Vehicle updated successfully!";
-    public static final String INVALID_BRAND = "Invalid brand format. Brand must have at least 3 alphabetical characters.";
     public static final String INVALID_MODEL = "Invalid model format.";
     public static final String INVALID_TYPE = "Invalid vehicle type. The type must be Small, SUV, or Medium.";
-    public static final String INVALID_YEAR_FORMAT = "Car year is not valid. It must be a 4-digit number";
     public static final String DUPLICATED_LICENSE_PLATE = "License Plate already registered";
     public static final String INVALID_LICENSE_PLATE_FORMAT = "Invalid license plate format. Please enter the license plate in the correct format: ABC1D34";
 
@@ -41,18 +39,6 @@ public class ValidationVehicle {
         return Pattern.matches("^[A-Z]{3}\\d{1}[A-Z]{1}\\d{2}$", licensePlate);
     }
 
-    public static String validateBrand(String brand) {
-        if (!isValidBrand(brand)) {
-            return INVALID_BRAND;
-        }
-        return "";
-    }
-
-    public static boolean isValidBrand(String brand) {
-        return brand.matches("[a-zA-Z]{2,}");
-    }
-
-
     public static String validateModel(String model) {
         if (!isRequired(model)) {
             return INVALID_MODEL;
@@ -63,13 +49,6 @@ public class ValidationVehicle {
     public static String validateType(String type) {
         if (!isValidType(type)) {
             return INVALID_TYPE;
-        }
-        return "";
-    }
-
-    public static String validateVehicleYear(int vehicleYear) {
-        if (!isValidFormat(String.valueOf(vehicleYear), "^(19[0-9]{2}|20[0-9]{2})$")) {
-            return INVALID_YEAR_FORMAT;
         }
         return "";
     }

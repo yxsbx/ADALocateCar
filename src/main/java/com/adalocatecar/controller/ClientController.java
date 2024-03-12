@@ -22,7 +22,7 @@ public class ClientController {
             System.out.println("\nClient Management Menu:");
             System.out.println("1. Create Client");
             System.out.println("2. Read Client list");
-            System.out.println("3. Update All Clients");
+            System.out.println("3. Update client");
             System.out.println("4. Delete Client");
             System.out.println("5. Find client by document or name");
             System.out.println("6. Back to Main Menu");
@@ -97,23 +97,23 @@ public class ClientController {
         String query = scanner.nextLine().trim();
 
         if (ValidationClient.validateClientIdFormat(query) == null) {
-            Optional<ClientDTO> client = clientService.findClientById(query);
-            if (client.isEmpty()) {
-                System.out.println(ValidationClient.clientNotFound());
+            Optional<ClientDTO> client = Optional.ofNullable(clientService.findClientByDocument(query));
+            if (client.isPresent()) {
+                System.out.println("Client found with the provided document:");
+                System.out.println(client.get());
             } else {
-                System.out.println("Clients found with the provided document:");
-                System.out.println(client);
+                System.out.println(ValidationClient.clientNotFound());
             }
         } else {
             try {
                 List<ClientDTO> clients = clientService.findClientsByName(query);
-                if (clients.isEmpty()) {
-                    System.out.println(ValidationClient.clientNotFound());
-                } else {
+                if (!clients.isEmpty()) {
                     System.out.println("Clients found with the provided name:");
                     for (ClientDTO client : clients) {
                         System.out.println(client);
                     }
+                } else {
+                    System.out.println(ValidationClient.clientNotFound());
                 }
             } catch (IOException e) {
                 System.out.println("Error occurred while searching for clients by name: " + e.getMessage());

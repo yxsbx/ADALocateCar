@@ -18,7 +18,7 @@ public interface ClientService {
 
     List<ClientDTO> findAllClients() throws IOException;
 
-    Optional<ClientDTO> findClientById(String id);
+    ClientDTO findClientByDocument(String id);
 
     List<ClientDTO> findClientsByName(String name) throws IOException;
 
@@ -26,5 +26,5 @@ public interface ClientService {
 
     boolean returnVehicleFromClient(String licensePlate);
 
-    public boolean assignVehicleToClient(Vehicle vehicle, Optional<ClientDTO> client, LocalDateTime startDate, LocalDateTime endDate);
+    public boolean assignVehicleToClient(Vehicle vehicle, Client client, LocalDateTime startDate, LocalDateTime endDate);
 }

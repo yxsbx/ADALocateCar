@@ -79,7 +79,6 @@ public class RentalController {
         }
     }
 
-
     private void returnVehicle(Scanner scanner) {
         System.out.println("Enter the license plate of the vehicle to return:");
         String licensePlate = scanner.nextLine();
@@ -98,7 +97,7 @@ public class RentalController {
     }
 
     private void listAllRentals() {
-        try {
+        /*try {
             List<RentalDTO> rentals = rentalService.findAllRentals();
             if (rentals.isEmpty()) {
                 System.out.println("No rentals found.");
@@ -108,6 +107,6 @@ public class RentalController {
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
-        }
+        }*/
     }
 }

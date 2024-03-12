@@ -61,9 +61,18 @@ public class ClientServiceImpl implements ClientService {
         return clientDTOs;
     }
     @Override
-    public Optional<ClientDTO> findClientById(String id) {
+    public ClientDTO findClientByDocument(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("Document cannot be null or empty");
+        }
+
         Optional<Client> optionalClient = clientRepository.findById(id);
-        return optionalClient.orElse(null);
+
+        if (optionalClient.isPresent()) {
+            return Converter.convertToDTO(optionalClient.get());
+        } else {
+            throw new RuntimeException(ValidationClient.ERROR_FINDING_CLIENTS_BY_DOCUMENT);
+        }
     }
 
     @Override
@@ -87,7 +96,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public boolean assignVehicleToClient(Vehicle vehicle, Optional<ClientDTO> client, LocalDateTime startDate, LocalDateTime expectedEndDate) {
+    public boolean assignVehicleToClient(Vehicle vehicle, Client client, LocalDateTime startDate, LocalDateTime expectedEndDate) {
         return false;
     }
 

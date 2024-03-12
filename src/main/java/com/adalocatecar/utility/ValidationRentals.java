@@ -2,24 +2,24 @@ package com.adalocatecar.utility;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 
 public class ValidationRentals {
     public static final String ERROR_CHECKING_RENTALS = "Error while checking rental records for client.";
-    public static final String INVALID_CLIENT_TYPE = "Invalid client type. It should be either Individual or Corporate.";
     public static final String INVALID_RENTAL_DURATION = "The rental duration should be at least 1 hour.";
     public static final String VEHICLE_NOT_AVAILABLE = "The selected vehicle is not available for rental.";
     public static final String RETURN_LOCATION_MISMATCH = "The vehicle must be returned to the same location as the rental.";
     public static final String INVALID_RETURN_DATE = "The return date must be after the rental date.";
     public static final String INVALID_DURATION_FOR_DISCOUNT = "The rental duration is not sufficient to apply the discount.";
+    public static final String CLIENT_NOT_FOUND = "Client not found.";
     public static final double DISCOUNT_FOR_INDIVIDUAL = 0.05;
     public static final double DISCOUNT_FOR_CORPORATE = 0.10;
     public static final double BASE_DAILY_RATE_SMALL = 100.00;
     public static final double BASE_DAILY_RATE_MEDIUM = 150.00;
     public static final double BASE_DAILY_RATE_SUV = 200.00;
 
-    public static void validateClientType(String clientType) {
-        if (!clientType.equalsIgnoreCase("Individual") && !clientType.equalsIgnoreCase("Corporate")) {
-            throw new IllegalArgumentException(INVALID_CLIENT_TYPE);
+    public static void validateClientIdFormat(String id) {
+        if (!Pattern.matches("\\d{11}|\\d{14}", id)) {
         }
     }
 

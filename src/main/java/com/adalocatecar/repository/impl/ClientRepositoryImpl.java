@@ -45,5 +45,5 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String
     }
 
     @Override
-    protected String getName(Client entity){ return  entity.getName();};
+    protected String getName(Client entity){ return  entity.getName();}
 }

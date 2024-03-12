@@ -9,7 +9,7 @@ import java.util.List;
 public interface RentalService {
     String rentVehicle(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate, String agencyLocal);
     String returnVehicle(String licensePlate, LocalDateTime actualEndDate);
-    List<RentalDTO> findAllRentals();
+   /* List<RentalDTO> findAllRentals();
     RentalDTO findRentalByClientId(String clientId);
-    List<Rental> findRentalsByVehicleLicensePlate(String licensePlate);
+    Rental findRentalByLicensePlate(String licensePlate);*/
 }

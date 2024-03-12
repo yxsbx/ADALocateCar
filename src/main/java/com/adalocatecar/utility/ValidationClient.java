@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 public class ValidationClient {
 
     public static final String ERROR_FINDING_CLIENTS_BY_NAME = "An error occurred while finding clients by name: %s.";
+    public static final String ERROR_FINDING_CLIENTS_BY_DOCUMENT = "An error occurred while finding clients by name: %s.";
     public static final String SUCCESS_MESSAGE = "Client updated successfully!";
     public static final String INVALID_ID_FORMAT = "Invalid ID format. Must be either a CPF with 11 digits or a CNPJ with 14 digits.";
     public static final String CLIENT_NOT_FOUND = "Client not found.";

@@ -1,19 +1,16 @@
 package com.adalocatecar.model;
 
-import java.util.List;
-
 public class Vehicle {
     private String licensePlate;
     private String model;
     private String type;
-    private int year;
+    private Rental rentalContract;
     private boolean available;
 
-    public Vehicle(String licensePlate, String type, String model, int year) {
+    public Vehicle(String licensePlate, String model, String type) {
         this.licensePlate = licensePlate;
         this.model = model;
         this.type = type;
-        this.year = year;
         this.available = true;
     }
 
@@ -41,19 +38,23 @@ public class Vehicle {
         this.type = type;
     }
 
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
     public void setAvailable(boolean available) {
         this.available = available;
     }
 
     public boolean checkAvailability() {
+        return rentalContract == null;
+    }
+
+    public Rental getRentalContract() {
+        return rentalContract;
+    }
+
+    public void setRentalContract(Rental rentalContract) {
+        this.rentalContract = rentalContract;
+    }
+
+    public boolean isAvailable() {
         return available;
     }
 }

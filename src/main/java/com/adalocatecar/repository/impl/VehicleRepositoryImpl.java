@@ -59,18 +59,7 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     public List<Vehicle> findByModel(String model) {
         List<Vehicle> matchingVehicles = new ArrayList<>();
         for (Vehicle vehicle : vehicles) {
-            if (vehicle.getType().equalsIgnoreCase(model)) {
-                matchingVehicles.add(vehicle);
-            }
-        }
-        return matchingVehicles;
-    }
-
-    @Override
-    public List<Vehicle> findByYear(int year) {
-        List<Vehicle> matchingVehicles = new ArrayList<>();
-        for (Vehicle vehicle : vehicles) {
-            if (vehicle.getYear() == year) {
+            if (vehicle.getModel().equalsIgnoreCase(model)) {
                 matchingVehicles.add(vehicle);
             }
         }
@@ -86,13 +75,15 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
         String licensePlate = parts[0];
         String model = parts[1];
         String type = parts[2];
-        int year = Integer.parseInt(parts[3]);
-        return new Vehicle(licensePlate, model, type, year);
+        String available = parts[3];
+        Vehicle vehicle = new Vehicle(licensePlate, model, type);
+        vehicle.setAvailable(Boolean.parseBoolean(available));
+        return vehicle;
     }
 
     @Override
     protected String objectToString(Vehicle object) {
-        return String.join(",", object.getLicensePlate(), object.getType(), String.valueOf(object.getYear()));
+        return String.join(",", object.getLicensePlate(), object.getModel(), object.getType(),String.valueOf(object.isAvailable()));
     }
 
     @Override
@@ -101,10 +92,10 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     }
 
     private VehicleDTO convertToDTO(Vehicle vehicle) {
-        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getModel(), vehicle.getType(), vehicle.getYear());
+        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getModel(), vehicle.getType());
     }
 
     @Override
-    protected String getName(Vehicle entity){ return  entity.getModel();};
+    protected String getName(Vehicle entity){ return entity.getModel();};
 }
 

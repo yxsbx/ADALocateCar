@@ -1,10 +1,8 @@
 package com.adalocatecar.service.impl;
 
 import com.adalocatecar.dto.VehicleDTO;
-import com.adalocatecar.model.Rental;
 import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.VehicleRepository;
-import com.adalocatecar.service.RentalService;
 import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.utility.Converter;
 import com.adalocatecar.utility.ValidationVehicle;
@@ -13,16 +11,16 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class VehicleServiceImpl implements VehicleService {
 
     private final VehicleRepository vehicleRepository;
-    private final RentalService rentalService;
 
-    public VehicleServiceImpl(VehicleRepository vehicleRepository, RentalService rentalService) {
+
+    public VehicleServiceImpl(VehicleRepository vehicleRepository) {
         this.vehicleRepository = vehicleRepository;
-        this.rentalService = rentalService;
     }
 
     @Override
@@ -104,16 +102,12 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public boolean isVehicleAvailable(String licensePlate, LocalDateTime startDate, LocalDateTime expectedEndDate) {
-        List<Rental> rentals = rentalService.findRentalsByVehicleLicensePlate(licensePlate);
-        for (Rental rental : rentals) {
-            LocalDateTime rentalStartDate = rental.getStartDate();
-            LocalDateTime rentalEndDate = rental.getExpectedEndDate();
-            if (startDate.isBefore(rentalEndDate) && expectedEndDate.isAfter(rentalStartDate)) {
-                return false;
-            }
+    public boolean isVehicleAvailable(String licensePlate) {
+        Optional<Vehicle> vehicle = Optional.ofNullable(vehicleRepository.findByLicensePlate(licensePlate));
+        if (vehicle.isEmpty()) {
+            throw new RuntimeException("Vehicle not found.");
         }
-        return true;
+        return vehicle.get().isAvailable();
     }
 
 
@@ -136,8 +130,8 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public Vehicle findVehicleByLicensePlate(String licensePlate) {
-        return vehicleRepository.findByLicensePlate(licensePlate);
+    public VehicleDTO findVehicleByLicensePlate(String licensePlate) {
+        return Converter.convertToDTO(vehicleRepository.findByLicensePlate(licensePlate));
     }
 
     @Override

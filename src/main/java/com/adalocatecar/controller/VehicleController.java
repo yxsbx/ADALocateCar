@@ -82,26 +82,14 @@ public class VehicleController {
         System.out.print("License Plate: ");
         String licensePlate = scanner.nextLine();
 
-        System.out.print("Model: ");
-        String model = scanner.nextLine();
-
-        System.out.print("Type: ");
-        String type = scanner.nextLine();
-
-        System.out.print("Year: ");
-        int year;
-        try {
-            year = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input. Please enter a valid year.");
-            return;
-        }
-
         String validationMessage = ValidationVehicle.validateLicensePlate(licensePlate);
         if (!validationMessage.isEmpty()) {
             System.out.println("Error: " + validationMessage);
             return;
         }
+
+        System.out.print("Model: ");
+        String model = scanner.nextLine();
 
         validationMessage = ValidationVehicle.validateModel(model);
         if (!validationMessage.isEmpty()) {
@@ -109,56 +97,48 @@ public class VehicleController {
             return;
         }
 
+        System.out.print("Type (SMALL, MEDIUM, SUV): ");
+        String type = scanner.nextLine();
+
         validationMessage = ValidationVehicle.validateType(type);
         if (!validationMessage.isEmpty()) {
             System.out.println("Error: " + validationMessage);
             return;
         }
 
-        validationMessage = ValidationVehicle.validateVehicleYear(year);
-        if (!validationMessage.isEmpty()) {
-            System.out.println("Error: " + validationMessage);
-            return;
-        }
+        if(!isUpdate){
+            VehicleDTO newVehicle = new VehicleDTO(licensePlate,model,type);
 
-        VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
-        if (isUpdate && vehicleDTO == null) {
-            System.out.println("Vehicle not found.");
-            return;
-        }
-
-        if (vehicleDTO != null && !vehicleDTO.isAvailable()) {
-            System.out.println("Vehicle is not available for registration or update.");
-            return;
-        }
-
-        if (vehicleDTO == null) {
-            vehicleDTO = new VehicleDTO(licensePlate, model, type, year);
-        } else {
-            vehicleDTO.setModel(model);
-            vehicleDTO.setType(type);
-            vehicleDTO.setYear(year);
-        }
-
-        try {
-            String response;
-            if (isUpdate) {
-                response = (String) vehicleService.updateVehicle(vehicleDTO);
-            } else {
-                response = vehicleService.createVehicle(vehicleDTO);
-            }
-
-            if (response.equals(ValidationVehicle.SUCCESS_MESSAGE)) {
-                if (isUpdate) {
-                    System.out.println("Vehicle updated successfully.");
-                } else {
+            try {
+                String response;
+                response = vehicleService.createVehicle(newVehicle);
+                if (response.equals(ValidationVehicle.SUCCESS_MESSAGE)) {
                     System.out.println("Vehicle registered successfully.");
+                } else {
+                    System.out.println("Error: " + response);
                 }
-            } else {
-                System.out.println("Error: " + response);
+            } catch (IOException e) {
+                System.out.println("Error occurred while saving vehicle: " + e.getMessage());
             }
-        } catch (IOException e) {
-            System.out.println("Error occurred while saving vehicle: " + e.getMessage());
+        }else {
+
+            VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
+            if (vehicleDTO == null) {
+                System.out.println("Vehicle not found.");
+                return;
+            }
+
+            if (!vehicleDTO.isAvailable()) {
+                System.out.println("Vehicle is not available for registration or update.");
+                return;
+            }
+
+           /* if (vehicleDTO == null) {
+                vehicleDTO = new VehicleDTO(licensePlate, model, type);
+            } else {
+                vehicleDTO.setModel(model);
+                vehicleDTO.setType(type);
+            }*/
         }
     }
 }
