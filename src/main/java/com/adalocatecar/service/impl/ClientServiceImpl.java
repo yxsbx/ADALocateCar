@@ -84,11 +84,6 @@ public class ClientServiceImpl implements ClientService {
         }
         return clientDTOs;
     }
-        @Override
-    public boolean assignVehicleToClient(Vehicle vehicle, Client client, String agency, LocalDateTime startDate, LocalDateTime expectedEndDate) {
-        vehicle.getRentalContract().rentThisCar(client,agency,startDate,expectedEndDate);
-        return true;
-    }
 
     private String[] getAllClientIdsFromRepository() throws IOException {
         List<Client> clients = clientRepository.findAll();

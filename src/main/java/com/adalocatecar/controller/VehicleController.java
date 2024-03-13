@@ -107,7 +107,7 @@ public class VehicleController {
         }
 
         if(!isUpdate){
-            VehicleDTO newVehicle = new VehicleDTO(licensePlate,model,type);
+            VehicleDTO newVehicle = new VehicleDTO(licensePlate,model,type, null);
 
             try {
                 String response;

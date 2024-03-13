@@ -16,7 +16,7 @@ public class Converter {
     }
 
     public static Vehicle convertToEntity(VehicleDTO vehicleDTO){
-        return new Vehicle(vehicleDTO.getLicensePlate(),vehicleDTO.getModel(),vehicleDTO.getType());
+        return  new Vehicle(vehicleDTO.getLicensePlate(),vehicleDTO.getModel(),vehicleDTO.getType(),vehicleDTO.getRentalContract());
     }
 
     public static ClientDTO convertToDTO(Client client) {
@@ -24,7 +24,7 @@ public class Converter {
     }
 
     public static VehicleDTO convertToDTO(Vehicle vehicle){
-        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getModel(), vehicle.getType());
+        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getModel(), vehicle.getType(), vehicle.getRentalContract());
     }
 
     public static List<VehicleDTO> convertToDTOList(List<Vehicle> all) {

@@ -7,13 +7,13 @@ public class VehicleDTO {
     private String model;
     private String type;
     private Rental rentalContract;
-    private boolean available;
 
-    public VehicleDTO(String licensePlate, String model, String type) {
+
+    public VehicleDTO(String licensePlate, String model, String type, Rental rentalContract) {
         this.licensePlate = licensePlate;
         this.model = model;
         this.type = type;
-        this.available = true;
+        this.rentalContract = rentalContract;
     }
 
     public String getLicensePlate() {
@@ -41,16 +41,9 @@ public class VehicleDTO {
     }
 
     public boolean isAvailable() {
-        return available;
+        return !rentalContract.getRentalStatus();
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
-
-    public boolean checkAvailability() {
-        return available;
-    }
 
     public Rental getRentalContract() {
         return rentalContract;
@@ -65,6 +58,6 @@ public class VehicleDTO {
         return  "License Plate ='" + licensePlate + '\'' +
                 ", Model ='" + model + '\'' +
                 ", Type ='" + type + '\'' +
-                ", Available =" + available;
+                ", Available =" + isAvailable();
     }
 }

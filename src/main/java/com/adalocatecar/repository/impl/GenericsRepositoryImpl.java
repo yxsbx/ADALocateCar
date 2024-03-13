@@ -49,13 +49,9 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     @Override
     public void update(T object) {
         try {
-            if (isUniqueObjectId(getId(object))) {
-                replaceObjectInFile(object);
-            } else {
-                logger.warning("Client with ID " + getId(object) + " already exists.");
-            }
+            replaceObjectInFile(object);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "An error occurred while updating a client.", e);
+            logger.log(Level.SEVERE, "An error occurred while updating.", e);
         }
     }
 
@@ -104,7 +100,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
         for (T object : objects) {
             lines.add(objectToString(object));
         }
-        FileHandler.writeToFile(lines, filePath.getAbsolutePath());
+        FileHandler.writeToFile(lines, filePath.getAbsolutePath(), false);
     }
 
     private boolean isUniqueObjectId(ID id) throws IOException {
@@ -118,7 +114,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     private void appendClientToFile(T object) throws IOException {
-        FileHandler.writeToFile(Collections.singletonList(objectToString(object)), filePath.getAbsolutePath());
+        FileHandler.writeToFile(Collections.singletonList(objectToString(object)), filePath.getAbsolutePath(),true);
     }
 
     private void replaceObjectInFile(T object) throws IOException {

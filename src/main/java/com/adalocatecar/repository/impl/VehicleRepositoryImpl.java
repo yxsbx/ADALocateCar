@@ -1,6 +1,7 @@
 package com.adalocatecar.repository.impl;
 
 import com.adalocatecar.dto.VehicleDTO;
+import com.adalocatecar.model.Rental;
 import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.VehicleRepository;
 
@@ -76,7 +77,7 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
         String model = parts[1];
         String type = parts[2];
         String available = parts[3];
-        Vehicle vehicle = new Vehicle(licensePlate, model, type);
+        Vehicle vehicle = new Vehicle(licensePlate, model, type, new Rental());
         return vehicle;
     }
 
@@ -91,7 +92,7 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     }
 
     private VehicleDTO convertToDTO(Vehicle vehicle) {
-        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getModel(), vehicle.getType());
+        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getModel(), vehicle.getType(),vehicle.getRentalContract());
     }
 
     @Override

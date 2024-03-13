@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 public class FileHandler {
     private static final Logger logger = Logger.getLogger(FileHandler.class.getName());
 
-    public static void writeToFile(List<String> lines, String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, true))) {
+    public static void writeToFile(List<String> lines, String filename, boolean op) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename, op))) {
             for (String line : lines) {
                 writer.write(line);
                 writer.newLine();

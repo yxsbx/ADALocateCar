@@ -66,10 +66,10 @@ public class RentalController {
         String endDateStr = scanner.nextLine();
 
         try {
-           // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyyTHH:mm");
+            //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
             LocalDateTime startDate = LocalDateTime.parse(startDateStr);
             LocalDateTime endDate = LocalDateTime.parse(endDateStr);
-            //2024-03-12 08:30
+
             String response = rentalService.rentVehicle(licensePlate, clientId, startDate, endDate, agencyLocal);
             System.out.println(response);
         } catch (DateTimeParseException e) {

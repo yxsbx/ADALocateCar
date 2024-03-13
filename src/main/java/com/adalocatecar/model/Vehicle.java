@@ -4,12 +4,13 @@ public class Vehicle {
     private String licensePlate;
     private String model;
     private String type;
-    private final Rental rentalContract = new Rental();
+    private final Rental rentalContract;
 
-    public Vehicle(String licensePlate, String model, String type) {
+    public Vehicle(String licensePlate, String model, String type, Rental rentalContract) {
         this.licensePlate = licensePlate;
         this.model = model;
         this.type = type;
+        this.rentalContract = rentalContract;
     }
 
     public String getLicensePlate() {

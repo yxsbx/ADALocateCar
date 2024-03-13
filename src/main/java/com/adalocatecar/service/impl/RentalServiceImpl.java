@@ -3,8 +3,10 @@ package com.adalocatecar.service.impl;
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.model.Client;
+import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.service.RentalService;
+import com.adalocatecar.repository.VehicleRepository;
 import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.utility.Converter;
 import com.adalocatecar.utility.ValidationRentals;
@@ -31,19 +33,14 @@ public class RentalServiceImpl implements RentalService {
             ValidationRentals.validateRentalDuration(startDate, expectedEndDate);
 
             VehicleDTO vehicle = vehicleService.findVehicleByLicensePlate(licensePlate);
-            if ((vehicle == null) || vehicle.isAvailable()) {
+            if ((vehicle == null) || !vehicle.isAvailable()) {
                 return "The selected vehicle is not available for rental.";
             }
 
             Optional<ClientDTO> clientOptional = Optional.ofNullable(clientService.findClientByDocument(clientId));
             if (clientOptional.isPresent()) {
-                ClientDTO clientDTO = clientOptional.get();
-                Client client = new Client(clientDTO.getId(), clientDTO.getName(), clientDTO.getType());
-
-                if (!clientService.assignVehicleToClient(Converter.convertToEntity(vehicle), client, agencyLocal, startDate, expectedEndDate)) {
-                    return "Failed to rent vehicle to client";
-                }
-
+                vehicle.getRentalContract().rentThisCar(Converter.convertToEntity(clientOptional.get()),agencyLocal,startDate,expectedEndDate);
+                //Arumar rental pra RentalDTO
                 vehicleService.updateVehicle(vehicle);
                 return "Vehicle rented successfully";
             } else {

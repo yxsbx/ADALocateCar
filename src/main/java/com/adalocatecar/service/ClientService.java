@@ -21,5 +21,4 @@ public interface ClientService {
 
     List<ClientDTO> findClientsByName(String name) throws IOException;
 
-    public boolean assignVehicleToClient(Vehicle vehicle, Client client, String agency,  LocalDateTime startDate, LocalDateTime endDate);
 }
