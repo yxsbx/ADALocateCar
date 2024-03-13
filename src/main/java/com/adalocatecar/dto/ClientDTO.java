@@ -1,14 +1,18 @@
 package com.adalocatecar.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClientDTO {
     private String id;
     private String name;
     private String type;
-
+    private final List<VehicleDTO> rentedVehicles;
     public ClientDTO(String id, String name, String type) {
         this.id = id;
         this.setName(name);
         this.type = type;
+        this.rentedVehicles = new ArrayList<>();
     }
     public String getId() {
         return id;
@@ -30,6 +34,13 @@ public class ClientDTO {
     }
     public void setType(String type) {
         this.type = type;
+    }
+
+    public List<VehicleDTO> getRentedVehicles() {
+        return rentedVehicles;
+    }
+    public void addRentedVehicle(VehicleDTO vehicle) {
+        this.rentedVehicles.add(vehicle);
     }
 
     @Override
