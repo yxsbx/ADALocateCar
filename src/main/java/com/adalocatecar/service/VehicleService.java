@@ -13,8 +13,6 @@ public interface VehicleService {
     void deleteVehicle(String licensePlate);
     List<VehicleDTO> findAllVehicles() throws IOException;
     boolean isVehicleAvailable(String licensePlate);
-    void markVehicleAsUnavailable(String licensePlate, LocalDateTime startDate, LocalDateTime expectedEndDate);
-    void markVehicleAsAvailable(String licensePlate);
     VehicleDTO findVehicleByLicensePlate(String licensePlate);
     List<VehicleDTO> findVehiclesByType(String type);
     List<VehicleDTO> findVehiclesByModel(String model);

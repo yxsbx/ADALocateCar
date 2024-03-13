@@ -90,6 +90,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
         }
         return objects;
     }
+
     @Override
     public List<T> findByName(String name){
         return findAll()
@@ -97,6 +98,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
                 .filter(a -> getName(a).equalsIgnoreCase(name))
                 .collect(Collectors.toList());
     }
+
     private void rewriteFile(List<T> objects) throws IOException {
         List<String> lines = new ArrayList<>();
         for (T object : objects) {

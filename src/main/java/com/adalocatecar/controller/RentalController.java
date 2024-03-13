@@ -66,14 +66,14 @@ public class RentalController {
         String endDateStr = scanner.nextLine();
 
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime startDate = LocalDateTime.parse(startDateStr, formatter);
-            LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
-
+           // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyyTHH:mm");
+            LocalDateTime startDate = LocalDateTime.parse(startDateStr);
+            LocalDateTime endDate = LocalDateTime.parse(endDateStr);
+            //2024-03-12 08:30
             String response = rentalService.rentVehicle(licensePlate, clientId, startDate, endDate, agencyLocal);
             System.out.println(response);
         } catch (DateTimeParseException e) {
-            System.out.println("Invalid date format. Please enter dates in the format yyyy-MM-dd HH:mm.");
+            System.out.println("Invalid date format. Please enter dates in the format dd-MM-yyyyTHH:mm.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }

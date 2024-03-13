@@ -77,7 +77,6 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
         String type = parts[2];
         String available = parts[3];
         Vehicle vehicle = new Vehicle(licensePlate, model, type);
-        vehicle.setAvailable(Boolean.parseBoolean(available));
         return vehicle;
     }
 

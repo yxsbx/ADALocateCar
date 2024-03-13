@@ -45,20 +45,19 @@ public class MainApplication {
                 System.out.println("4. Exit");
                 System.out.print("Choose an option: ");
 
-                int option = scanner.nextInt();
-                scanner.nextLine();
+                String option = scanner.nextLine();
 
                 switch (option) {
-                    case 1:
+                    case "1":
                         vehicleController.manageVehicles(scanner);
                         break;
-                    case 2:
+                    case "2":
                         clientController.manageClients(scanner);
                         break;
-                    case 3:
+                    case "3":
                         rentalController.manageRentals(scanner);
                         break;
-                    case 4:
+                    case "4":
                         System.out.println("Thank you for using ADA LocateCar System. Goodbye!");
                         running = false;
                         break;

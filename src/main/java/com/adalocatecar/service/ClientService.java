@@ -7,7 +7,6 @@ import com.adalocatecar.model.Vehicle;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface ClientService {
     String createClient(ClientDTO clientDTO);
@@ -22,9 +21,5 @@ public interface ClientService {
 
     List<ClientDTO> findClientsByName(String name) throws IOException;
 
-    Client findClientByVehicleLicensePlate(String licensePlate);
-
-    boolean returnVehicleFromClient(String licensePlate);
-
-    public boolean assignVehicleToClient(Vehicle vehicle, Client client, LocalDateTime startDate, LocalDateTime endDate);
+    public boolean assignVehicleToClient(Vehicle vehicle, Client client, String agency,  LocalDateTime startDate, LocalDateTime endDate);
 }

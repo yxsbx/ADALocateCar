@@ -1,23 +1,17 @@
 package com.adalocatecar.service.impl;
 
 import com.adalocatecar.dto.ClientDTO;
-import com.adalocatecar.dto.RentalDTO;
 import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.model.Client;
-import com.adalocatecar.model.Rental;
-import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.service.RentalService;
 import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.utility.Converter;
 import com.adalocatecar.utility.ValidationRentals;
 
-import java.time.Duration;
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class RentalServiceImpl implements RentalService {
 
@@ -37,7 +31,7 @@ public class RentalServiceImpl implements RentalService {
             ValidationRentals.validateRentalDuration(startDate, expectedEndDate);
 
             VehicleDTO vehicle = vehicleService.findVehicleByLicensePlate(licensePlate);
-            if (vehicle == null || !vehicleService.isVehicleAvailable(licensePlate)) {
+            if ((vehicle == null) || vehicle.isAvailable()) {
                 return "The selected vehicle is not available for rental.";
             }
 
@@ -46,18 +40,19 @@ public class RentalServiceImpl implements RentalService {
                 ClientDTO clientDTO = clientOptional.get();
                 Client client = new Client(clientDTO.getId(), clientDTO.getName(), clientDTO.getType());
 
-                if (!clientService.assignVehicleToClient(Converter.convertToEntity(vehicle), client, startDate, expectedEndDate)) {
+                if (!clientService.assignVehicleToClient(Converter.convertToEntity(vehicle), client, agencyLocal, startDate, expectedEndDate)) {
                     return "Failed to rent vehicle to client";
                 }
 
-                vehicleService.markVehicleAsUnavailable(licensePlate, startDate, expectedEndDate);
-
+                vehicleService.updateVehicle(vehicle);
                 return "Vehicle rented successfully";
             } else {
                 return "Client not found";
             }
         } catch (IllegalArgumentException ex) {
             return ex.getMessage();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -69,16 +64,10 @@ public class RentalServiceImpl implements RentalService {
                 return "Vehicle not found";
             }
 
-           /* Rental rental = findRentalByLicensePlate(licensePlate);
-            if (rental == null) {
-                return "Rental record not found";
-            }*/
-
             ValidationRentals.validateRentalDuration(vehicle.getRentalContract().getStartDate(), actualEndDate);
             ValidationRentals.validateReturnDate(vehicle.getRentalContract().getStartDate(), actualEndDate);
 
             vehicle.getRentalContract().setActualEndDate(actualEndDate);
-            vehicleService.markVehicleAsAvailable(licensePlate);
 
             return "Vehicle returned successfully";
         } catch (IllegalArgumentException ex) {

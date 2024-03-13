@@ -110,25 +110,6 @@ public class VehicleServiceImpl implements VehicleService {
         return vehicle.get().isAvailable();
     }
 
-
-    @Override
-    public void markVehicleAsUnavailable(String licensePlate, LocalDateTime startDate, LocalDateTime expectedEndDate) {
-        Vehicle vehicle = vehicleRepository.findByLicensePlate(licensePlate);
-        if (vehicle != null) {
-            vehicle.setAvailable(false);
-            vehicleRepository.update(vehicle);
-        }
-    }
-
-    @Override
-    public void markVehicleAsAvailable(String licensePlate) {
-        Vehicle vehicle = vehicleRepository.findByLicensePlate(licensePlate);
-        if (vehicle != null) {
-            vehicle.setAvailable(true);
-            vehicleRepository.update(vehicle);
-        }
-    }
-
     @Override
     public VehicleDTO findVehicleByLicensePlate(String licensePlate) {
         return Converter.convertToDTO(vehicleRepository.findByLicensePlate(licensePlate));
