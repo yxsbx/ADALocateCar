@@ -1,12 +1,11 @@
 package com.adalocatecar.controller;
 
-import com.adalocatecar.dto.RentalDTO;
+
 import com.adalocatecar.service.RentalService;
 import com.adalocatecar.utility.ValidationInput;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Scanner;
 
 public class RentalController {
@@ -22,14 +21,14 @@ public class RentalController {
             System.out.println("\nRental Management");
             System.out.println("1. Rent a Vehicle");
             System.out.println("2. Return a Vehicle");
-            System.out.println("3. Back to Main Menu");
+            System.out.println("0. Back to Main Menu");
             System.out.print("Choose an option: ");
 
             int option;
             try {
                 option = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
+                System.err.println("Invalid input. Please enter a number.");
                 continue;
             }
 
@@ -40,7 +39,7 @@ public class RentalController {
                 case 2:
                     returnVehicle(scanner);
                     break;
-                case 3:
+                case 0:
                     System.out.println("Exiting Rental Management...");
                     return;
                 default:

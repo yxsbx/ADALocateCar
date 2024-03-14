@@ -6,14 +6,14 @@ public class VehicleDTO {
     private String model;
     private String type;
     private RentalDTO rentalContract;
-    private boolean available;
+    //private boolean available; Comentado para explicação do Daniel
 
     public VehicleDTO(String licensePlate, String model, String type, RentalDTO rentalContract) {
         this.licensePlate = licensePlate;
         this.model = model;
         this.type = type;
         this.rentalContract = rentalContract;
-        this.available = true;
+       // this.available = true; //private boolean available; Comentado para explicação do Daniel
     }
 
     public String getLicensePlate() {
@@ -49,12 +49,12 @@ public class VehicleDTO {
     }
 
     public boolean isAvailable() {
-        return available;
+        return !rentalContract.getRentalStatus();
     }
 
-    public void setAvailable(boolean available) {
+   /* public void setAvailable(boolean available) {
         this.available = available;
-    }
+    }*///Comentado para explicação do Daniel
 
     @Override
     public String toString() {

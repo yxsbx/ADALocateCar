@@ -4,24 +4,21 @@ import java.time.LocalDateTime;
 
 public class RentalDTO {
     private Boolean rentalStatus;
-    private ClientDTO clientWhoRented;
+    private String idClientWhoRented;
     private String agencyLocal;
     private LocalDateTime startDate;
     private LocalDateTime expectedEndDate;
-    private LocalDateTime actualEndDate;
 
     public RentalDTO(Boolean rentalStatus,
-                     ClientDTO client,
+                     String idClientWhoRented,
                      String agencyLocal,
                      LocalDateTime startDate,
-                     LocalDateTime expectedEndDate,
-                     LocalDateTime actualEndDate) {
+                     LocalDateTime expectedEndDate) {
         this.rentalStatus = rentalStatus;
-        this.clientWhoRented = client;
+        this.idClientWhoRented = idClientWhoRented;
         this.agencyLocal = agencyLocal;
         this.startDate = startDate;
         this.expectedEndDate = expectedEndDate;
-        this.actualEndDate = actualEndDate;
     }
 
     public Boolean getRentalStatus() {
@@ -32,12 +29,12 @@ public class RentalDTO {
         this.rentalStatus = rentalStatus;
     }
 
-    public ClientDTO getClientWhoRented() {
-        return clientWhoRented;
+    public String getIdClientWhoRented() {
+        return idClientWhoRented;
     }
 
-    public void setClientWhoRented(ClientDTO clientWhoRented) {
-        this.clientWhoRented = clientWhoRented;
+    public void setIdClientWhoRented(String clientWhoRented) {
+        this.idClientWhoRented = clientWhoRented;
     }
 
     public String getAgencyLocal() {
@@ -62,13 +59,5 @@ public class RentalDTO {
 
     public void setExpectedEndDate(LocalDateTime expectedEndDate) {
         this.expectedEndDate = expectedEndDate;
-    }
-
-    public LocalDateTime getActualEndDate() {
-        return actualEndDate;
-    }
-
-    public void setActualEndDate(LocalDateTime actualEndDate) {
-        this.actualEndDate = actualEndDate;
     }
 }

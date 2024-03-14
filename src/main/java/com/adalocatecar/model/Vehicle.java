@@ -5,13 +5,12 @@ public class Vehicle {
     private String model;
     private String type;
     private Rental rentalContract;
-    private boolean available;
 
     public Vehicle(String licensePlate, String model, String type) {
         this.licensePlate = licensePlate;
         this.model = model;
         this.type = type;
-        this.available = true;
+        this.rentalContract = new Rental();
     }
 
     public String getLicensePlate() {
@@ -44,23 +43,14 @@ public class Vehicle {
 
     public void setRentalContract(Rental rentalContract) {
         this.rentalContract = rentalContract;
-        updateAvailability();
     }
 
     public void removeRentalContract() {
         this.rentalContract = null;
-        updateAvailability();
-    }
-
-    private void updateAvailability() {
-        this.available = (this.rentalContract == null || !this.rentalContract.isRentalStatus());
     }
 
     public boolean isAvailable() {
-        return available;
+        return !rentalContract.isRentalStatus();
     }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
-    }
 }

@@ -42,7 +42,7 @@ public class MainApplication {
                 System.out.println("1. Manage Vehicles");
                 System.out.println("2. Manage Clients");
                 System.out.println("3. Manage Rentals");
-                System.out.println("4. Exit");
+                System.out.println("0. Exit");
                 System.out.print("Choose an option: ");
 
                 String option = scanner.nextLine();
@@ -57,7 +57,7 @@ public class MainApplication {
                     case "3":
                         rentalController.manageRentals(scanner);
                         break;
-                    case "4":
+                    case "0":
                         System.out.println("Thank you for using ADA LocateCar System. Goodbye!");
                         running = false;
                         break;

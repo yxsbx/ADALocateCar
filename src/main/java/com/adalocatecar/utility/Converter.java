@@ -42,21 +42,19 @@ public class Converter {
             return null;
         }
         return new RentalDTO(rental.isRentalStatus(),
-                convertToDTO(rental.getClientWhoRented()),
+                rental.getIdClientWhoRented(),
                 rental.getAgencyLocal(),
                 rental.getStartDate(),
-                rental.getExpectedEndDate(),
-                rental.getActualEndDate());
+                rental.getExpectedEndDate());
     }
 
     public static Rental convertToEntity(RentalDTO rentalDTO) {
         Rental rental = new Rental();
         rental.setRentalStatus(rentalDTO.getRentalStatus());
-        rental.setClientWhoRented(convertToEntity(rentalDTO.getClientWhoRented()));
+        rental.setIdClientWhoRented(rentalDTO.getIdClientWhoRented());
         rental.setAgencyLocal(rentalDTO.getAgencyLocal());
         rental.setStartDate(rentalDTO.getStartDate());
         rental.setExpectedEndDate(rentalDTO.getExpectedEndDate());
-        rental.setActualEndDate(rentalDTO.getActualEndDate());
         return rental;
     }
 

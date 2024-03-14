@@ -3,23 +3,20 @@ package com.adalocatecar.model;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SequencedCollection;
 
 public class Rental {
     private Boolean rentalStatus;
-    private Client clientWhoRented = new Client("","","");
-    private String agencyLocal;
+    private String idClientWhoRented = "";
+    private String agencyLocal = "";
     private LocalDateTime startDate;
     private LocalDateTime expectedEndDate;
     private LocalDateTime actualEndDate;
-    private List<Vehicle> rentedVehicles;
 
     public Rental() {
         this.rentalStatus = false;
-        this.rentedVehicles = new ArrayList<>();
     }
 
-    public void rentThisCar(Client client,
+    public void rentThisCar(String idClientWhoRented,
                             String agencyLocal,
                             LocalDateTime startDate,
                             LocalDateTime expectedReturnDate) {
@@ -27,14 +24,14 @@ public class Rental {
             throw new IllegalStateException("Rental has already been rented");
         }
         this.rentalStatus = true;
-        this.clientWhoRented = client;
+        this.idClientWhoRented = idClientWhoRented;
         this.agencyLocal = agencyLocal;
         this.startDate = startDate;
         this.expectedEndDate = expectedReturnDate;
     }
 
-    public Client getClientWhoRented() {
-        return clientWhoRented;
+    public String getIdClientWhoRented() {
+        return idClientWhoRented;
     }
 
     public String getAgencyLocal() {
@@ -61,8 +58,8 @@ public class Rental {
         this.rentalStatus = rentalStatus;
     }
 
-    public void setClientWhoRented(Client clientWhoRented) {
-        this.clientWhoRented = clientWhoRented;
+    public void setIdClientWhoRented(String ClientWhoRented) {
+        this.idClientWhoRented = ClientWhoRented;
     }
 
     public void setAgencyLocal(String agencyLocal) {
@@ -81,7 +78,4 @@ public class Rental {
         return rentalStatus;
     }
 
-    public List<Vehicle> getRentedVehicles() {
-        return rentedVehicles;
-    }
 }

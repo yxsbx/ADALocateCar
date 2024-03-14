@@ -142,7 +142,7 @@ public class VehicleServiceImpl implements VehicleService {
         if (vehicleOptional.isPresent()) {
             Vehicle vehicle = vehicleOptional.get();
             vehicle.setRentalContract(null);
-            vehicle.setAvailable(true);
+            //vehicle.setAvailable(true);
             try {
                 vehicleRepository.update(vehicle);
             } catch (Exception e) {

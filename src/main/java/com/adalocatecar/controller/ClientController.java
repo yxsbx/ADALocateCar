@@ -25,11 +25,16 @@ public class ClientController {
             System.out.println("3. Update client");
             System.out.println("4. Delete Client");
             System.out.println("5. Find client by document or name");
-            System.out.println("6. Back to Main Menu");
+            System.out.println("0. Back to Main Menu");
             System.out.print("Choose an option: ");
 
-            int option = scanner.nextInt();
-            scanner.nextLine();
+            int option;
+            try {
+                option = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid input. Please enter a number.");
+                continue;
+            }
 
             switch (option) {
                 case 1:
@@ -47,7 +52,7 @@ public class ClientController {
                 case 5:
                     readClient(scanner);
                     break;
-                case 6:
+                case 0:
                     System.out.println("Returning to Main Menu.");
                     running = false;
                     break;

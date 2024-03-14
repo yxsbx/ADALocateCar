@@ -34,7 +34,7 @@ public class ValidationRentals {
 
     public static void validateVehicleAvailability(VehicleDTO vehicle) {
         if (!vehicle.isAvailable()) {
-            throw new IllegalArgumentException(VEHICLE_NOT_AVAILABLE);
+            throw new RuntimeException(VEHICLE_NOT_AVAILABLE);
         }
     }
 

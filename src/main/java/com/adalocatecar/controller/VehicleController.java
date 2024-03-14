@@ -22,14 +22,14 @@ public class VehicleController {
             System.out.println("1. Register Vehicle");
             System.out.println("2. Update Vehicle Information");
             System.out.println("3. List All Vehicles");
-            System.out.println("4. Back to Main Menu");
+            System.out.println("0. Back to Main Menu");
             System.out.print("Choose an option: ");
 
             int option;
             try {
                 option = Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
+                System.err.println("Invalid input. Please enter a number.");
                 continue;
             }
 
@@ -43,7 +43,7 @@ public class VehicleController {
                 case 3:
                     readAllVehicles();
                     break;
-                case 4:
+                case 0:
                     return;
                 default:
                     System.out.println("Invalid option. Please try again.");
@@ -79,7 +79,7 @@ public class VehicleController {
     private void saveVehicle(Scanner scanner, boolean isUpdate) {
         System.out.println("Enter vehicle details:");
 
-        System.out.print("License Plate: ");
+        System.out.print("License Plate EX:(ABC1D23): ");
         String licensePlate = scanner.nextLine();
 
         String validationMessage = ValidationVehicle.validateLicensePlate(licensePlate);
