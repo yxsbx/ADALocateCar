@@ -52,10 +52,6 @@ public class VehicleDTO {
         return !rentalContract.getRentalStatus();
     }
 
-   /* public void setAvailable(boolean available) {
-        this.available = available;
-    }*///Comentado para explicação do Daniel
-
     @Override
     public String toString() {
         return "License Plate ='" + licensePlate + '\'' +

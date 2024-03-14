@@ -7,13 +7,13 @@ public class Client {
     private String id;
     private String name;
     private String clientType;
-    private final List<Vehicle> rentedVehicles;
+    private final List<String> rentedVehiclesPlates;
 
     public Client(String id, String name, String type) {
         this.id = id;
         this.name = name;
         this.clientType = type;
-        this.rentedVehicles = new ArrayList<>();
+        this.rentedVehiclesPlates = new ArrayList<>();
     }
 
     public String getId() {
@@ -40,12 +40,12 @@ public class Client {
         this.clientType = clientType;
     }
 
-    public void addRentedVehicle(Vehicle vehicle) {
-        this.rentedVehicles.add(vehicle);
+    public void addRentedVehicle(String vehicleParte) {
+        this.rentedVehiclesPlates.add(vehicleParte);
     }
 
-    public List<Vehicle> getRentedVehicles() {
-        return rentedVehicles;
+    public List<String> getRentedVehiclesPlates() {
+        return rentedVehiclesPlates;
     }
 
     public boolean hasRentedCars() {

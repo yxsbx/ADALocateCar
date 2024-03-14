@@ -3,7 +3,6 @@ package com.adalocatecar.service.impl;
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.dto.RentalDTO;
 import com.adalocatecar.dto.VehicleDTO;
-import com.adalocatecar.model.Rental;
 import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.service.RentalService;
@@ -37,8 +36,9 @@ public class RentalServiceImpl implements RentalService {
         }
         RentalDTO rentalDTO = new RentalDTO(true, clientDTO.getId(), agencyLocal, startDate, expectedEndDate);
         vehicleDTO.setRentalContract(rentalDTO);
-        clientDTO.getRentedVehicles().add(vehicleDTO);
+        clientDTO.getRentedVehiclesPlates().add(vehicleDTO.getLicensePlate());
 
+        System.out.println(clientDTO);
         try {
             vehicleService.updateVehicle(vehicleDTO);
             clientService.updateClient(clientDTO);
@@ -95,7 +95,7 @@ public class RentalServiceImpl implements RentalService {
 
         if(days >= 3) {
             ClientDTO clientWhoRented = clientService.findClientByDocument(vehicle.getRentalContract().getIdClientWhoRented());
-            String clientType = clientWhoRented.getType();
+            String clientType = clientWhoRented.getClientType();
             if ("Individual".equals(clientType) && days >= 5) {
                 totalCost *= (1 - ValidationRentals.DISCOUNT_FOR_INDIVIDUAL);
             } else if ("Corporate".equals(clientType)) {

@@ -25,7 +25,7 @@ public class ValidationClient {
         if (!Pattern.matches("^[A-Za-zÀ-ú ]{3,}$", name)) {
             return INVALID_NAME_FORMAT;
         }
-        return "";
+        return null;
     }
 
     public enum OperationType {

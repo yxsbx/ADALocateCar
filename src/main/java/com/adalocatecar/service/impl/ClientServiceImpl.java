@@ -2,7 +2,9 @@ package com.adalocatecar.service.impl;
 
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.model.Client;
+import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.ClientRepository;
+import com.adalocatecar.repository.impl.ClientRepositoryImpl;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.utility.Converter;
 import com.adalocatecar.utility.ValidationClient;
@@ -27,6 +29,10 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public String updateClient(ClientDTO clientDTO) {
+        Optional<Client> existingClient = clientRepository.findById(clientDTO.getId());
+        if (existingClient.isEmpty()) {
+            throw new RuntimeException("Client not found.");
+        }
         Client client = Converter.convertToEntity(clientDTO);
         return saveClient(client, ValidationClient.OperationType.UPDATE);
     }
@@ -94,31 +100,11 @@ public class ClientServiceImpl implements ClientService {
     }
 
     public String saveClient(Client client, ValidationClient.OperationType operationType) {
-
         String validateIdFormat = ValidationClient.validateClientIdFormat(client.getId());
+
         if (validateIdFormat != null) {
             return validateIdFormat;
         }
-
-        String validateNameFormat = ValidationClient.validateClientNameFormat(client.getName());
-        if (!validateNameFormat.isEmpty()) {
-            return validateNameFormat;
-        }
-
-        String[] existingIds;
-        try {
-            existingIds = getAllClientIdsFromRepository();
-        } catch (IOException e) {
-            return "Failed to fetch existing client IDs.";
-        }
-
-        String operationValidation = ValidationClient.validateClientOperation(client.getId(), existingIds, operationType);
-        if (!operationValidation.equals(ValidationClient.SUCCESS_MESSAGE)) {
-            return operationValidation;
-        }
-
-        String clientType = determineClientType(client.getId());
-        client.setClientType(clientType);
 
         try {
             if (operationType == ValidationClient.OperationType.CREATE) {

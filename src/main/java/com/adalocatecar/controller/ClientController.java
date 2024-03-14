@@ -72,17 +72,20 @@ public class ClientController {
 
         String validationMessage = ValidationClient.validateClientNameFormat(name);
         if (validationMessage != null) {
-            System.out.println("Error: " + validationMessage);
+            System.err.println("Error: " + validationMessage);
             return;
         }
 
         validationMessage = ValidationClient.validateClientIdFormat(id);
+
         if (validationMessage != null) {
-            System.out.println("Error: " + validationMessage);
+            System.err.println("Error: " + validationMessage);
             return;
         }
-        ClientDTO newClient = new ClientDTO(name, id, null);
-        clientService.createClient(newClient);
+
+        ClientDTO newClient = new ClientDTO( id, name,null);
+        System.out.println(clientService.createClient(newClient));
+
     }
 
     private void readAllClients() {

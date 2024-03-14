@@ -14,7 +14,9 @@ import java.util.List;
 public class Converter {
 
     public static Client convertToEntity(ClientDTO clientDTO) {
-        return new Client(clientDTO.getId(), clientDTO.getName(), clientDTO.getType());
+        Client client = new Client(clientDTO.getId(), clientDTO.getName(), clientDTO.getClientType());
+        clientDTO.getRentedVehiclesPlates().forEach(client::addRentedVehicle);
+        return client;
     }
 
     public static Vehicle convertToEntity(VehicleDTO vehicleDTO) {

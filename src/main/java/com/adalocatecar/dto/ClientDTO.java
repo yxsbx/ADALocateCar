@@ -6,14 +6,14 @@ import java.util.List;
 public class ClientDTO {
     private String id;
     private String name;
-    private String type;
-    private final List<VehicleDTO> rentedVehicles;
+    private String clientType;
+    private final List<String> rentedVehiclesPlates;
 
-    public ClientDTO(String id, String name, String type) {
+    public ClientDTO(String id, String name, String clientType) {
         this.id = id;
-        this.setName(name);
-        this.type = type;
-        this.rentedVehicles = new ArrayList<>();
+        this.name = name;
+        this.clientType = clientType;
+        this.rentedVehiclesPlates = new ArrayList<>();
     }
 
     public String getId() {
@@ -32,34 +32,29 @@ public class ClientDTO {
         this.name = name;
     }
 
-    public String getType() {
-        return type;
+    public String getClientType() {
+        return clientType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setClientType(String clientType) {
+        this.clientType = clientType;
     }
 
-    public List<VehicleDTO> getRentedVehicles() {
-        return rentedVehicles;
+    public List<String> getRentedVehiclesPlates() {
+        return rentedVehiclesPlates;
     }
 
-    public boolean addRentedVehicle(VehicleDTO vehicleDTO) {
-        for (VehicleDTO rentedVehicle : rentedVehicles) {
-            if (rentedVehicle.getLicensePlate().equals(vehicleDTO.getLicensePlate())) {
-                return false;
-            }
-        }
-        rentedVehicles.add(vehicleDTO);
-        return true;
+    public void addRentedVehicle(String vehicleParte) {
+       this.rentedVehiclesPlates.add(vehicleParte);
     }
 
     @Override
     public String toString() {
-        return "Client{" +
-                "CPF/CNPJ='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", type='" + type + '\'' +
-                '}';
+        return "ClientDTO{" +
+               "id='" + id + '\'' +
+               ", name='" + name + '\'' +
+               ", type='" + clientType + '\'' +
+               ", rentedVehicles=" + rentedVehiclesPlates +
+               '}';
     }
 }

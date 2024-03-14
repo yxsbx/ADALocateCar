@@ -47,6 +47,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     private String saveVehicle(Vehicle vehicle, ValidationVehicle.OperationType operationType) {
         String validationMessage = validateVehicle(vehicle, operationType);
+
         if (!validationMessage.isEmpty()) {
             return validationMessage;
         }

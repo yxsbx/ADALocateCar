@@ -19,7 +19,7 @@ ABC1D48,Renegade,SUV,false,,,null,null
 ABC1D49,Kicks,SUV,false,,,null,null
 ABC1D50,Ecosport,SUV,false,,,null,null
 ABC1D51,Ranger,SMALL,false,,,null,null
-ABC1D52,Hilux,SMALL,false,,,null,null
-ABC1D53,S10,SMALL,false,,,null,null
-ABC1D54,Strada,SMALL,false,,,null,null
+ABC1D52,Hilux,SMALL,true,12345678900,RJ,2024-12-12T12:12,2024-12-13T12:12
+ABC1D53,S10,SMALL,true,12345678900,Rj,2024-12-12T20:20,2024-12-15T20:20
+ABC1D54,Strada,SMALL,true,12345678900,RJ,2024-12-12T10:00,2024-12-13T10:00
 ABC1D55,Fiorino,MEDIUM,false,,,null,null
