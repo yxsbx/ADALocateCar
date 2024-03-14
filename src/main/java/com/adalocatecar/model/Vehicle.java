@@ -4,13 +4,14 @@ public class Vehicle {
     private String licensePlate;
     private String model;
     private String type;
-    private final Rental rentalContract;
+    private Rental rentalContract;
+    private boolean available;
 
-    public Vehicle(String licensePlate, String model, String type, Rental rentalContract) {
+    public Vehicle(String licensePlate, String model, String type) {
         this.licensePlate = licensePlate;
         this.model = model;
         this.type = type;
-        this.rentalContract = rentalContract;
+        this.available = true;
     }
 
     public String getLicensePlate() {
@@ -41,7 +42,25 @@ public class Vehicle {
         return rentalContract;
     }
 
+    public void setRentalContract(Rental rentalContract) {
+        this.rentalContract = rentalContract;
+        updateAvailability();
+    }
+
+    public void removeRentalContract() {
+        this.rentalContract = null;
+        updateAvailability();
+    }
+
+    private void updateAvailability() {
+        if (rentalContract != null) {
+            this.available = !rentalContract.getRentalStatus();
+        } else {
+            this.available = true;
+        }
+    }
+
     public boolean isAvailable() {
-        return !rentalContract.getRentalStatus();
+        return available;
     }
 }

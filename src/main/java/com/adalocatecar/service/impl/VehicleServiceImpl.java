@@ -24,20 +24,19 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public String createVehicle(VehicleDTO vehicleDTO) throws IOException {
+    public String createVehicle(VehicleDTO vehicleDTO) {
         Vehicle vehicle = Converter.convertToEntity(vehicleDTO);
         return saveVehicle(vehicle, ValidationVehicle.OperationType.CREATE);
     }
 
     @Override
-    public String updateVehicle(VehicleDTO vehicleDTO) throws IOException {
-        Vehicle existingVehicle = vehicleRepository.findByLicensePlate(vehicleDTO.getLicensePlate());
-        if (existingVehicle == null) {
-            return "Vehicle not found.";
+    public String updateVehicle(VehicleDTO vehicleDTO) {
+        Optional<Vehicle> existingVehicle = vehicleRepository.findByLicensePlate(vehicleDTO.getLicensePlate());
+        if (existingVehicle.isEmpty()) {
+            throw new RuntimeException( "Vehicle not found.");
         }
 
         Vehicle updatedVehicle = Converter.convertToEntity(vehicleDTO);
-        updatedVehicle.setLicensePlate(existingVehicle.getLicensePlate());
 
         return saveVehicle(updatedVehicle, ValidationVehicle.OperationType.UPDATE);
     }
@@ -47,7 +46,7 @@ public class VehicleServiceImpl implements VehicleService {
         vehicleRepository.delete(licensePlate);
     }
 
-    private String saveVehicle(Vehicle vehicle, ValidationVehicle.OperationType operationType) throws IOException {
+    private String saveVehicle(Vehicle vehicle, ValidationVehicle.OperationType operationType) {
         String validationMessage = validateVehicle(vehicle, operationType);
         if (!validationMessage.isEmpty()) {
             return validationMessage;
@@ -65,7 +64,7 @@ public class VehicleServiceImpl implements VehicleService {
         }
     }
 
-    private String validateVehicle(Vehicle vehicle, ValidationVehicle.OperationType operationType) throws IOException {
+    private String validateVehicle(Vehicle vehicle, ValidationVehicle.OperationType operationType) {
         String typeValidation = ValidationVehicle.validateType(vehicle.getType());
         if (!typeValidation.isEmpty()) {
             return typeValidation;
@@ -87,7 +86,7 @@ public class VehicleServiceImpl implements VehicleService {
         return "";
     }
 
-    private List<String> findAllLicensePlates() throws IOException {
+    private List<String> findAllLicensePlates()  {
         List<Vehicle> vehicles = vehicleRepository.findAll();
         List<String> licensePlates = new ArrayList<>();
         for (Vehicle vehicle : vehicles) {
@@ -97,13 +96,13 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public List<VehicleDTO> findAllVehicles() throws IOException {
+    public List<VehicleDTO> findAllVehicles() {
         return Converter.convertToDTOList(vehicleRepository.findAll());
     }
 
     @Override
     public boolean isVehicleAvailable(String licensePlate) {
-        Optional<Vehicle> vehicle = Optional.ofNullable(vehicleRepository.findByLicensePlate(licensePlate));
+        Optional<Vehicle> vehicle = vehicleRepository.findByLicensePlate(licensePlate);
         if (vehicle.isEmpty()) {
             throw new RuntimeException("Vehicle not found.");
         }
@@ -112,7 +111,11 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public VehicleDTO findVehicleByLicensePlate(String licensePlate) {
-        return Converter.convertToDTO(vehicleRepository.findByLicensePlate(licensePlate));
+    Optional<Vehicle> vehicle = vehicleRepository.findByLicensePlate(licensePlate);
+        if (vehicle.isEmpty()) {
+            throw new RuntimeException("Vehicle not found.");
+        }
+        return Converter.convertToDTO(vehicle.get());
     }
 
     @Override

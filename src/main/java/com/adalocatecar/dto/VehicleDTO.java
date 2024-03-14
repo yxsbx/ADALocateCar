@@ -6,10 +6,10 @@ public class VehicleDTO {
     private String licensePlate;
     private String model;
     private String type;
-    private Rental rentalContract;
+    private RentalDTO rentalContract;
 
 
-    public VehicleDTO(String licensePlate, String model, String type, Rental rentalContract) {
+    public VehicleDTO(String licensePlate, String model, String type, RentalDTO rentalContract) {
         this.licensePlate = licensePlate;
         this.model = model;
         this.type = type;
@@ -44,12 +44,11 @@ public class VehicleDTO {
         return !rentalContract.getRentalStatus();
     }
 
-
-    public Rental getRentalContract() {
+    public RentalDTO getRentalContract() {
         return rentalContract;
     }
 
-    public void setRentalContract(Rental rentalContract) {
+    public void setRentalContract(RentalDTO rentalContract) {
         this.rentalContract = rentalContract;
     }
 

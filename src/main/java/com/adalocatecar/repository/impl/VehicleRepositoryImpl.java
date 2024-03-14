@@ -4,10 +4,12 @@ import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.model.Rental;
 import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.VehicleRepository;
+import com.adalocatecar.utility.Converter;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,13 +38,9 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     }
 
     @Override
-    public Vehicle findByLicensePlate(String licensePlate) {
-        for (Vehicle vehicle : vehicles) {
-            if (vehicle.getLicensePlate().equals(licensePlate)) {
-                return vehicle;
-            }
-        }
-        return null;
+    public Optional<Vehicle> findByLicensePlate(String licensePlate) {
+        return vehicles.stream()
+                .filter(vehicle -> vehicle.getLicensePlate().equalsIgnoreCase(licensePlate)).findFirst();
     }
 
     @Override
@@ -60,7 +58,7 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     public List<Vehicle> findByModel(String model) {
         List<Vehicle> matchingVehicles = new ArrayList<>();
         for (Vehicle vehicle : vehicles) {
-            if (vehicle.getModel().equalsIgnoreCase(model)) {
+            if (vehicle.getModel().toLowerCase().contains(model.toLowerCase())) {
                 matchingVehicles.add(vehicle);
             }
         }
@@ -76,8 +74,9 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
         String licensePlate = parts[0];
         String model = parts[1];
         String type = parts[2];
-        String available = parts[3];
-        Vehicle vehicle = new Vehicle(licensePlate, model, type, new Rental());
+        boolean available = Boolean.parseBoolean(parts[3]);
+        Vehicle vehicle = new Vehicle(licensePlate, model, type);
+        vehicle.getRentalContract().setRentalStatus(available);
         return vehicle;
     }
 
@@ -89,10 +88,6 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     @Override
     protected String getId(Vehicle entity) {
         return entity.getLicensePlate();
-    }
-
-    private VehicleDTO convertToDTO(Vehicle vehicle) {
-        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getModel(), vehicle.getType(),vehicle.getRentalContract());
     }
 
     @Override

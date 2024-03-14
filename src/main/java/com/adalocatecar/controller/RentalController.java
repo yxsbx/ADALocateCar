@@ -2,7 +2,6 @@ package com.adalocatecar.controller;
 
 import com.adalocatecar.service.RentalService;
 import com.adalocatecar.utility.ValidationInput;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;

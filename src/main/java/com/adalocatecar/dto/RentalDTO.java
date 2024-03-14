@@ -3,77 +3,61 @@ package com.adalocatecar.dto;
 import java.time.LocalDateTime;
 
 public class RentalDTO {
-    private String licensePlate;
-    private String vehicleType;
-    private LocalDateTime startDate;
-    private LocalDateTime expectedEndDate;
-    private LocalDateTime actualEndDate;
-    private String agencyLocal;
-    private double totalCost;
+  private Boolean rentalStatus;
+  private ClientDTO clientWhoRented;
+  private String agencyLocal;
+  private LocalDateTime startDate;
+  private LocalDateTime expectedEndDate;
 
-    public RentalDTO(String licensePlate, String vehicleType, LocalDateTime startDate, LocalDateTime expectedEndDate, LocalDateTime actualEndDate, String agencyLocal, double totalCost) {
-        this.licensePlate = licensePlate;
-        this.vehicleType = vehicleType;
-        this.startDate = startDate;
-        this.expectedEndDate = expectedEndDate;
-        this.actualEndDate = actualEndDate;
-        this.agencyLocal = agencyLocal;
-        this.totalCost = totalCost;
-    }
+  public RentalDTO(Boolean rentalStatus,
+                        ClientDTO client,
+                        String agencyLocal,
+                        LocalDateTime startDate,
+                        LocalDateTime expectedEndDate) {
+    this.rentalStatus = rentalStatus;
+    this.clientWhoRented = client;
+    this.agencyLocal = agencyLocal;
+    this.startDate = startDate;
+    this.expectedEndDate = expectedEndDate;
+  }
 
-    public String getLicensePlate() {
-        return licensePlate;
-    }
+  public Boolean getRentalStatus() {
+    return rentalStatus;
+  }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
-    }
+  public void setRentalStatus(Boolean rentalStatus) {
+    this.rentalStatus = rentalStatus;
+  }
 
-    public String getVehicleType() {
-        return vehicleType;
-    }
+  public ClientDTO getClientWhoRented() {
+    return clientWhoRented;
+  }
 
-    public void setVehicleType(String vehicleType) {
-        this.vehicleType = vehicleType;
-    }
+  public void setClientWhoRented(ClientDTO clientWhoRented) {
+    this.clientWhoRented = clientWhoRented;
+  }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
+  public String getAgencyLocal() {
+    return agencyLocal;
+  }
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
+  public void setAgencyLocal(String agencyLocal) {
+    this.agencyLocal = agencyLocal;
+  }
 
-    public LocalDateTime getExpectedEndDate() {
-        return expectedEndDate;
-    }
+  public LocalDateTime getStartDate() {
+    return startDate;
+  }
 
-    public void setExpectedEndDate(LocalDateTime expectedEndDate) {
-        this.expectedEndDate = expectedEndDate;
-    }
+  public void setStartDate(LocalDateTime startDate) {
+    this.startDate = startDate;
+  }
 
-    public LocalDateTime getActualEndDate() {
-        return actualEndDate;
-    }
+  public LocalDateTime getExpectedEndDate() {
+    return expectedEndDate;
+  }
 
-    public void setActualEndDate(LocalDateTime actualEndDate) {
-        this.actualEndDate = actualEndDate;
-    }
-
-    public String getAgencyLocal() {
-        return agencyLocal;
-    }
-
-    public void setAgencyLocal(String agencyLocal) {
-        this.agencyLocal = agencyLocal;
-    }
-
-    public double getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(double totalCost) {
-        this.totalCost = totalCost;
-    }
+  public void setExpectedEndDate(LocalDateTime expectedEndDate) {
+    this.expectedEndDate = expectedEndDate;
+  }
 }

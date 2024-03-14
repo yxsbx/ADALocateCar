@@ -1,5 +1,7 @@
 package com.adalocatecar.utility;
 
+import com.adalocatecar.dto.VehicleDTO;
+
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -12,7 +14,7 @@ public class ValidationVehicle {
     public static final String DUPLICATED_LICENSE_PLATE = "License Plate already registered";
     public static final String INVALID_LICENSE_PLATE_FORMAT = "Invalid license plate format. Please enter the license plate in the correct format: ABC1D34";
 
-    public enum OperationType {
+  public enum OperationType {
         CREATE,
         UPDATE,
     }

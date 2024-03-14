@@ -1,76 +1,82 @@
 package com.adalocatecar.service.impl;
 
 import com.adalocatecar.dto.ClientDTO;
+import com.adalocatecar.dto.RentalDTO;
 import com.adalocatecar.dto.VehicleDTO;
-import com.adalocatecar.model.Client;
-import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.service.RentalService;
-import com.adalocatecar.repository.VehicleRepository;
 import com.adalocatecar.service.VehicleService;
-import com.adalocatecar.utility.Converter;
 import com.adalocatecar.utility.ValidationRentals;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public class RentalServiceImpl implements RentalService {
 
-    private final ClientService clientService;
-    private final VehicleService vehicleService;
+  private final ClientService clientService;
+  private final VehicleService vehicleService;
 
 
-    public RentalServiceImpl(ClientService clientService, VehicleService vehicleService) {
-        this.clientService = clientService;
-        this.vehicleService = vehicleService;
+  public RentalServiceImpl(ClientService clientService, VehicleService vehicleService) {
+    this.clientService = clientService;
+    this.vehicleService = vehicleService;
+  }
+
+  @Override
+  public String rentVehicle(
+          String licensePlate,
+          String clientId,
+          LocalDateTime startDate,
+          LocalDateTime expectedEndDate,
+          String agencyLocal) {
+
+    VehicleDTO vehicle = vehicleService.findVehicleByLicensePlate(licensePlate);
+    System.out.println(vehicle.isAvailable());//aaaaaaaaaaaaaaaaa
+
+    try {
+      ValidationRentals.validateVehicleAvailability(vehicle);
+    } catch (IllegalArgumentException ex) {
+      return ex.getMessage();
     }
 
-    @Override
-    public String rentVehicle(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate, String agencyLocal) {
-        try {
-            ValidationRentals.validateClientIdFormat(clientId);
-            ValidationRentals.validateRentalDuration(startDate, expectedEndDate);
+    ClientDTO client = clientService.findClientByDocument(clientId);
 
-            VehicleDTO vehicle = vehicleService.findVehicleByLicensePlate(licensePlate);
-            if ((vehicle == null) || !vehicle.isAvailable()) {
-                return "The selected vehicle is not available for rental.";
-            }
+    RentalDTO rentalDTO = new RentalDTO(true, client, agencyLocal, startDate, expectedEndDate);
+    vehicle.setRentalContract(rentalDTO);
 
-            Optional<ClientDTO> clientOptional = Optional.ofNullable(clientService.findClientByDocument(clientId));
-            if (clientOptional.isPresent()) {
-                vehicle.getRentalContract().rentThisCar(Converter.convertToEntity(clientOptional.get()),agencyLocal,startDate,expectedEndDate);
-                //Arumar rental pra RentalDTO
-                vehicleService.updateVehicle(vehicle);
-                return "Vehicle rented successfully";
-            } else {
-                return "Client not found";
-            }
-        } catch (IllegalArgumentException ex) {
-            return ex.getMessage();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    System.out.println(vehicle.isAvailable());//aaaaaaaaaaaaaaaaa
+
+    client.addRentedVehicle(vehicle);
+
+    try {
+      vehicleService.updateVehicle(vehicle);
+      clientService.updateClient(client);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return "Vehicle rented successfully";
+
+  }
+
+  @Override
+  public String returnVehicle(String licensePlate, LocalDateTime actualEndDate) {
+    /*try {
+      VehicleDTO vehicle = vehicleService.findVehicleByLicensePlate(licensePlate);
+        if (vehicle == null) {
+            return "Vehicle not found";
         }
-    }
 
-    @Override
-    public String returnVehicle(String licensePlate, LocalDateTime actualEndDate) {
-        try {
-            VehicleDTO vehicle = vehicleService.findVehicleByLicensePlate(licensePlate);
-            if (vehicle == null) {
-                return "Vehicle not found";
-            }
+      ValidationRentals.validateRentalDuration(vehicle.getRentalContract().getStartDate(), actualEndDate);
+      ValidationRentals.validateReturnDate(vehicle.getRentalContract().getStartDate(), actualEndDate);
 
-            ValidationRentals.validateRentalDuration(vehicle.getRentalContract().getStartDate(), actualEndDate);
-            ValidationRentals.validateReturnDate(vehicle.getRentalContract().getStartDate(), actualEndDate);
+       vehicle.getRentalContract().setActualEndDate(actualEndDate);
 
-            vehicle.getRentalContract().setActualEndDate(actualEndDate);
-
-            return "Vehicle returned successfully";
-        } catch (IllegalArgumentException ex) {
-            return ex.getMessage();
-        }
-    }
+      return "Vehicle returned successfully";
+    } catch (IllegalArgumentException ex) {
+        return ex.getMessage();
+    }*/
+    return "";
+  }
 /*
     @Override
     public List<RentalDTO> findAllRentals() {

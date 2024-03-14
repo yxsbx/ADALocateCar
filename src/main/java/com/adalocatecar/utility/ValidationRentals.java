@@ -1,5 +1,8 @@
 package com.adalocatecar.utility;
 
+import com.adalocatecar.dto.VehicleDTO;
+import com.adalocatecar.model.Vehicle;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.regex.Pattern;
@@ -29,11 +32,10 @@ public class ValidationRentals {
         }
     }
 
-    public static boolean validateVehicleAvailability(boolean isAvailable) {
-        if (!isAvailable) {
+    public static void validateVehicleAvailability(VehicleDTO vehicle) {
+        if (!vehicle.isAvailable()) {
             throw new IllegalArgumentException(VEHICLE_NOT_AVAILABLE);
         }
-        return true;
     }
 
     public static boolean validateReturnLocation(String rentalLocation, String returnLocation) {

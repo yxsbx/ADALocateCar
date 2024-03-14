@@ -1,5 +1,5 @@
-12345670001234,Henrique Ubers LTDA,Corporate
-12345678911,Daniel Marvellous,Individual
+12345670001234,Henrique Ubers LTDA,CORPORATE
+12345678911,Daniel Marvellous,PERSONAL
 98765432100,Isabela Silva & Cia,Corporate
 56789012345,Lucas Enterprises,Corporate
 11223344556,Sofia Tech Solutions,Corporate

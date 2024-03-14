@@ -9,5 +9,5 @@ public interface GenericsRepository <T, ID>{
     boolean delete(ID id);
     Optional<T> findById(ID id);
     List<T> findByName(String name);
-    List<T> findAll() throws IOException;
+    List<T> findAll() ;
 }
