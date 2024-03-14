@@ -38,7 +38,6 @@ public class RentalServiceImpl implements RentalService {
         vehicleDTO.setRentalContract(rentalDTO);
         clientDTO.getRentedVehiclesPlates().add(vehicleDTO.getLicensePlate());
 
-        System.out.println(clientDTO);
         try {
             vehicleService.updateVehicle(vehicleDTO);
             clientService.updateClient(clientDTO);

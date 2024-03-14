@@ -106,6 +106,9 @@ public class ClientServiceImpl implements ClientService {
             return validateIdFormat;
         }
 
+        String clientType = determineClientType(client.getId());
+        client.setClientType(clientType);
+
         try {
             if (operationType == ValidationClient.OperationType.CREATE) {
                 clientRepository.create(client);

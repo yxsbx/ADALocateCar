@@ -14,7 +14,7 @@
 12131415161,Letícia Design Studio,Corporate,
 17181920212,Andréa Productions,Corporate,
 88899900011,João Alberto Dantas,PERSONAL,
-23242526237,Maria Joaquina Albuquerque,Individual,
+23242526237,Maria Joaquina Albuquerque,PERSONAL,
 38394041452,Lucas Silva,PERSONAL,
 54555657567,Camila Conte,Individual,
 67686970782,Pedro Matias de Oliveira,PERSONAL,
