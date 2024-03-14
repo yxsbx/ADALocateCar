@@ -122,23 +122,20 @@ public class VehicleController {
             }
         } else {
 
-            VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
-            if (vehicleDTO == null) {
-                System.out.println("Vehicle not found.");
-                return;
+            try {
+               VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
+
+                if (vehicleDTO != null && !vehicleDTO.isAvailable()) {
+                    System.out.println("Vehicle is not available for update because it is currently rented.");
+                }else{
+                    vehicleDTO.setModel(model);
+                    vehicleDTO.setType(type);
+                    vehicleService.updateVehicle(vehicleDTO);
+                }
+            }catch(RuntimeException | IOException e){
+                System.out.println("Error: " + e.getMessage());
             }
 
-            if (!vehicleDTO.isAvailable()) {
-                System.out.println("Vehicle is not available for registration or update.");
-                return;
-            }
-
-           /* if (vehicleDTO == null) {
-                vehicleDTO = new VehicleDTO(licensePlate, model, type);
-            } else {
-                vehicleDTO.setModel(model);
-                vehicleDTO.setType(type);
-            }*/
         }
     }
 }
