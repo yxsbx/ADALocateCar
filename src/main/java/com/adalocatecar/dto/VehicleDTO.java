@@ -1,19 +1,19 @@
 package com.adalocatecar.dto;
 
-import com.adalocatecar.model.Rental;
 
 public class VehicleDTO {
     private String licensePlate;
     private String model;
     private String type;
     private RentalDTO rentalContract;
-
+    private boolean available;
 
     public VehicleDTO(String licensePlate, String model, String type, RentalDTO rentalContract) {
         this.licensePlate = licensePlate;
         this.model = model;
         this.type = type;
         this.rentalContract = rentalContract;
+        this.available = true;
     }
 
     public String getLicensePlate() {
@@ -40,10 +40,6 @@ public class VehicleDTO {
         this.type = type;
     }
 
-    public boolean isAvailable() {
-        return !rentalContract.getRentalStatus();
-    }
-
     public RentalDTO getRentalContract() {
         return rentalContract;
     }
@@ -52,9 +48,17 @@ public class VehicleDTO {
         this.rentalContract = rentalContract;
     }
 
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
     @Override
     public String toString() {
-        return  "License Plate ='" + licensePlate + '\'' +
+        return "License Plate ='" + licensePlate + '\'' +
                 ", Model ='" + model + '\'' +
                 ", Type ='" + type + '\'' +
                 ", Available =" + isAvailable();

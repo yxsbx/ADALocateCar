@@ -106,8 +106,8 @@ public class VehicleController {
             return;
         }
 
-        if(!isUpdate){
-            VehicleDTO newVehicle = new VehicleDTO(licensePlate,model,type, null);
+        if (!isUpdate) {
+            VehicleDTO newVehicle = new VehicleDTO(licensePlate, model, type, null);
 
             try {
                 String response;
@@ -120,7 +120,7 @@ public class VehicleController {
             } catch (IOException e) {
                 System.out.println("Error occurred while saving vehicle: " + e.getMessage());
             }
-        }else {
+        } else {
 
             VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
             if (vehicleDTO == null) {

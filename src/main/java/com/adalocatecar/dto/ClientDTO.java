@@ -8,6 +8,7 @@ public class ClientDTO {
     private String name;
     private String type;
     private final List<VehicleDTO> rentedVehicles;
+
     public ClientDTO(String id, String name, String type) {
         this.id = id;
         this.setName(name);
@@ -34,6 +35,7 @@ public class ClientDTO {
     public String getType() {
         return type;
     }
+
     public void setType(String type) {
         this.type = type;
     }
@@ -41,8 +43,15 @@ public class ClientDTO {
     public List<VehicleDTO> getRentedVehicles() {
         return rentedVehicles;
     }
-    public void addRentedVehicle(VehicleDTO vehicle) {
-        this.rentedVehicles.add(vehicle);
+
+    public boolean addRentedVehicle(VehicleDTO vehicleDTO) {
+        for (VehicleDTO rentedVehicle : rentedVehicles) {
+            if (rentedVehicle.getLicensePlate().equals(vehicleDTO.getLicensePlate())) {
+                return false;
+            }
+        }
+        rentedVehicles.add(vehicleDTO);
+        return true;
     }
 
     @Override

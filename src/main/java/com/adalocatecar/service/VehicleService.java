@@ -18,4 +18,6 @@ public interface VehicleService {
     List<VehicleDTO> findVehiclesByModel(String model);
 
     LocalDateTime findRentalStartDateByLicensePlate(String licensePlate);
+
+    void removeRentalContract(String licensePlate);
 }

@@ -7,14 +7,14 @@
 54321098765,Laura Creative Agency,Corporate
 24681357900,Rafaela Ventures,Corporate
 13579246811,Gabriel Innovations,Corporate
-98765432123,Ana Consulting Services,Corporate
-11122233344,Matheus Holdings,Corporate
+98765432123,Ana Consulting Services,PERSONAL
+11122233344,Matheus Holdings,PERSONAL
 44455566677,Carolina Investments,Corporate
-88899900011,João Alberto Dantas,Individual
+88899900011,João Alberto Dantas,PERSONAL
 12131415161,Letícia Design Studio,Corporate
 17181920212,Andréa Productions,Corporate
-88899900011,João Fernandes da Silva,Individual
+88899900011,João Alberto Dantas,PERSONAL
 23242526237,Maria Joaquina Albuquerque,Individual
-38394041452,Lucas Silva,Individual
+38394041452,Lucas Silva,PERSONAL
 54555657567,Camila Conte,Individual
-67686970782,Pedro Matias de Oliveira,Individual
+67686970782,Pedro Matias de Oliveira,PERSONAL

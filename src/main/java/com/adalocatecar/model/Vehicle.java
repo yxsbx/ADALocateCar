@@ -53,14 +53,14 @@ public class Vehicle {
     }
 
     private void updateAvailability() {
-        if (rentalContract != null) {
-            this.available = !rentalContract.getRentalStatus();
-        } else {
-            this.available = true;
-        }
+        this.available = (this.rentalContract == null || !this.rentalContract.isRentalStatus());
     }
 
     public boolean isAvailable() {
         return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
     }
 }

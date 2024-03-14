@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepository <T, ID>{
+public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepository<T, ID> {
 
     private static final Logger logger = Logger.getLogger(GenericsRepositoryImpl.class.getName());
     File filePath;
@@ -72,9 +72,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
 
     @Override
     public Optional<T> findById(ID id) {
-        return findAll().stream()
-                .filter(obj -> getId(obj).equals(id))
-                .findFirst();
+        return findAll().stream().filter(obj -> getId(obj).equals(id)).findFirst();
     }
 
     @Override
@@ -88,11 +86,8 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     @Override
-    public List<T> findByName(String name){
-        return findAll()
-                .stream()
-                .filter(a -> getName(a).equalsIgnoreCase(name))
-                .collect(Collectors.toList());
+    public List<T> findByName(String name) {
+        return findAll().stream().filter(a -> getName(a).equalsIgnoreCase(name)).collect(Collectors.toList());
     }
 
     private void rewriteFile(List<T> objects) throws IOException {
@@ -114,18 +109,20 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     private void appendClientToFile(T object) throws IOException {
-        FileHandler.writeToFile(Collections.singletonList(objectToString(object)), filePath.getAbsolutePath(),true);
+        FileHandler.writeToFile(Collections.singletonList(objectToString(object)), filePath.getAbsolutePath(), true);
     }
 
     private void replaceObjectInFile(T object) throws IOException {
         List<T> objects = findAll();
-        List<T> updatedObjects = objects.stream()
-                .map(c -> getId(c).equals(getId(object)) ? object : c)
-                .collect(Collectors.toList());
+        List<T> updatedObjects = objects.stream().map(c -> getId(c).equals(getId(object)) ? object : c).collect(Collectors.toList());
         rewriteFile(updatedObjects);
     }
+
     protected abstract T stringToObject(String str);
+
     protected abstract String objectToString(T object);
+
     protected abstract ID getId(T entity);
+
     protected abstract String getName(T entity);
 }

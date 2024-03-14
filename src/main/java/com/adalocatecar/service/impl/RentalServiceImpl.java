@@ -3,108 +3,77 @@ package com.adalocatecar.service.impl;
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.dto.RentalDTO;
 import com.adalocatecar.dto.VehicleDTO;
+import com.adalocatecar.model.Client;
+import com.adalocatecar.model.Rental;
+import com.adalocatecar.model.Vehicle;
+import com.adalocatecar.utility.Converter;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.service.RentalService;
 import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.utility.ValidationRentals;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class RentalServiceImpl implements RentalService {
 
-  private final ClientService clientService;
-  private final VehicleService vehicleService;
+    private final ClientService clientService;
+    private final VehicleService vehicleService;
 
 
-  public RentalServiceImpl(ClientService clientService, VehicleService vehicleService) {
-    this.clientService = clientService;
-    this.vehicleService = vehicleService;
-  }
-
-  @Override
-  public String rentVehicle(
-          String licensePlate,
-          String clientId,
-          LocalDateTime startDate,
-          LocalDateTime expectedEndDate,
-          String agencyLocal) {
-
-    VehicleDTO vehicle = vehicleService.findVehicleByLicensePlate(licensePlate);
-    System.out.println(vehicle.isAvailable());//aaaaaaaaaaaaaaaaa
-
-    try {
-      ValidationRentals.validateVehicleAvailability(vehicle);
-    } catch (IllegalArgumentException ex) {
-      return ex.getMessage();
+    public RentalServiceImpl(ClientService clientService, VehicleService vehicleService) {
+        this.clientService = clientService;
+        this.vehicleService = vehicleService;
     }
 
-    ClientDTO client = clientService.findClientByDocument(clientId);
-
-    RentalDTO rentalDTO = new RentalDTO(true, client, agencyLocal, startDate, expectedEndDate);
-    vehicle.setRentalContract(rentalDTO);
-
-    System.out.println(vehicle.isAvailable());//aaaaaaaaaaaaaaaaa
-
-    client.addRentedVehicle(vehicle);
-
-    try {
-      vehicleService.updateVehicle(vehicle);
-      clientService.updateClient(client);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return "Vehicle rented successfully";
-
-  }
-
-  @Override
-  public String returnVehicle(String licensePlate, LocalDateTime actualEndDate) {
-    /*try {
-      VehicleDTO vehicle = vehicleService.findVehicleByLicensePlate(licensePlate);
-        if (vehicle == null) {
-            return "Vehicle not found";
+    public String rentVehicle(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate, String agencyLocal) {
+        VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
+        try {
+            ValidationRentals.validateVehicleAvailability(vehicleDTO);
+        } catch (IllegalArgumentException ex) {
+            return ex.getMessage();
         }
 
-      ValidationRentals.validateRentalDuration(vehicle.getRentalContract().getStartDate(), actualEndDate);
-      ValidationRentals.validateReturnDate(vehicle.getRentalContract().getStartDate(), actualEndDate);
+        ClientDTO clientDTO = clientService.findClientByDocument(clientId);
 
-       vehicle.getRentalContract().setActualEndDate(actualEndDate);
+        RentalDTO rentalDTO = new RentalDTO(true, clientDTO, agencyLocal, startDate, expectedEndDate, null);
+        vehicleDTO.setRentalContract(rentalDTO);
+        vehicleDTO.setAvailable(false);
 
-      return "Vehicle returned successfully";
-    } catch (IllegalArgumentException ex) {
-        return ex.getMessage();
-    }*/
-    return "";
-  }
-/*
-    @Override
-    public List<RentalDTO> findAllRentals() {
-        return new ArrayList<>(findAllRentals());
+        vehicleDTO.setRentalContract(rentalDTO);
+
+        try {
+            vehicleService.updateVehicle(vehicleDTO);
+            clientDTO.getRentedVehicles().add(vehicleDTO);
+            clientService.updateClient(clientDTO);
+            return "Vehicle rented successfully";
+
+        } catch (IOException e) {
+            return "Error while updating vehicle information: " + e.getMessage();
+        }
     }
 
     @Override
-    public RentalDTO findRentalByClientId(String clientId) {
-        return findRentalByClientId(clientId);
-    }
-    @Override
-    public Rental findRentalByLicensePlate(String licensePlate) {
-        return findRentalByLicensePlate(licensePlate);
-    }
+    public String returnVehicle(String licensePlate, LocalDateTime actualEndDate) {
+        VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
+        if (vehicleDTO == null || !vehicleDTO.isAvailable()) {
+            return "Vehicle not found or not currently rented";
+        }
+        RentalDTO rentalDTO = vehicleDTO.getRentalContract();
+        if (rentalDTO == null) {
+            return "Rental agreement not found.";
+        }
+        rentalDTO.setActualEndDate(actualEndDate);
+        vehicleDTO.setAvailable(true);
 
-
-
-    private RentalDTO convertToDTO(Rental rental) {
-        double totalCost = calculateRentalCost(rental);
-        return new RentalDTO(
-                rental.getRentedVehicles().getFirst().getLicensePlate(),
-                rental.getClientWhoRented().getId(),
-                rental.getStartDate(),
-                rental.getExpectedEndDate(),
-                rental.getActualEndDate(),
-                rental.getAgencyLocal(),
-                totalCost
-        );
+        try {
+            vehicleService.updateVehicle(vehicleDTO);
+            return "Vehicle returned successfully";
+        } catch (Exception e) {
+            return "Error while returning vehicle: " + e.getMessage();
+        }
     }
 
     private double calculateRentalCost(Rental rental) {
@@ -130,5 +99,5 @@ public class RentalServiceImpl implements RentalService {
         }
 
         return totalCost;
-    }*/
+    }
 }

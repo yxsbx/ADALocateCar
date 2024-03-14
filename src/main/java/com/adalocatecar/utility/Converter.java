@@ -17,9 +17,11 @@ public class Converter {
         return new Client(clientDTO.getId(), clientDTO.getName(), clientDTO.getType());
     }
 
-    public static Vehicle convertToEntity(VehicleDTO vehicleDTO){
-        Vehicle vehicle = new Vehicle(vehicleDTO.getLicensePlate(),vehicleDTO.getModel(),vehicleDTO.getType());
-        vehicle.setRentalContract(Converter.convertToEntity(vehicleDTO.getRentalContract()));
+    public static Vehicle convertToEntity(VehicleDTO vehicleDTO) {
+        Vehicle vehicle = new Vehicle(vehicleDTO.getLicensePlate(), vehicleDTO.getModel(), vehicleDTO.getType());
+        if (vehicleDTO.getRentalContract() != null) {
+            vehicle.setRentalContract(convertToEntity(vehicleDTO.getRentalContract()));
+        }
         return vehicle;
     }
 
@@ -27,34 +29,37 @@ public class Converter {
         return new ClientDTO(client.getId(), client.getName(), client.getClientType());
     }
 
-    public static VehicleDTO convertToDTO(Vehicle vehicle){
-        return new VehicleDTO(
-                vehicle.getLicensePlate(),
-                vehicle.getModel(),
-                vehicle.getType(),
-                convertToDTO(vehicle.getRentalContract())
-        );
+    public static VehicleDTO convertToDTO(Vehicle vehicle) {
+        RentalDTO rentalDTO = null;
+        if (vehicle.getRentalContract() != null) {
+            rentalDTO = convertToDTO(vehicle.getRentalContract());
+        }
+        return new VehicleDTO(vehicle.getLicensePlate(), vehicle.getModel(), vehicle.getType(), rentalDTO);
     }
 
-    public static RentalDTO convertToDTO(Rental rental){
-        return new RentalDTO(
-                rental.getRentalStatus(),
+    public static RentalDTO convertToDTO(Rental rental) {
+        if (rental == null) {
+            return null;
+        }
+        return new RentalDTO(rental.isRentalStatus(),
                 convertToDTO(rental.getClientWhoRented()),
                 rental.getAgencyLocal(),
                 rental.getStartDate(),
-                rental.getExpectedEndDate()
-        );
+                rental.getExpectedEndDate(),
+                rental.getActualEndDate());
     }
 
-    public static Rental convertToEntity (RentalDTO rentalDTO){
+    public static Rental convertToEntity(RentalDTO rentalDTO) {
         Rental rental = new Rental();
         rental.setRentalStatus(rentalDTO.getRentalStatus());
-        rental.setClientWhoRented(Converter.convertToEntity(rentalDTO.getClientWhoRented()));
+        rental.setClientWhoRented(convertToEntity(rentalDTO.getClientWhoRented()));
         rental.setAgencyLocal(rentalDTO.getAgencyLocal());
         rental.setStartDate(rentalDTO.getStartDate());
         rental.setExpectedEndDate(rentalDTO.getExpectedEndDate());
+        rental.setActualEndDate(rentalDTO.getActualEndDate());
         return rental;
     }
+
 
     public static List<VehicleDTO> convertToDTOList(List<Vehicle> all) {
         List<VehicleDTO> dtos = new ArrayList<>();

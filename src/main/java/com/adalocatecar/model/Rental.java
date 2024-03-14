@@ -1,6 +1,9 @@
 package com.adalocatecar.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SequencedCollection;
 
 public class Rental {
     private Boolean rentalStatus;
@@ -9,22 +12,27 @@ public class Rental {
     private LocalDateTime startDate;
     private LocalDateTime expectedEndDate;
     private LocalDateTime actualEndDate;
+    private List<Vehicle> rentedVehicles;
 
     public Rental() {
         this.rentalStatus = false;
+        this.rentedVehicles = new ArrayList<>();
     }
 
     public void rentThisCar(Client client,
                             String agencyLocal,
                             LocalDateTime startDate,
                             LocalDateTime expectedReturnDate) {
-        if(rentalStatus) throw new IllegalStateException("Rental has already been rented");
+        if(rentalStatus) {
+            throw new IllegalStateException("Rental has already been rented");
+        }
         this.rentalStatus = true;
         this.clientWhoRented = client;
         this.agencyLocal = agencyLocal;
         this.startDate = startDate;
         this.expectedEndDate = expectedReturnDate;
     }
+
     public Client getClientWhoRented() {
         return clientWhoRented;
     }
@@ -49,7 +57,7 @@ public class Rental {
         this.actualEndDate = actualEndDate;
     }
 
-    public void setRentalStatus(Boolean rentalStatus) {
+    public void setRentalStatus(boolean rentalStatus) {
         this.rentalStatus = rentalStatus;
     }
 
@@ -69,7 +77,11 @@ public class Rental {
         this.expectedEndDate = expectedEndDate;
     }
 
-    public boolean getRentalStatus() {
+    public boolean isRentalStatus() {
         return rentalStatus;
+    }
+
+    public List<Vehicle> getRentedVehicles() {
+        return rentedVehicles;
     }
 }

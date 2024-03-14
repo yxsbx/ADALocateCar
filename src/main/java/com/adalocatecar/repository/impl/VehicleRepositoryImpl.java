@@ -76,13 +76,13 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
         String type = parts[2];
         boolean available = Boolean.parseBoolean(parts[3]);
         Vehicle vehicle = new Vehicle(licensePlate, model, type);
-        vehicle.getRentalContract().setRentalStatus(available);
+        vehicle.setAvailable(available);
         return vehicle;
     }
 
     @Override
     protected String objectToString(Vehicle object) {
-        return String.join(",", object.getLicensePlate(), object.getModel(), object.getType(),String.valueOf(object.isAvailable()));
+        return String.join(",", object.getLicensePlate(), object.getModel(), object.getType(), String.valueOf(object.isAvailable()));
     }
 
     @Override
@@ -91,6 +91,9 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     }
 
     @Override
-    protected String getName(Vehicle entity){ return entity.getModel();};
-}
+    protected String getName(Vehicle entity) {
+        return entity.getModel();
+    }
 
+    ;
+}

@@ -3,14 +3,15 @@ package com.adalocatecar.repository.impl;
 import com.adalocatecar.model.Client;
 import com.adalocatecar.repository.ClientRepository;
 import com.adalocatecar.utility.FileHandler;
+
 import java.io.*;
 import java.util.*;
 
-public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String> implements ClientRepository {
+public class ClientRepositoryImpl extends GenericsRepositoryImpl<Client, String> implements ClientRepository {
     private static final File filePath = new File("src/data/clients.txt");
 
     public ClientRepositoryImpl() {
-     super(filePath);
+        super(filePath);
     }
 
     public boolean hasRentedCars(String id) {
@@ -45,5 +46,7 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl <Client, String
     }
 
     @Override
-    protected String getName(Client entity){ return  entity.getName();}
+    protected String getName(Client entity) {
+        return entity.getName();
+    }
 }

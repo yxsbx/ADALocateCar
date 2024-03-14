@@ -7,7 +7,6 @@ import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.utility.Converter;
 import com.adalocatecar.utility.ValidationVehicle;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,7 @@ public class VehicleServiceImpl implements VehicleService {
     public String updateVehicle(VehicleDTO vehicleDTO) {
         Optional<Vehicle> existingVehicle = vehicleRepository.findByLicensePlate(vehicleDTO.getLicensePlate());
         if (existingVehicle.isEmpty()) {
-            throw new RuntimeException( "Vehicle not found.");
+            throw new RuntimeException("Vehicle not found.");
         }
 
         Vehicle updatedVehicle = Converter.convertToEntity(vehicleDTO);
@@ -86,7 +85,7 @@ public class VehicleServiceImpl implements VehicleService {
         return "";
     }
 
-    private List<String> findAllLicensePlates()  {
+    private List<String> findAllLicensePlates() {
         List<Vehicle> vehicles = vehicleRepository.findAll();
         List<String> licensePlates = new ArrayList<>();
         for (Vehicle vehicle : vehicles) {
@@ -111,7 +110,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public VehicleDTO findVehicleByLicensePlate(String licensePlate) {
-    Optional<Vehicle> vehicle = vehicleRepository.findByLicensePlate(licensePlate);
+        Optional<Vehicle> vehicle = vehicleRepository.findByLicensePlate(licensePlate);
         if (vehicle.isEmpty()) {
             throw new RuntimeException("Vehicle not found.");
         }
@@ -135,5 +134,22 @@ public class VehicleServiceImpl implements VehicleService {
     @Override
     public LocalDateTime findRentalStartDateByLicensePlate(String licensePlate) {
         return null;
+    }
+
+    @Override
+    public void removeRentalContract(String licensePlate) {
+        Optional<Vehicle> vehicleOptional = vehicleRepository.findByLicensePlate(licensePlate);
+        if (vehicleOptional.isPresent()) {
+            Vehicle vehicle = vehicleOptional.get();
+            vehicle.setRentalContract(null);
+            vehicle.setAvailable(true);
+            try {
+                vehicleRepository.update(vehicle);
+            } catch (Exception e) {
+                throw new RuntimeException("Error updating vehicle availability: " + e.getMessage());
+            }
+        } else {
+            throw new RuntimeException("Vehicle not found.");
+        }
     }
 }
