@@ -46,14 +46,22 @@ public class RentalServiceImpl implements RentalService {
 
         } catch (IOException e) {
             return "Error while updating vehicle information: " + e.getMessage();
+        }catch(RuntimeException e) {
+            return "Error while updating client information:" + e.getMessage();
         }
     }
 
     @Override
     public String returnVehicle(String licensePlate, LocalDateTime actualEndDate) {
-        VehicleDTO vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
-        if (vehicleDTO == null || !vehicleDTO.isAvailable()) {
-            return "Vehicle not found or not currently rented";
+        VehicleDTO vehicleDTO;
+        try{
+            vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
+        } catch (RuntimeException e) {
+            return e.getMessage();
+        }
+
+        if (!vehicleDTO.isAvailable()) {
+            return "Vehicle not currently rented";
         }
         RentalDTO rentalDTO = vehicleDTO.getRentalContract();
         if (rentalDTO == null) {
