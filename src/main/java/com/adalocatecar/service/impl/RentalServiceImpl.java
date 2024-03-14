@@ -8,7 +8,8 @@ import com.adalocatecar.service.ClientService;
 import com.adalocatecar.service.RentalService;
 import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.utility.ValidationRentals;
-
+import com.adalocatecar.utility.Converter;
+import com.adalocatecar.model.Client;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -59,7 +60,7 @@ public class RentalServiceImpl implements RentalService {
             return e.getMessage();
         }
 
-        if (!vehicleDTO.isAvailable()) {
+        if (vehicleDTO.isAvailable()) {
             return "Vehicle not currently rented";
         }
         RentalDTO rentalDTO = vehicleDTO.getRentalContract();
@@ -67,18 +68,25 @@ public class RentalServiceImpl implements RentalService {
             return "Rental agreement not found.";
         }
         rentalDTO.setExpectedEndDate(actualEndDate);
-
+        Vehicle vehicleReturned = Converter.convertToEntity(vehicleDTO);
+        double cost = calculateRentalCost(vehicleReturned, actualEndDate);
         try {
+            ClientDTO client = clientService.findClientByDocument(vehicleDTO.getRentalContract().getIdClientWhoRented());
+            vehicleDTO.setRentalContract(new RentalDTO(false, "", "", null, null));
             vehicleService.updateVehicle(vehicleDTO);
-            return "Vehicle returned successfully";
+            client.getRentedVehiclesPlates().remove(vehicleDTO.getLicensePlate());
+            clientService.updateClient(client);
+            return "Vehicle returned successfully, cost: $"+ cost;
         } catch (Exception e) {
             return "Error while returning vehicle: " + e.getMessage();
         }
     }
 
     private double calculateRentalCost(Vehicle vehicle, LocalDateTime ActualEndDate) {
-        Duration duration = Duration.between(vehicle.getRentalContract().getStartDate(),
-                vehicle.getRentalContract().getActualEndDate());
+        Duration duration = Duration.between(
+                vehicle.getRentalContract().getStartDate(),
+                ActualEndDate
+        );
 
         long days = duration.toDays() + (duration.toHours() % 24 > 0 ? 1 : 0);
 
@@ -95,9 +103,9 @@ public class RentalServiceImpl implements RentalService {
         if(days >= 3) {
             ClientDTO clientWhoRented = clientService.findClientByDocument(vehicle.getRentalContract().getIdClientWhoRented());
             String clientType = clientWhoRented.getClientType();
-            if ("Individual".equals(clientType) && days >= 5) {
+            if ("INDIVIDUAL".equals(clientType) && days >= 5) {
                 totalCost *= (1 - ValidationRentals.DISCOUNT_FOR_INDIVIDUAL);
-            } else if ("Corporate".equals(clientType)) {
+            } else if ("CORPORATE".equals(clientType)) {
                 totalCost *= (1 - ValidationRentals.DISCOUNT_FOR_CORPORATE);
             }
         }
