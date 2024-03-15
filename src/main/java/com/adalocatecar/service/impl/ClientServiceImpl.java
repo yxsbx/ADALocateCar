@@ -122,6 +122,6 @@ public class ClientServiceImpl implements ClientService {
     }
 
     private String determineClientType(String id) {
-        return (id.length() == 11) ? "PERSONAL" : (id.length() == 14) ? "CORPORATE" : "INVALID";
+        return (id.length() == 11) ? "INDIVIDUAL" : (id.length() == 14) ? "CORPORATE" : "INVALID";
     }
 }

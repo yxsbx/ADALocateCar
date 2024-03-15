@@ -94,8 +94,8 @@ public class RentalController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
 
-            rentalService.returnVehicle(licensePlate, endDate);
-            System.out.println("Vehicle returned successfully.");
+            System.out.println(rentalService.returnVehicle(licensePlate, endDate));
+            //System.out.println("Vehicle returned successfully.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
