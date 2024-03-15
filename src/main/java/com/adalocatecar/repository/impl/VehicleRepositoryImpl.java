@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -61,7 +60,7 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     @Override
     protected Vehicle stringToObject(String str) {
         String[] parts = str.split(",");
-        if (parts.length != 8) {
+        if (parts.length != 7) {
             throw new IllegalArgumentException("Invalid string format for Vehicle object");
         }
         String licensePlate = parts[0];
@@ -79,9 +78,6 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
             vehicle.getRentalContract().setStartDate(
                     LocalDateTime.parse(parts[6])
             );
-            vehicle.getRentalContract().setExpectedEndDate(
-                    LocalDateTime.parse(parts[7])
-            );
         }
         return vehicle;
     }
@@ -95,8 +91,7 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
                 String.valueOf(object.getRentalContract().isRentalStatus()),
                 object.getRentalContract().getIdClientWhoRented(),
                 object.getRentalContract().getAgencyLocal(),
-                String.valueOf(object.getRentalContract().getStartDate()),
-                String.valueOf(object.getRentalContract().getExpectedEndDate())
+                String.valueOf(object.getRentalContract().getStartDate())
         );
     }
 

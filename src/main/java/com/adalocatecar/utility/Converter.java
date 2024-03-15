@@ -28,7 +28,9 @@ public class Converter {
     }
 
     public static ClientDTO convertToDTO(Client client) {
-        return new ClientDTO(client.getId(), client.getName(), client.getClientType());
+        ClientDTO clientDTO = new ClientDTO(client.getId(), client.getName(), client.getClientType());
+        client.getRentedVehiclesPlates().forEach(clientDTO::addRentedVehicle);
+        return clientDTO;
     }
 
     public static VehicleDTO convertToDTO(Vehicle vehicle) {
@@ -46,8 +48,8 @@ public class Converter {
         return new RentalDTO(rental.isRentalStatus(),
                 rental.getIdClientWhoRented(),
                 rental.getAgencyLocal(),
-                rental.getStartDate(),
-                rental.getExpectedEndDate());
+                rental.getStartDate()
+        );
     }
 
     public static Rental convertToEntity(RentalDTO rentalDTO) {
@@ -56,7 +58,6 @@ public class Converter {
         rental.setIdClientWhoRented(rentalDTO.getIdClientWhoRented());
         rental.setAgencyLocal(rentalDTO.getAgencyLocal());
         rental.setStartDate(rentalDTO.getStartDate());
-        rental.setExpectedEndDate(rentalDTO.getExpectedEndDate());
         return rental;
     }
 

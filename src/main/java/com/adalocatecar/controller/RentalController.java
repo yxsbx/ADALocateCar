@@ -51,7 +51,7 @@ public class RentalController {
 
     private void rentVehicle(Scanner scanner) {
         String licensePlate, clientId, agencyLocal;
-        LocalDateTime startDate, endDate;
+        LocalDateTime startDate;
 
         do {
             System.out.println("Enter the license plate of the vehicle to rent:");
@@ -74,13 +74,7 @@ public class RentalController {
             startDate = ValidationInput.isValidDate(startDateStr);
         } while (startDate == null);
 
-        do {
-            System.out.println("Enter expected end date (yyyy-MM-dd HH:mm):");
-            String endDateStr = scanner.nextLine();
-            endDate = ValidationInput.isValiEndDate(startDate, endDateStr);
-        } while (endDate == null);
-
-        String response = rentalService.rentVehicle(licensePlate, clientId, startDate, endDate, agencyLocal);
+        String response = rentalService.rentVehicle(licensePlate, clientId, startDate, agencyLocal);
         System.out.println(response);
     }
 

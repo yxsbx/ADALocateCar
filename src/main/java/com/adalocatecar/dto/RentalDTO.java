@@ -7,18 +7,15 @@ public class RentalDTO {
     private String idClientWhoRented;
     private String agencyLocal;
     private LocalDateTime startDate;
-    private LocalDateTime expectedEndDate;
 
     public RentalDTO(Boolean rentalStatus,
                      String idClientWhoRented,
                      String agencyLocal,
-                     LocalDateTime startDate,
-                     LocalDateTime expectedEndDate) {
+                     LocalDateTime startDate) {
         this.rentalStatus = rentalStatus;
         this.idClientWhoRented = idClientWhoRented;
         this.agencyLocal = agencyLocal;
         this.startDate = startDate;
-        this.expectedEndDate = expectedEndDate;
     }
 
     public Boolean getRentalStatus() {
@@ -51,13 +48,5 @@ public class RentalDTO {
 
     public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
-    }
-
-    public LocalDateTime getExpectedEndDate() {
-        return expectedEndDate;
-    }
-
-    public void setExpectedEndDate(LocalDateTime expectedEndDate) {
-        this.expectedEndDate = expectedEndDate;
     }
 }

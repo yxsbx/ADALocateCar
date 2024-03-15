@@ -13,7 +13,6 @@ public class VehicleDTO {
         this.model = model;
         this.type = type;
         this.rentalContract = rentalContract;
-       // this.available = true; //private boolean available; Comentado para explicação do Daniel
     }
 
     public String getLicensePlate() {

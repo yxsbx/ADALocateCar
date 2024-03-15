@@ -25,7 +25,7 @@ public class RentalServiceImpl implements RentalService {
         this.vehicleService = vehicleService;
     }
 
-    public String rentVehicle(String licensePlate, String clientId, LocalDateTime startDate, LocalDateTime expectedEndDate, String agencyLocal) {
+    public String rentVehicle(String licensePlate, String clientId, LocalDateTime startDate, String agencyLocal) {
         VehicleDTO vehicleDTO;
         ClientDTO clientDTO;
         try {
@@ -35,7 +35,7 @@ public class RentalServiceImpl implements RentalService {
         } catch (RuntimeException e) {
             return e.getMessage();
         }
-        RentalDTO rentalDTO = new RentalDTO(true, clientDTO.getId(), agencyLocal, startDate, expectedEndDate);
+        RentalDTO rentalDTO = new RentalDTO(true, clientDTO.getId(), agencyLocal, startDate);
         vehicleDTO.setRentalContract(rentalDTO);
         clientDTO.getRentedVehiclesPlates().add(vehicleDTO.getLicensePlate());
 
@@ -67,12 +67,11 @@ public class RentalServiceImpl implements RentalService {
         if (rentalDTO == null) {
             return "Rental agreement not found.";
         }
-        rentalDTO.setExpectedEndDate(actualEndDate);
         Vehicle vehicleReturned = Converter.convertToEntity(vehicleDTO);
         double cost = calculateRentalCost(vehicleReturned, actualEndDate);
         try {
             ClientDTO client = clientService.findClientByDocument(vehicleDTO.getRentalContract().getIdClientWhoRented());
-            vehicleDTO.setRentalContract(new RentalDTO(false, "", "", null, null));
+            vehicleDTO.setRentalContract(new RentalDTO(false, "", "", null));
             vehicleService.updateVehicle(vehicleDTO);
             client.getRentedVehiclesPlates().remove(vehicleDTO.getLicensePlate());
             clientService.updateClient(client);
