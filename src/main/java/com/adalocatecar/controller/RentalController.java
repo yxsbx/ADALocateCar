@@ -79,17 +79,23 @@ public class RentalController {
     }
 
     private void returnVehicle(Scanner scanner) {
+        String licensePlate;
+        LocalDateTime endDate;
+        do {
         System.out.println("Enter the license plate of the vehicle to return:");
-        String licensePlate = scanner.nextLine();
+        licensePlate = scanner.nextLine();
+        } while (!ValidationInput.isValidLicensePlate(licensePlate));
+
+        do {
+
         System.out.println("Enter actual end date (yyyy-MM-dd HH:mm):");
         String endDateStr = scanner.nextLine();
+        endDate = ValidationInput.isValidDate(endDateStr);
+        } while (endDate == null);
+
 
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-            LocalDateTime endDate = LocalDateTime.parse(endDateStr, formatter);
-
             System.out.println(rentalService.returnVehicle(licensePlate, endDate));
-            //System.out.println("Vehicle returned successfully.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }

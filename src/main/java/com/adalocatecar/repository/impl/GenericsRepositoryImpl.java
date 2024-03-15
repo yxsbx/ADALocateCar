@@ -7,6 +7,7 @@ import jdk.dynalink.beans.StaticClass;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,24 +73,29 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
 
     @Override
     public Optional<T> findById(ID id) {
-        return findAll().stream().filter(obj -> getId(obj).equals(id)).findFirst();
+        return findAll().stream()
+                .filter(obj -> getId(obj).equals(id))
+                .findFirst();
     }
 
     @Override
     public List<T> findAll() {
-        List<T> objects = new ArrayList<>();
-        List<String> lines = FileHandler.readFromFile(filePath.getAbsolutePath());
-        for (String line : lines) {
-            objects.add(stringToObject(line));
+        try {
+            return Files.lines(filePath.toPath())
+                    .map(this::stringToObject)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            return Collections.emptyList();
         }
-        return objects;
     }
-
     @Override
-    public List<T> findByName(String name) {
-        return findAll().stream().filter(a -> getName(a).equalsIgnoreCase(name)).collect(Collectors.toList());
+    public Optional<List<T>> findByName(String name) {
+        List<T> allObjects = findAll();
+        List<T> filteredObjects = allObjects.stream()
+                .filter(a -> getName(a).toLowerCase().contains(name.toLowerCase()))
+                .collect(Collectors.toList());
+        return Optional.of(filteredObjects);
     }
-
     private void rewriteFile(List<T> objects) throws IOException {
         List<String> lines = new ArrayList<>();
         for (T object : objects) {

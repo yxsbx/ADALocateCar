@@ -20,7 +20,6 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
 
     private static final File filePath = new File("src/data/vehicles.txt");
     private static final Logger logger = Logger.getLogger(VehicleRepositoryImpl.class.getName());
-    private final GenericsRepository clientRepository = new ClientRepositoryImpl();
 
     public VehicleRepositoryImpl() {
         super(filePath);

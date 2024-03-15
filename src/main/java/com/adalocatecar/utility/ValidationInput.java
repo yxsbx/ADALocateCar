@@ -10,7 +10,7 @@ public class ValidationInput {
         if (Pattern.matches("\\d{11}|\\d{14}", id)) {
             return true;
         }
-        System.out.println("Invalid client id format.");
+        System.err.println("Invalid client id format.");
         return false;
 
     }
@@ -19,7 +19,7 @@ public class ValidationInput {
         if (Pattern.matches("[A-Z]{3}\\d{1}[A-Z]{1}\\d{2}", licensePlate)) {
             return true;
         }
-        System.out.println("Invalid license plate format.");
+        System.err.println("Invalid license plate format.");
         return false;
     }
 
@@ -27,7 +27,7 @@ public class ValidationInput {
         if (Pattern.matches("[a-zA-Z\\s]+", agencyLocation)) {
             return true;
         }
-        System.out.println("Invalid location format.");
+        System.err.println("Invalid location format.");
         return false;
     }
 
@@ -35,24 +35,27 @@ public class ValidationInput {
         try {
             return LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         } catch (DateTimeParseException e) {
-            System.out.println("Invalid date format. Please enter dates in the format dd-MM-yyyyTHH:mm.");
+            System.err.println("Invalid date format. Please enter dates in the format dd-MM-yyyyTHH:mm.");
             return null;
         }
     }
 
-    public static LocalDateTime isValiEndDate(LocalDateTime startDate, String Enddate) {
-        try {
-            LocalDateTime endDate = LocalDateTime.parse(Enddate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-            if (startDate.isAfter(endDate)) {
-                System.out.println("Start date cannot be after end date.");
-                return null;
-            }
-            return endDate;
-        } catch (DateTimeParseException e) {
-            System.out.println("Invalid date format. Please enter dates in the format dd-MM-yyyyTHH:mm.");
+    public static boolean isValidClientNameFormat(String name) {
+        if (name.length() >= 3 && Pattern.matches("[a-zA-Z0-9\\s]+", name)) {
+            return true;
+        }
+        System.err.println("Invalid client name format.");
+        return false;
+    }
+
+    public static String validateQuerySearchType(String query) {
+        if (Pattern.matches("\\d{11}|\\d{14}", query)) {
+            return "document";
+        } else if (Pattern.matches("[a-zA-Z0-9\\s]+", query)) {
+            return "name";
+        } else {
+            System.err.println("Invalid query format.");
             return null;
         }
     }
-
-
 }

@@ -3,11 +3,12 @@ package com.adalocatecar.controller;
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.utility.ValidationClient;
+import com.adalocatecar.utility.ValidationInput;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class ClientController {
     private final ClientService clientService;
@@ -64,26 +65,18 @@ public class ClientController {
     }
 
     public void createClient(Scanner scanner) {
-        System.out.println("Enter client name:");
-        String name = scanner.nextLine().trim();
+        String name, clientId;
+        do {
+            System.out.println("Enter client name:");
+            name = scanner.nextLine().trim();
+        } while (ValidationInput.isValidClientNameFormat(name));
 
-        System.out.println("Enter client document:");
-        String id = scanner.nextLine().trim();
+        do {
+            System.out.println("Enter client document:");
+            clientId = scanner.nextLine().trim();
+        } while (ValidationInput.validateClientIdFormat(clientId));
 
-        String validationMessage = ValidationClient.validateClientNameFormat(name);
-        if (validationMessage != null) {
-            System.err.println("Error: " + validationMessage);
-            return;
-        }
-
-        validationMessage = ValidationClient.validateClientIdFormat(id);
-
-        if (validationMessage != null) {
-            System.err.println("Error: " + validationMessage);
-            return;
-        }
-
-        ClientDTO newClient = new ClientDTO( id, name,null);
+        ClientDTO newClient = new ClientDTO(clientId, name, null);
         System.out.println(clientService.createClient(newClient));
 
     }
@@ -101,33 +94,31 @@ public class ClientController {
     }
 
     private void readClient(Scanner scanner) {
-        System.out.println("Enter client document or name to search:");
-        String query = scanner.nextLine().trim();
+        String query, searchType;
 
-        if (ValidationClient.validateClientIdFormat(query) == null) {
-            Optional<ClientDTO> client = Optional.ofNullable(clientService.findClientByDocument(query));
-            if (client.isPresent()) {
+        do {
+            System.out.println("Enter client document or name to search:");
+            query = scanner.nextLine().trim();
+            searchType = ValidationInput.validateQuerySearchType(query);
+        } while (searchType == null);
+
+        try {
+            if (searchType.equals("document")) {
+                ClientDTO client = clientService.findClientByDocument(query);
                 System.out.println("Client found with the provided document:");
-                System.out.println(client.get());
+                System.out.println(client);
             } else {
-                System.out.println(ValidationClient.clientNotFound());
-            }
-        } else {
-            try {
                 List<ClientDTO> clients = clientService.findClientsByName(query);
-                if (!clients.isEmpty()) {
-                    System.out.println("Clients found with the provided name:");
-                    for (ClientDTO client : clients) {
-                        System.out.println(client);
-                    }
-                } else {
-                    System.out.println(ValidationClient.clientNotFound());
+                System.out.println("Clients found with the provided name:");
+                for (ClientDTO client : clients) {
+                    System.out.println(client);
                 }
-            } catch (IOException e) {
-                System.out.println("Error occurred while searching for clients by name: " + e.getMessage());
             }
+        } catch (IOException | RuntimeException e) {
+            System.out.println(e.getMessage() + query);
         }
     }
+
 
     public void updateClient(Scanner scanner) {
         System.out.println("Enter client name:");

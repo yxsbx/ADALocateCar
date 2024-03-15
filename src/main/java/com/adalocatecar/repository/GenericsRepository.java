@@ -13,7 +13,7 @@ public interface GenericsRepository<T, ID> {
 
     Optional<T> findById(ID id);
 
-    List<T> findByName(String name);
+    Optional<List<T>> findByName(String name);
 
-    List<T> findAll();
+   List<T> findAll();
 }

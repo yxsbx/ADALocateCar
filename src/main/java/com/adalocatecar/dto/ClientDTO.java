@@ -50,11 +50,8 @@ public class ClientDTO {
 
     @Override
     public String toString() {
-        return "ClientDTO{" +
-               "id='" + id + '\'' +
-               ", name='" + name + '\'' +
-               ", type='" + clientType + '\'' +
-               ", rentedVehicles=" + rentedVehiclesPlates +
-               '}';
+        return "Name=" + name +
+               "\nClient type = " + clientType +
+               "\nRented Vehicles Plates = " + String.join(",", rentedVehiclesPlates) + "\n";
     }
 }

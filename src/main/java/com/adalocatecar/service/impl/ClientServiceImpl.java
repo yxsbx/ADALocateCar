@@ -2,9 +2,7 @@ package com.adalocatecar.service.impl;
 
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.model.Client;
-import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.ClientRepository;
-import com.adalocatecar.repository.impl.ClientRepositoryImpl;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.utility.Converter;
 import com.adalocatecar.utility.ValidationClient;
@@ -13,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ClientServiceImpl implements ClientService {
     private final ClientRepository clientRepository;
@@ -82,12 +81,14 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public List<ClientDTO> findClientsByName(String name) {
-        List<Client> clients = clientRepository.findByName(name);
-        List<ClientDTO> clientDTOs = new ArrayList<>();
-        for (Client client : clients) {
-            clientDTOs.add(Converter.convertToDTO(client));
+        List<Client> clients = clientRepository.findByName(name)
+                .orElseThrow(() -> new RuntimeException(ValidationClient.ERROR_FINDING_CLIENTS_BY_NAME));
+        if (clients.isEmpty()) {
+            throw new RuntimeException(ValidationClient.ERROR_FINDING_CLIENTS_BY_NAME);
         }
-        return clientDTOs;
+        return clients.stream()
+                .map(Converter::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     private String[] getAllClientIdsFromRepository() throws IOException {
