@@ -16,9 +16,9 @@ public class Client {
     /**
      * Constructs a Client object with the specified parameters.
      *
-     * @param id    The ID of the client.
-     * @param name  The name of the client.
-     * @param type  The type of the client (e.g., individual, corporate).
+     * @param id   The ID of the client.
+     * @param name The name of the client.
+     * @param type The type of the client (e.g., individual, corporate).
      */
 
     public Client(String id, String name, String type) {

@@ -17,6 +17,7 @@ public class ClientController {
 
     /**
      * Constructs a ClientController with a given ClientService.
+     *
      * @param clientService The service that will be used to manage client data.
      */
 
@@ -26,6 +27,7 @@ public class ClientController {
 
     /**
      * Displays the client management menu and processes user input to perform actions.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -78,6 +80,7 @@ public class ClientController {
 
     /**
      * Creates a new client with details provided by the user.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -121,6 +124,7 @@ public class ClientController {
 
     /**
      * Updates an existing client with details provided by the user.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -155,6 +159,7 @@ public class ClientController {
 
     /**
      * Deletes a client based on the document ID provided by the user.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -177,6 +182,7 @@ public class ClientController {
 
     /**
      * Searches for clients based on a query provided by the user.
+     *
      * @param scanner The scanner to read user input.
      */
 

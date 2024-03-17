@@ -2,7 +2,7 @@ package com.adalocatecar.dto;
 
 
 public class VehicleDTO {
-    private String licensePlate;
+    private final String licensePlate;
     private String model;
     private String type;
     private RentalDTO rentalContract;
@@ -112,8 +112,8 @@ public class VehicleDTO {
     @Override
     public String toString() {
         return "License Plate: " + licensePlate +
-                ", Model: " + model +
-                ", Type: " + type +
-                ", Available: " + isAvailable();
+               ", Model: " + model +
+               ", Type: " + type +
+               ", Available: " + isAvailable();
     }
 }

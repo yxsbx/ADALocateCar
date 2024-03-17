@@ -2,7 +2,6 @@ package com.adalocatecar.service.impl;
 
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.model.Client;
-import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.ClientRepository;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.utility.Converter;
@@ -132,7 +131,7 @@ public class ClientServiceImpl implements ClientService {
     /**
      * Saves or updates a client based on the operation type.
      *
-     * @param client       The client object to be saved or updated.
+     * @param client        The client object to be saved or updated.
      * @param operationType The type of operation to perform (CREATE or UPDATE).
      * @throws RuntimeException If the client ID or name is invalid, or if an operation type other than CREATE or UPDATE is provided.
      */

@@ -15,6 +15,7 @@ public class RentalController {
 
     /**
      * Constructor for RentalController.
+     *
      * @param rentalService The service responsible for rental operations.
      */
 
@@ -24,6 +25,7 @@ public class RentalController {
 
     /**
      * Manages the rental operations menu and user input.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -62,6 +64,7 @@ public class RentalController {
 
     /**
      * Handles the process of renting a vehicle.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -96,6 +99,7 @@ public class RentalController {
 
     /**
      * Handles the process of returning a rented vehicle.
+     *
      * @param scanner The scanner to read user input.
      */
 

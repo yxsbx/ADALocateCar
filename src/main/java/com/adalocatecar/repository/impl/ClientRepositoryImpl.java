@@ -45,7 +45,7 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl<Client, String>
     @Override
     protected Client stringToObject(String str) {
         String[] parts = str.split(",");
-        if (parts.length < 3) {
+        if (parts.length < 3 || parts[0].isEmpty()) {
             throw new IllegalArgumentException("Invalid input string: " + str);
         }
 

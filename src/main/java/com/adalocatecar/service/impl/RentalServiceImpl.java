@@ -3,7 +3,6 @@ package com.adalocatecar.service.impl;
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.dto.RentalDTO;
 import com.adalocatecar.dto.VehicleDTO;
-import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.service.RentalService;
 import com.adalocatecar.service.VehicleService;
@@ -65,7 +64,7 @@ public class RentalServiceImpl implements RentalService {
             vehicleService.updateVehicle(vehicleDTO);
 
             ClientDTO client = clientService.searchClientById(clientId);
-            client.addRentedVehicle(licensePlate);
+            client.addRentedVehicle(vehicleDTO.getLicensePlate());
             clientService.updateClient(client);
 
             return ValidationInput.SUCCESS_RENTED;
@@ -96,11 +95,11 @@ public class RentalServiceImpl implements RentalService {
             }
 
             ClientDTO client = clientService.searchClientById(vehicleDTO.getRentalContract().idClientWhoRented());
-            client.getRentedVehiclesPlates().remove(licensePlate);
+            client.getRentedVehiclesPlates().remove(vehicleDTO.getLicensePlate());
             clientService.updateClient(client);
 
             double cost = calculateRentalCost(vehicleDTO, actualEndDate);
-            vehicleDTO.setRentalContract(new RentalDTO(false,"" , "", null));
+            vehicleDTO.setRentalContract(new RentalDTO(false, "", "", null));
             vehicleService.updateVehicle(vehicleDTO);
 
             return String.format("Vehicle returned successfully, total cost: $%.2f", cost);
@@ -112,8 +111,8 @@ public class RentalServiceImpl implements RentalService {
     /**
      * Calculates the rental cost based on the vehicle type, rental duration, and client type.
      *
-     * @param vehicle         The vehicle DTO for which the cost is calculated.
-     * @param actualEndDate   The actual end date of the rental period.
+     * @param vehicle       The vehicle DTO for which the cost is calculated.
+     * @param actualEndDate The actual end date of the rental period.
      * @return The total rental cost after applying any applicable discounts.
      */
 
@@ -122,7 +121,10 @@ public class RentalServiceImpl implements RentalService {
         long daysRented = duration.toDays() + (duration.toHours() % 24 > 0 ? 1 : 0);
 
         double totalCost = getBaseCost(vehicle.getType()) * daysRented;
-        totalCost = applyDiscountIfEligible(totalCost, vehicle.getRentalContract().idClientWhoRented(), daysRented);
+
+        if (daysRented > 3) {
+            totalCost = applyDiscountIfEligible(totalCost, vehicle.getRentalContract().idClientWhoRented(), daysRented);
+        }
 
         return totalCost;
     }
@@ -135,37 +137,32 @@ public class RentalServiceImpl implements RentalService {
      */
 
     private double getBaseCost(String type) {
-        switch (type) {
-            case "SMALL":
-                return ValidationInput.BASE_DAILY_RATE_SMALL;
-            case "MEDIUM":
-                return ValidationInput.BASE_DAILY_RATE_MEDIUM;
-            case "SUV":
-                return ValidationInput.BASE_DAILY_RATE_SUV;
-            default:
-                return 0.0;
-        }
+        return switch (type.toUpperCase()) {
+            case "SMALL" -> ValidationInput.BASE_DAILY_RATE_SMALL;
+            case "MEDIUM" -> ValidationInput.BASE_DAILY_RATE_MEDIUM;
+            case "SUV" -> ValidationInput.BASE_DAILY_RATE_SUV;
+            default -> 0.0;
+        };
     }
 
     /**
      * Applies discounts to the total rental cost based on client type and rental duration.
      *
-     * @param totalCost   The total rental cost before applying discounts.
-     * @param clientId    The ID of the client who rented the vehicle.
-     * @param daysRented  The number of days the vehicle was rented for.
+     * @param totalCost  The total rental cost before applying discounts.
+     * @param clientId   The ID of the client who rented the vehicle.
+     * @param daysRented The number of days the vehicle was rented for.
      * @return The total rental cost after applying any applicable discounts.
      */
 
     private double applyDiscountIfEligible(double totalCost, String clientId, long daysRented) {
-        if (daysRented >= 3) {
-            ClientDTO clientWhoRented = clientService.searchClientById(clientId);
-            String clientType = clientWhoRented.getClientType();
-            if ("INDIVIDUAL".equals(clientType) && daysRented >= 5) {
-                totalCost *= (1 - ValidationInput.DISCOUNT_FOR_INDIVIDUAL);
-            } else if ("CORPORATE".equals(clientType)) {
-                totalCost *= (1 - ValidationInput.DISCOUNT_FOR_CORPORATE);
-            }
+        ClientDTO clientWhoRented = clientService.searchClientById(clientId);
+        String clientType = clientWhoRented.getClientType();
+        if ("INDIVIDUAL".equals(clientType) && daysRented >= 5) {
+            totalCost *= (1 - ValidationInput.DISCOUNT_FOR_INDIVIDUAL);
+        } else if ("CORPORATE".equals(clientType)) {
+            totalCost *= (1 - ValidationInput.DISCOUNT_FOR_CORPORATE);
         }
+
         return totalCost;
     }
 }

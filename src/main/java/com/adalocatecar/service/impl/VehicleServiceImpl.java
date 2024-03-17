@@ -7,6 +7,7 @@ import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.utility.Converter;
 import com.adalocatecar.utility.ValidationInput;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,7 +94,7 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public VehicleDTO searchVehicleById(String licensePlate) {
-        return vehicleRepository.searchById(licensePlate)
+        return vehicleRepository.searchById(licensePlate.toUpperCase())
                 .map(Converter::convertToDTO)
                 .orElseThrow(() -> new IllegalArgumentException(ValidationInput.VEHICLE_NOT_FOUND));
     }
@@ -107,9 +108,9 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Override
     public List<VehicleDTO> searchVehiclesByName(String model) {
-        return vehicleRepository.searchByName(model).get().stream()
+        return vehicleRepository.searchByName(model).map(vehicles -> vehicles.stream()
                 .map(Converter::convertToDTO)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList())).orElse(Collections.emptyList());
     }
 
     /**
@@ -127,7 +128,7 @@ public class VehicleServiceImpl implements VehicleService {
     /**
      * Saves a vehicle to the repository based on the operation type (create or update).
      *
-     * @param vehicle      The vehicle to be saved.
+     * @param vehicle       The vehicle to be saved.
      * @param operationType The type of operation (create or update) to be performed.
      */
 
@@ -137,11 +138,12 @@ public class VehicleServiceImpl implements VehicleService {
             if (!ValidationInput.isUniqueLicensePlate(vehicle.getLicensePlate(), existingLicensePlates)) {
                 throw new IllegalArgumentException(ValidationInput.DUPLICATED_LICENSE_PLATE);
             }
+
+            if (!ValidationInput.isValidLicensePlate(vehicle.getLicensePlate())) {
+                throw new IllegalArgumentException(ValidationInput.INVALID_LICENSE_PLATE_FORMAT);
+            }
         }
 
-        if (!ValidationInput.isValidLicensePlate(vehicle.getLicensePlate())) {
-            throw new IllegalArgumentException(ValidationInput.INVALID_LICENSE_PLATE_FORMAT);
-        }
 
         if (!ValidationInput.isValidModel(vehicle.getModel())) {
             throw new IllegalArgumentException(ValidationInput.INVALID_MODEL_FORMAT);

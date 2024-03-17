@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Abstract implementation of the GenericsRepository interface providing common CRUD operations for data entities.
@@ -110,9 +111,10 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     @Override
     public List<T> readAll() {
         try {
-            return Files.lines(filePath.toPath())
-                    .map(this::stringToObject)
-                    .collect(Collectors.toList());
+            try (Stream<String> lines = Files.lines(filePath.toPath())) {
+                return lines.map(this::stringToObject)
+                        .collect(Collectors.toList());
+            }
         } catch (IOException e) {
             return Collections.emptyList();
         }
@@ -162,7 +164,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
         }
         Files.writeString(
                 filePath.toPath(),
-                lines.stream().collect(Collectors.joining("\n")),
+                String.join("\n", lines),
                 StandardOpenOption.CREATE,
                 StandardOpenOption.TRUNCATE_EXISTING);
     }
@@ -195,7 +197,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     private void appendClientToFile(T object) throws IOException {
         Files.writeString(
                 filePath.toPath(),
-                objectToString(object) + "\n",
+                "\n" + objectToString(object),
                 StandardOpenOption.CREATE,
                 StandardOpenOption.APPEND);
     }

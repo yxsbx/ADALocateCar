@@ -24,4 +24,3 @@ ABC1D53,S10,SMALL,false,,,null
 ABC1D54,Strada,SMALL,false,,,null
 ABC1D55,Fiorino,MEDIUM,false,,,null
 ABC1D56,prisma,SMALL,false,,,null
-ABC1D23,A3,small,false,,,null

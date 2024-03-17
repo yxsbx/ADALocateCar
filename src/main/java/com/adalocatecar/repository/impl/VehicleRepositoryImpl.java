@@ -1,14 +1,10 @@
 package com.adalocatecar.repository.impl;
 
-import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.VehicleRepository;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of the VehicleRepository interface for managing vehicles in a file-based repository.
@@ -36,7 +32,7 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     @Override
     protected Vehicle stringToObject(String str) {
         String[] parts = str.split(",");
-        if (parts.length != 7) {
+        if (parts.length != 7 || parts[0].isEmpty()) {
             throw new IllegalArgumentException("Invalid string format for Vehicle object");
         }
         String licensePlate = parts[0];

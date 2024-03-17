@@ -17,6 +17,7 @@ public class VehicleController {
 
     /**
      * Constructor for VehicleController.
+     *
      * @param vehicleService The service responsible for vehicle operations.
      */
 
@@ -26,6 +27,7 @@ public class VehicleController {
 
     /**
      * Manages the vehicle operations menu and user input.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -35,7 +37,7 @@ public class VehicleController {
             System.out.println("1. Create vehicle");
             System.out.println("2. Read all vehicles");
             System.out.println("3. Update vehicle information");
-            System.out.println("4. Delete vehicle information");
+            System.out.println("4. Delete vehicle");
             System.out.println("5. Search vehicle by model or license plate");
             System.out.println("0. Back to Main Menu");
             System.out.print("Choose an option: ");
@@ -75,6 +77,7 @@ public class VehicleController {
 
     /**
      * Handles the process of creating a new vehicle.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -96,7 +99,7 @@ public class VehicleController {
             type = scanner.nextLine();
         } while (!ValidationInput.isValidType(type));
 
-        VehicleDTO newVehicle = new VehicleDTO(licensePlate, model, type, null);
+        VehicleDTO newVehicle = new VehicleDTO(licensePlate.toUpperCase(), model, type, null);
 
         try {
             vehicleService.createVehicle(newVehicle);
@@ -125,6 +128,7 @@ public class VehicleController {
 
     /**
      * Handles the process of updating existing vehicle information.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -165,6 +169,7 @@ public class VehicleController {
 
     /**
      * Handles the deletion of a vehicle.
+     *
      * @param scanner The scanner to read user input.
      */
 
@@ -179,7 +184,6 @@ public class VehicleController {
 
         try {
             vehicleService.deleteVehicle(vehiclelicensePlate);
-            System.out.println("Vehicle deleted successfully");
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
         }
@@ -187,6 +191,7 @@ public class VehicleController {
 
     /**
      * Handles searching for vehicles by license plate or model.
+     *
      * @param scanner The scanner to read user input.
      */
 
