@@ -1,0 +1,27 @@
+ABC1D30,Toyota Camry,SMALL,false,,,null
+ABC1D31,Ford Mustang,MEDIUM,false,,,null
+ABC1D34,prisma,SMALL,false,,,null
+ABC1D35,Corsa,Small,false,,,null
+ABC1D36,palio,SUV,false,,,null
+ABC1D37,Uno,MEDIUM,false,,,null
+ABC1D37,Uno,MEDIUM,false,,,null
+ABC1D38,Gol,MEDIUM,false,,,null
+ABC1D39,Fiesta,SMALL,false,,,null
+ABC1D40,Corolla,MEDIUM,false,,,null
+ABC1D41,Civic,MEDIUM,false,,,null
+ABC1D42,HB20,MEDIUM,false,,,null
+ABC1D43,Onix,SMALL,false,,,null
+ABC1D44,Ka,SMALL,false,,,null
+ABC1D45,Sandero,SMALL,false,,,null
+ABC1D46,Creta,SUV,false,,,null
+ABC1D47,Tucson,SUV,false,,,null
+ABC1D48,Renegade,SUV,false,,,null
+ABC1D49,Kicks,SUV,false,,,null
+ABC1D50,Ecosport,SUV,false,,,null
+ABC1D51,Ranger,SMALL,false,,,null
+ABC1D52,Hilux,SMALL,false,,,null
+ABC1D53,S10,SMALL,false,,,null
+ABC1D54,Strada,SMALL,false,,,null
+ABC1D55,Fiorino,MEDIUM,false,,,null
+ABC1D56,prisma,SMALL,false,,,null
+ABC1D23,A3,small,false,,,null
