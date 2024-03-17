@@ -1,5 +1,6 @@
 package com.adalocatecar.repository.impl;
 
+import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.VehicleRepository;
 
@@ -9,33 +10,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the VehicleRepository interface for managing vehicles in a file-based repository.
+ */
 
 public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, String> implements VehicleRepository {
-
     private static final File filePath = new File("src/data/vehicles.txt");
+
+    /**
+     * Constructs a new VehicleRepositoryImpl instance.
+     */
 
     public VehicleRepositoryImpl() {
         super(filePath);
     }
 
-    @Override
-    public Optional<Vehicle> searchByLicensePlate(String licensePlate) {
-        List<Vehicle> vehicles = readAll();
-        return vehicles.stream()
-                .filter(vehicle -> vehicle.getLicensePlate().equalsIgnoreCase(licensePlate)).findFirst();
-    }
-
-    @Override
-    public List<Vehicle> searchByType(String type) {
-        List<Vehicle> vehicles = readAll();
-        return vehicles.stream().filter(vehicle -> vehicle.getType().equalsIgnoreCase(type)).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Vehicle> searchByModel(String model) {
-        List<Vehicle> vehicles = readAll();
-        return vehicles.stream().filter(vehicle -> vehicle.getModel().toLowerCase().contains(model.toLowerCase())).collect(Collectors.toList());
-    }
+    /**
+     * Convert a string representation to a Vehicle object.
+     *
+     * @param str The string to convert.
+     * @return The corresponding Vehicle object.
+     * @throws IllegalArgumentException if the string format is invalid.
+     */
 
     @Override
     protected Vehicle stringToObject(String str) {
@@ -62,6 +58,13 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
         return vehicle;
     }
 
+    /**
+     * Convert a Vehicle object to its string representation.
+     *
+     * @param object The Vehicle object to convert.
+     * @return The string representation of the Vehicle object.
+     */
+
     @Override
     protected String objectToString(Vehicle object) {
         return String.join(",",
@@ -75,10 +78,24 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
         );
     }
 
+    /**
+     * Get the ID of a Vehicle entity.
+     *
+     * @param entity The Vehicle entity.
+     * @return The ID of the Vehicle entity.
+     */
+
     @Override
     protected String getId(Vehicle entity) {
         return entity.getLicensePlate();
     }
+
+    /**
+     * Get the name of a Vehicle entity.
+     *
+     * @param entity The Vehicle entity.
+     * @return The name of the Vehicle entity.
+     */
 
     @Override
     protected String getName(Vehicle entity) {

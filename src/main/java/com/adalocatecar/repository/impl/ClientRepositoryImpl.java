@@ -61,10 +61,24 @@ public class ClientRepositoryImpl extends GenericsRepositoryImpl<Client, String>
         return client;
     }
 
+    /**
+     * Gets the ID of the Client entity.
+     *
+     * @param entity The Client entity.
+     * @return The ID of the Client.
+     */
+
     @Override
     protected String getId(Client entity) {
         return entity.getId();
     }
+
+    /**
+     * Gets the name of the Client entity.
+     *
+     * @param entity The Client entity.
+     * @return The name of the Client.
+     */
 
     @Override
     protected String getName(Client entity) {

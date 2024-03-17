@@ -134,7 +134,7 @@ public class ClientController {
         } while (!ValidationInput.isValidClientId(clientId));
 
         try {
-            clientService.searchClientByDocument(clientId);
+            clientService.searchClientById(clientId);
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
         }
@@ -168,7 +168,7 @@ public class ClientController {
         } while (!ValidationInput.isValidClientId(clientId));
 
         try {
-            ClientDTO clientToDelete = clientService.searchClientByDocument(clientId);
+            ClientDTO clientToDelete = clientService.searchClientById(clientId);
             System.out.println(clientService.deleteClient(clientToDelete));
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
@@ -191,7 +191,7 @@ public class ClientController {
 
         try {
             if (searchType.equals("document")) {
-                ClientDTO client = clientService.searchClientByDocument(query);
+                ClientDTO client = clientService.searchClientById(query);
                 System.out.println("Client found with the provided document:");
                 System.out.println(client);
             } else {

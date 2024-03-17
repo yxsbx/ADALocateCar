@@ -17,6 +17,7 @@ public class ValidationInput {
     public static final String CLIENT_NOT_FOUND = "Client not found.";
     public static final String INVALID_ID_FORMAT = "Invalid ID format. Must be either a CPF with 11 digits or a CNPJ with 14 digits.";
     public static final String INVALID_NAME_FORMAT = "Invalid name format. Must contain at least 3 characters.";
+    public static final String ERROR_HAS_RENTED = "The client cannot be deleted because they have active rental agreements.";
 
     // Constants for regex patterns for client
 
@@ -30,7 +31,6 @@ public class ValidationInput {
     public static final String DUPLICATED_LICENSE_PLATE = "License Plate already registered";
     public static final String INVALID_MODEL_FORMAT = "Invalid model format.";
     public static final String INVALID_TYPE = "Invalid vehicle type. The type must be Small, SUV, or Medium.";
-    public static final String ERROR_HAS_RENTED = "The client cannot be deleted because they have active rental agreements.";
     public static final String ERROR_IS_RENTED = "This vehicle is currently rented and cannot be deleted.";
     public static final String INVALID_QUERY_FORMAT = "Invalid query format.";
 
@@ -105,7 +105,7 @@ public class ValidationInput {
     /**
      * Checks if a license plate is unique among existing ones.
      *
-     * @param licensePlate         The license plate to check.
+     * @param licensePlate          The license plate to check.
      * @param existingLicensePlates List of existing license plates.
      * @return True if the license plate is unique, false otherwise.
      */

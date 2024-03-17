@@ -1,18 +1,18 @@
 package com.adalocatecar;
 
-import com.adalocatecar.controller.VehicleController;
 import com.adalocatecar.controller.ClientController;
 import com.adalocatecar.controller.RentalController;
+import com.adalocatecar.controller.VehicleController;
 import com.adalocatecar.repository.ClientRepository;
 import com.adalocatecar.repository.VehicleRepository;
 import com.adalocatecar.repository.impl.ClientRepositoryImpl;
 import com.adalocatecar.repository.impl.VehicleRepositoryImpl;
-import com.adalocatecar.service.impl.VehicleServiceImpl;
-import com.adalocatecar.service.impl.ClientServiceImpl;
-import com.adalocatecar.service.impl.RentalServiceImpl;
-import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.service.RentalService;
+import com.adalocatecar.service.VehicleService;
+import com.adalocatecar.service.impl.ClientServiceImpl;
+import com.adalocatecar.service.impl.RentalServiceImpl;
+import com.adalocatecar.service.impl.VehicleServiceImpl;
 
 import java.util.Scanner;
 import java.util.logging.Level;

@@ -138,7 +138,7 @@ public class VehicleController {
         } while (!ValidationInput.isValidLicensePlate(licensePlate));
 
         try {
-            vehicleService.searchVehicleByLicensePlate(licensePlate);
+            vehicleService.searchVehicleById(licensePlate);
         } catch (RuntimeException e) {
             System.err.println(e.getMessage());
         }
@@ -201,11 +201,11 @@ public class VehicleController {
 
         try {
             if (searchType.equals("licensePlate")) {
-                VehicleDTO vehicle = vehicleService.searchVehicleByLicensePlate(query);
+                VehicleDTO vehicle = vehicleService.searchVehicleById(query);
                 System.out.println("Client found with the provided document:");
                 System.out.println(vehicle);
             } else {
-                List<VehicleDTO> vehicles = vehicleService.searchVehiclesByModel(query);
+                List<VehicleDTO> vehicles = vehicleService.searchVehiclesByName(query);
                 System.out.println("Clients found with the provided name:");
                 for (VehicleDTO vehicle : vehicles) {
                     System.out.println(vehicle);
