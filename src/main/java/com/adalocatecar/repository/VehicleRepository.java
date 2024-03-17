@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VehicleRepository extends GenericsRepository<Vehicle, String> {
-    Optional<Vehicle> findByLicensePlate(String licensePlate);
+    Optional<Vehicle> searchByLicensePlate(String licensePlate);
 
-    List<Vehicle> findByType(String type);
+    List<Vehicle> searchByType(String type);
 
-    List<Vehicle> findByModel(String model);
+    List<Vehicle> searchByModel(String model);
 }

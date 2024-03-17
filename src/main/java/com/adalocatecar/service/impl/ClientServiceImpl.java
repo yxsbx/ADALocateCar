@@ -5,9 +5,8 @@ import com.adalocatecar.model.Client;
 import com.adalocatecar.repository.ClientRepository;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.utility.Converter;
-import com.adalocatecar.utility.ValidationClient;
+import com.adalocatecar.utility.ValidationInput;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,46 +20,14 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public String createClient(ClientDTO clientDTO) {
+    public void createClient(ClientDTO clientDTO) {
         Client client = Converter.convertToEntity(clientDTO);
-        return saveClient(client, ValidationClient.OperationType.CREATE);
+        saveClient(client, "CREATE");
     }
 
     @Override
-    public String updateClient(ClientDTO clientDTO) {
-        Optional<Client> existingClient = clientRepository.findById(clientDTO.getId());
-        if (existingClient.isEmpty()) {
-            throw new RuntimeException("Client not found.");
-        }
-        Client client = Converter.convertToEntity(clientDTO);
-        return saveClient(client, ValidationClient.OperationType.UPDATE);
-    }
-
-    @Override
-    public String deleteClient(String id) {
-        try {
-            getAllClientIdsFromRepository();
-            boolean hasRentedCars = clientRepository.hasRentedCars(id);
-
-            String deletionResult = ValidationClient.validateDeletion(hasRentedCars);
-
-            if (!deletionResult.equals(ValidationClient.SUCCESS_MESSAGE)) {
-                return deletionResult;
-            }
-
-            boolean deleted = clientRepository.delete(id);
-            if (!deleted) {
-                System.out.println(ValidationClient.clientNotFound());
-            }
-            return "Client deleted successfully.";
-        } catch (IOException e) {
-            return "Failed to delete client due to an error.";
-        }
-    }
-
-    @Override
-    public List<ClientDTO> findAllClients() {
-        List<Client> clients = clientRepository.findAll();
+    public List<ClientDTO> readAllClients() {
+        List<Client> clients = clientRepository.readAll();
         List<ClientDTO> clientDTOs = new ArrayList<>();
         for (Client client : clients) {
             clientDTOs.add(Converter.convertToDTO(client));
@@ -69,56 +36,65 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientDTO findClientByDocument(String id) {
-        Optional<Client> optionalClient = clientRepository.findById(id);
+    public void updateClient(ClientDTO clientDTO) {
+        Optional<Client> existingClient = clientRepository.searchById(clientDTO.getId());
+        if (existingClient.isEmpty()) {
+            throw new RuntimeException("Client not found.");
+        }
+        Client client = Converter.convertToEntity(clientDTO);
+        saveClient(client, "UPDATE");
+    }
+
+    @Override
+    public String deleteClient(ClientDTO clientToDelete) {
+        if (!clientToDelete.getRentedVehiclesPlates().isEmpty()) {
+            throw new RuntimeException(ValidationInput.ERROR_HAS_RENTED);
+        }
+        clientRepository.delete(Converter.convertToEntity(clientToDelete));
+        return ValidationInput.CLIENT_DELETED;
+    }
+
+    @Override
+    public ClientDTO searchClientByDocument(String id) {
+        Optional<Client> optionalClient = clientRepository.searchById(id);
 
         if (optionalClient.isPresent()) {
             return Converter.convertToDTO(optionalClient.get());
         } else {
-            throw new RuntimeException(ValidationClient.ERROR_FINDING_CLIENTS_BY_DOCUMENT);
+            throw new RuntimeException(ValidationInput.CLIENT_NOT_FOUND);
         }
     }
 
     @Override
-    public List<ClientDTO> findClientsByName(String name) {
-        List<Client> clients = clientRepository.findByName(name)
-                .orElseThrow(() -> new RuntimeException(ValidationClient.ERROR_FINDING_CLIENTS_BY_NAME));
+    public List<ClientDTO> searchClientsByName(String name) {
+        List<Client> clients = clientRepository.searchByName(name)
+                .orElseThrow(() -> new RuntimeException(ValidationInput.CLIENT_NOT_FOUND));
         if (clients.isEmpty()) {
-            throw new RuntimeException(ValidationClient.ERROR_FINDING_CLIENTS_BY_NAME);
+            throw new RuntimeException(ValidationInput.CLIENT_NOT_FOUND);
         }
         return clients.stream()
                 .map(Converter::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    private String[] getAllClientIdsFromRepository() throws IOException {
-        List<Client> clients = clientRepository.findAll();
-        String[] clientIds = new String[clients.size()];
-        for (int i = 0; i < clients.size(); i++) {
-            clientIds[i] = clients.get(i).getId();
+    private void saveClient(Client client, String operationType) {
+        if (!ValidationInput.isValidClientId(client.getId())) {
+            throw new RuntimeException(ValidationInput.INVALID_ID_FORMAT);
         }
-        return clientIds;
-    }
 
-    public String saveClient(Client client, ValidationClient.OperationType operationType) {
-        String validateIdFormat = ValidationClient.validateClientIdFormat(client.getId());
-
-        if (validateIdFormat != null) {
-            return validateIdFormat;
+        if (!ValidationInput.isValidClientName(client.getName())) {
+            throw new RuntimeException(ValidationInput.INVALID_NAME_FORMAT);
         }
 
         String clientType = determineClientType(client.getId());
         client.setClientType(clientType);
 
-        try {
-            if (operationType == ValidationClient.OperationType.CREATE) {
-                clientRepository.create(client);
-            } else if (operationType == ValidationClient.OperationType.UPDATE) {
-                clientRepository.update(client);
-            }
-            return ValidationClient.SUCCESS_MESSAGE;
-        } catch (Exception e) {
-            return "An error occurred while saving the client.";
+        if ("CREATE".equals(operationType)) {
+            clientRepository.create(client);
+            System.out.println(ValidationInput.CLIENT_CREATED);
+        } else {
+            clientRepository.update(client);
+            System.out.println(ValidationInput.CLIENT_UPDATED);
         }
     }
 

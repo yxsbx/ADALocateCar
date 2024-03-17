@@ -12,18 +12,6 @@ public class Rental {
         this.rentalStatus = false;
     }
 
-    public void rentThisCar(String idClientWhoRented,
-                            String agencyLocal,
-                            LocalDateTime startDate) {
-        if(rentalStatus) {
-            throw new IllegalStateException("Rental has already been rented");
-        }
-        this.rentalStatus = true;
-        this.idClientWhoRented = idClientWhoRented;
-        this.agencyLocal = agencyLocal;
-        this.startDate = startDate;
-    }
-
     public String getIdClientWhoRented() {
         return idClientWhoRented;
     }

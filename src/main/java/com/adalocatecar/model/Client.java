@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Client {
-    private String id;
-    private String name;
+    private final String id;
+    private final String name;
     private String clientType;
     private final List<String> rentedVehiclesPlates;
 
@@ -20,16 +20,8 @@ public class Client {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getClientType() {
@@ -46,9 +38,5 @@ public class Client {
 
     public List<String> getRentedVehiclesPlates() {
         return rentedVehiclesPlates;
-    }
-
-    public boolean hasRentedCars() {
-        return true;
     }
 }

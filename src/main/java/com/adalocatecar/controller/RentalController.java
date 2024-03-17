@@ -1,20 +1,31 @@
 package com.adalocatecar.controller;
 
-
 import com.adalocatecar.service.RentalService;
 import com.adalocatecar.utility.ValidationInput;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
-public class RentalController {
+/**
+ * Controls rental-related operations such as renting and returning vehicles.
+ */
 
+public class RentalController {
     private final RentalService rentalService;
+
+    /**
+     * Constructor for RentalController.
+     * @param rentalService The service responsible for rental operations.
+     */
 
     public RentalController(RentalService rentalService) {
         this.rentalService = rentalService;
     }
+
+    /**
+     * Manages the rental operations menu and user input.
+     * @param scanner The scanner to read user input.
+     */
 
     public void manageRentals(Scanner scanner) {
         while (true) {
@@ -49,6 +60,11 @@ public class RentalController {
         }
     }
 
+    /**
+     * Handles the process of renting a vehicle.
+     * @param scanner The scanner to read user input.
+     */
+
     private void rentVehicle(Scanner scanner) {
         String licensePlate, clientId, agencyLocal;
         LocalDateTime startDate;
@@ -61,12 +77,12 @@ public class RentalController {
         do {
             System.out.println("Enter the client document:");
             clientId = scanner.nextLine();
-        } while (!ValidationInput.validateClientIdFormat(clientId));
+        } while (!ValidationInput.isValidClientId(clientId));
 
         do {
             System.out.println("Enter the location of rental agency:");
             agencyLocal = scanner.nextLine();
-        } while (!ValidationInput.isValidLocation(agencyLocal)); // Melhorar Validação para a localização
+        } while (!ValidationInput.isValidLocation(agencyLocal));
 
         do {
             System.out.println("Enter start date (yyyy-MM-dd HH:mm):");
@@ -78,19 +94,24 @@ public class RentalController {
         System.out.println(response);
     }
 
+    /**
+     * Handles the process of returning a rented vehicle.
+     * @param scanner The scanner to read user input.
+     */
+
     private void returnVehicle(Scanner scanner) {
         String licensePlate;
         LocalDateTime endDate;
         do {
-        System.out.println("Enter the license plate of the vehicle to return:");
-        licensePlate = scanner.nextLine();
+            System.out.println("Enter the license plate of the vehicle to return:");
+            licensePlate = scanner.nextLine();
         } while (!ValidationInput.isValidLicensePlate(licensePlate));
 
         do {
 
-        System.out.println("Enter actual end date (yyyy-MM-dd HH:mm):");
-        String endDateStr = scanner.nextLine();
-        endDate = ValidationInput.isValidDate(endDateStr);
+            System.out.println("Enter actual end date (yyyy-MM-dd HH:mm):");
+            String endDateStr = scanner.nextLine();
+            endDate = ValidationInput.isValidDate(endDateStr);
         } while (endDate == null);
 
 

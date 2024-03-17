@@ -1,9 +1,7 @@
 package com.adalocatecar.repository.impl;
 
-import com.adalocatecar.model.Client;
 import com.adalocatecar.repository.GenericsRepository;
 import com.adalocatecar.utility.FileHandler;
-import jdk.dynalink.beans.StaticClass;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +38,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
             if (isUniqueObjectId(getId(object))) {
                 appendClientToFile(object);
             } else {
-                logger.warning("Client with ID " + getId(object) + " already exists.");
+                throw new RuntimeException("Client with ID " + getId(object) + " already exists.");
             }
         } catch (IOException e) {
             logger.log(Level.SEVERE, "An error occurred while creating a client.", e);
@@ -57,10 +55,10 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     @Override
-    public boolean delete(ID id) {
+    public boolean delete(T clientToDelete) {
         try {
-            List<T> clients = findAll();
-            boolean removed = clients.removeIf(c -> getId(c).equals(id));
+            List<T> clients = readAll();
+            boolean removed = clients.removeIf(c -> getId(c).equals(getId(clientToDelete)));
             if (removed) {
                 rewriteFile(clients);
             }
@@ -72,14 +70,14 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     @Override
-    public Optional<T> findById(ID id) {
-        return findAll().stream()
+    public Optional<T> searchById(ID id) {
+        return readAll().stream()
                 .filter(obj -> getId(obj).equals(id))
                 .findFirst();
     }
 
     @Override
-    public List<T> findAll() {
+    public List<T> readAll() {
         try {
             return Files.lines(filePath.toPath())
                     .map(this::stringToObject)
@@ -88,14 +86,16 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
             return Collections.emptyList();
         }
     }
+
     @Override
-    public Optional<List<T>> findByName(String name) {
-        List<T> allObjects = findAll();
+    public Optional<List<T>> searchByName(String name) {
+        List<T> allObjects = readAll();
         List<T> filteredObjects = allObjects.stream()
                 .filter(a -> getName(a).toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
         return Optional.of(filteredObjects);
     }
+
     private void rewriteFile(List<T> objects) throws IOException {
         List<String> lines = new ArrayList<>();
         for (T object : objects) {
@@ -105,7 +105,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     private boolean isUniqueObjectId(ID id) throws IOException {
-        List<T> clients = findAll();
+        List<T> clients = readAll();
         for (T object : clients) {
             if (getId(object).equals(id)) {
                 return false;
@@ -119,7 +119,7 @@ public abstract class GenericsRepositoryImpl<T, ID> implements GenericsRepositor
     }
 
     private void replaceObjectInFile(T object) throws IOException {
-        List<T> objects = findAll();
+        List<T> objects = readAll();
         List<T> updatedObjects = objects.stream().map(c -> getId(c).equals(getId(object)) ? object : c).collect(Collectors.toList());
         rewriteFile(updatedObjects);
     }

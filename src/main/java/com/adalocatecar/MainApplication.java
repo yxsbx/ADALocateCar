@@ -18,22 +18,33 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The main class for the ADA LocateCar application. Initializes and starts the application.
+ */
+
 public class MainApplication {
     private static final Logger logger = Logger.getLogger(MainApplication.class.getName());
 
     public static void main(String[] args) {
+
+        // Initialize repositories
+
         ClientRepository clientRepository = new ClientRepositoryImpl();
         VehicleRepository vehicleRepository = new VehicleRepositoryImpl();
 
+        // Initialize services
 
         ClientService clientService = new ClientServiceImpl(clientRepository);
         VehicleService vehicleService = new VehicleServiceImpl(vehicleRepository);
         RentalService rentalService = new RentalServiceImpl(clientService, vehicleService);
 
+        // Initialize controllers
 
         VehicleController vehicleController = new VehicleController(vehicleService);
         ClientController clientController = new ClientController(clientService);
         RentalController rentalController = new RentalController(rentalService);
+
+        // Main application loop
 
         try (Scanner scanner = new Scanner(System.in)) {
             boolean running = true;

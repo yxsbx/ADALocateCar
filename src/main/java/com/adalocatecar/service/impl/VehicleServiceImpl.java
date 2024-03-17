@@ -5,12 +5,9 @@ import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.repository.VehicleRepository;
 import com.adalocatecar.service.VehicleService;
 import com.adalocatecar.utility.Converter;
-import com.adalocatecar.utility.ValidationVehicle;
+import com.adalocatecar.utility.ValidationInput;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class VehicleServiceImpl implements VehicleService {
@@ -23,134 +20,84 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public String createVehicle(VehicleDTO vehicleDTO) {
+    public void createVehicle(VehicleDTO vehicleDTO) {
         Vehicle vehicle = Converter.convertToEntity(vehicleDTO);
-        return saveVehicle(vehicle, ValidationVehicle.OperationType.CREATE);
+        saveVehicle(vehicle, "CREATE");
     }
 
     @Override
-    public String updateVehicle(VehicleDTO vehicleDTO) {
-        Optional<Vehicle> existingVehicle = vehicleRepository.findByLicensePlate(vehicleDTO.getLicensePlate());
-        if (existingVehicle.isEmpty()) {
-            throw new RuntimeException("Vehicle not found.");
-        }
-
-        Vehicle updatedVehicle = Converter.convertToEntity(vehicleDTO);
-
-        return saveVehicle(updatedVehicle, ValidationVehicle.OperationType.UPDATE);
-    }
-
-    @Override
-    public void deleteVehicle(String licensePlate) {
-        vehicleRepository.delete(licensePlate);
-    }
-
-    private String saveVehicle(Vehicle vehicle, ValidationVehicle.OperationType operationType) {
-        String validationMessage = validateVehicle(vehicle, operationType);
-
-        if (!validationMessage.isEmpty()) {
-            return validationMessage;
-        }
-
-        try {
-            if (operationType == ValidationVehicle.OperationType.CREATE) {
-                vehicleRepository.create(vehicle);
-            } else if (operationType == ValidationVehicle.OperationType.UPDATE) {
-                vehicleRepository.update(vehicle);
-            }
-            return ValidationVehicle.SUCCESS_MESSAGE;
-        } catch (Exception e) {
-            return "An error occurred while saving the vehicle.";
-        }
-    }
-
-    private String validateVehicle(Vehicle vehicle, ValidationVehicle.OperationType operationType) {
-        String typeValidation = ValidationVehicle.validateType(vehicle.getType());
-        if (!typeValidation.isEmpty()) {
-            return typeValidation;
-        }
-
-        if (operationType == ValidationVehicle.OperationType.CREATE) {
-            String licensePlateValidation = ValidationVehicle.validateLicensePlate(vehicle.getLicensePlate());
-            if (!licensePlateValidation.isEmpty()) {
-                return licensePlateValidation;
-            }
-
-            List<String> existingLicensePlates = findAllLicensePlates();
-            String uniqueLicensePlateValidation = ValidationVehicle.validateUniqueLicensePlate(vehicle.getLicensePlate(), existingLicensePlates);
-            if (!uniqueLicensePlateValidation.isEmpty()) {
-                return uniqueLicensePlateValidation;
-            }
-        }
-
-        return "";
-    }
-
-    private List<String> findAllLicensePlates() {
-        List<Vehicle> vehicles = vehicleRepository.findAll();
-        List<String> licensePlates = new ArrayList<>();
-        for (Vehicle vehicle : vehicles) {
-            licensePlates.add(vehicle.getLicensePlate());
-        }
-        return licensePlates;
-    }
-
-    @Override
-    public List<VehicleDTO> findAllVehicles() {
-        return Converter.convertToDTOList(vehicleRepository.findAll());
-    }
-
-    @Override
-    public boolean isVehicleAvailable(String licensePlate) {
-        Optional<Vehicle> vehicle = vehicleRepository.findByLicensePlate(licensePlate);
-        if (vehicle.isEmpty()) {
-            throw new RuntimeException("Vehicle not found.");
-        }
-        return vehicle.get().isAvailable();
-    }
-
-    @Override
-    public VehicleDTO findVehicleByLicensePlate(String licensePlate) {
-        Optional<Vehicle> vehicle = vehicleRepository.findByLicensePlate(licensePlate);
-        if (vehicle.isEmpty()) {
-            throw new RuntimeException("Vehicle not found.");
-        }
-        return Converter.convertToDTO(vehicle.get());
-    }
-
-    @Override
-    public List<VehicleDTO> findVehiclesByType(String type) {
-        List<Vehicle> vehicles = vehicleRepository.findByType(type);
-        return vehicles.stream().map(Converter::convertToDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<VehicleDTO> findVehiclesByModel(String model) {
-        List<Vehicle> vehicles = vehicleRepository.findByModel(model);
-        return vehicles.stream()
+    public List<VehicleDTO> readAllVehicles() {
+        return vehicleRepository.readAll().stream()
                 .map(Converter::convertToDTO)
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public LocalDateTime findRentalStartDateByLicensePlate(String licensePlate) {
-        return null;
+    private List<String> readAllLicensePlates() {
+        return vehicleRepository.readAll().stream()
+                .map(Vehicle::getLicensePlate)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public void removeRentalContract(String licensePlate) {
-        Optional<Vehicle> vehicleOptional = vehicleRepository.findByLicensePlate(licensePlate);
-        if (vehicleOptional.isPresent()) {
-            Vehicle vehicle = vehicleOptional.get();
-            vehicle.setRentalContract(null);
+    public void updateVehicle(VehicleDTO vehicleDTO) {
+        Vehicle existingVehicle = vehicleRepository.searchByLicensePlate(vehicleDTO.getLicensePlate())
+                .orElseThrow(() -> new RuntimeException(ValidationInput.VEHICLE_NOT_FOUND));
+        existingVehicle.setModel(vehicleDTO.getModel());
+        existingVehicle.setType(vehicleDTO.getType());
+        saveVehicle(existingVehicle, "UPDATE");
+    }
 
-            try {
-                vehicleRepository.update(vehicle);
-            } catch (Exception e) {
-                throw new RuntimeException("Error updating vehicle availability: " + e.getMessage());
-            }
-        } else {
-            throw new RuntimeException("Vehicle not found.");
+    @Override
+    public void deleteVehicle(String licensePlate) {
+        VehicleDTO vehicleToDelete = searchVehicleByLicensePlate(licensePlate);
+        if (!vehicleToDelete.isAvailable()) {
+            throw new RuntimeException(ValidationInput.ERROR_IS_RENTED);
         }
+        vehicleRepository.delete(Converter.convertToEntity(vehicleToDelete));
+        System.out.println(ValidationInput.VEHICLE_DELETED);
+    }
+
+    private void saveVehicle(Vehicle vehicle, String operationType) {
+        if ("CREATE".equals(operationType)) {
+            List<String> existingLicensePlates = readAllLicensePlates();
+            if (!ValidationInput.isUniqueLicensePlate(vehicle.getLicensePlate(), existingLicensePlates)) {
+                throw new RuntimeException(ValidationInput.DUPLICATED_LICENSE_PLATE);
+            }
+        }
+
+        if (!ValidationInput.isValidLicensePlate(vehicle.getLicensePlate())) {
+            throw new RuntimeException(ValidationInput.INVALID_LICENSE_PLATE_FORMAT);
+        }
+
+        if (!ValidationInput.isValidModel(vehicle.getModel())) {
+            throw new RuntimeException(ValidationInput.INVALID_MODEL_FORMAT);
+        }
+
+        if (!ValidationInput.isValidType(vehicle.getType())) {
+            throw new RuntimeException(ValidationInput.INVALID_TYPE);
+        }
+
+        if (operationType.equals("CREATE")) {
+            vehicleRepository.create(vehicle);
+            System.out.println(ValidationInput.VEHICLE_CREATED);
+        } else {
+            vehicleRepository.update(vehicle);
+            System.out.println(ValidationInput.VEHICLE_UPDATED);
+        }
+    }
+
+
+    @Override
+    public VehicleDTO searchVehicleByLicensePlate(String licensePlate) {
+        return vehicleRepository.searchByLicensePlate(licensePlate)
+                .map(Converter::convertToDTO)
+                .orElseThrow(() -> new RuntimeException(ValidationInput.VEHICLE_NOT_FOUND));
+    }
+
+    @Override
+    public List<VehicleDTO> searchVehiclesByModel(String model) {
+        return vehicleRepository.searchByModel(model).stream()
+                .map(Converter::convertToDTO)
+                .collect(Collectors.toList());
     }
 }

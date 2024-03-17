@@ -3,14 +3,11 @@ package com.adalocatecar.service.impl;
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.dto.RentalDTO;
 import com.adalocatecar.dto.VehicleDTO;
-import com.adalocatecar.model.Vehicle;
 import com.adalocatecar.service.ClientService;
 import com.adalocatecar.service.RentalService;
 import com.adalocatecar.service.VehicleService;
-import com.adalocatecar.utility.ValidationRentals;
-import com.adalocatecar.utility.Converter;
-import com.adalocatecar.model.Client;
-import java.io.IOException;
+import com.adalocatecar.utility.ValidationInput;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -25,90 +22,85 @@ public class RentalServiceImpl implements RentalService {
         this.vehicleService = vehicleService;
     }
 
+    @Override
     public String rentVehicle(String licensePlate, String clientId, LocalDateTime startDate, String agencyLocal) {
-        VehicleDTO vehicleDTO;
-        ClientDTO clientDTO;
         try {
-            vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
-            ValidationRentals.validateVehicleAvailability(vehicleDTO);
-            clientDTO = clientService.findClientByDocument(clientId);
-        } catch (RuntimeException e) {
-            return e.getMessage();
-        }
-        RentalDTO rentalDTO = new RentalDTO(true, clientDTO.getId(), agencyLocal, startDate);
-        vehicleDTO.setRentalContract(rentalDTO);
-        clientDTO.getRentedVehiclesPlates().add(vehicleDTO.getLicensePlate());
+            VehicleDTO vehicleDTO = vehicleService.searchVehicleByLicensePlate(licensePlate);
+            if (!ValidationInput.validateVehicleAvailability(vehicleDTO.isAvailable())) {
+                throw new RuntimeException(ValidationInput.VEHICLE_NOT_AVAILABLE);
+            }
 
-        try {
+            if (!ValidationInput.isValidLocation(agencyLocal)) {
+                throw new RuntimeException(ValidationInput.INVALID_LOCATION_FORMAT);
+            }
+
+            if (startDate == null || startDate.toString().isEmpty()) {
+                throw new RuntimeException(ValidationInput.INVALID_DATE_FORMAT);
+            }
+
+            RentalDTO rentalDTO = new RentalDTO(true, clientId, agencyLocal, startDate);
+            vehicleDTO.setRentalContract(rentalDTO);
             vehicleService.updateVehicle(vehicleDTO);
-            clientService.updateClient(clientDTO);
-            return "Vehicle rented successfully";
 
-        } catch (IOException e) {
-            return "Error while updating vehicle information: " + e.getMessage();
-        }catch(RuntimeException e) {
-            return "Error while updating client information:" + e.getMessage();
+            return ValidationInput.SUCCESS_RENTED;
+        } catch (Exception e) {
+            return e.getMessage();
         }
     }
 
     @Override
     public String returnVehicle(String licensePlate, LocalDateTime actualEndDate) {
-        VehicleDTO vehicleDTO;
-        try{
-            vehicleDTO = vehicleService.findVehicleByLicensePlate(licensePlate);
-        } catch (RuntimeException e) {
-            return e.getMessage();
-        }
-
-        if (vehicleDTO.isAvailable()) {
-            return "Vehicle not currently rented";
-        }
-        RentalDTO rentalDTO = vehicleDTO.getRentalContract();
-        if (rentalDTO == null) {
-            return "Rental agreement not found.";
-        }
-        Vehicle vehicleReturned = Converter.convertToEntity(vehicleDTO);
-        double cost = calculateRentalCost(vehicleReturned, actualEndDate);
         try {
-            ClientDTO client = clientService.findClientByDocument(vehicleDTO.getRentalContract().getIdClientWhoRented());
-            vehicleDTO.setRentalContract(new RentalDTO(false, "", "", null));
+            VehicleDTO vehicleDTO = vehicleService.searchVehicleByLicensePlate(licensePlate);
+            if (vehicleDTO.isAvailable() || vehicleDTO.getRentalContract() == null) {
+                throw new RuntimeException(ValidationInput.VEHICLE_NOT_RENTED);
+            }
+
+            LocalDateTime startDate = vehicleDTO.getRentalContract().startDate();
+            if (actualEndDate == null || !actualEndDate.isAfter(startDate)) {
+                throw new RuntimeException(ValidationInput.INVALID_RETURN_DATE);
+            }
+
+            double cost = calculateRentalCost(vehicleDTO, actualEndDate);
+            vehicleDTO.setRentalContract(null);
             vehicleService.updateVehicle(vehicleDTO);
-            client.getRentedVehiclesPlates().remove(vehicleDTO.getLicensePlate());
-            clientService.updateClient(client);
-            return "Vehicle returned successfully, cost: $"+ cost;
+
+            return String.format("Vehicle returned successfully, total cost: $%.2f", cost);
         } catch (Exception e) {
-            return "Error while returning vehicle: " + e.getMessage();
+            return e.getMessage();
         }
     }
 
-    private double calculateRentalCost(Vehicle vehicle, LocalDateTime ActualEndDate) {
-        Duration duration = Duration.between(
-                vehicle.getRentalContract().getStartDate(),
-                ActualEndDate
-        );
+    private double calculateRentalCost(VehicleDTO vehicle, LocalDateTime actualEndDate) {
+        LocalDateTime startDate = vehicle.getRentalContract().startDate();
+        long daysRented = Duration.between(startDate, actualEndDate).toDays() + 1;
 
-        long days = duration.toDays() + (duration.toHours() % 24 > 0 ? 1 : 0);
+        double dailyRate = getDailyRateBasedOnVehicleType(vehicle.getType());
+        double totalCost = daysRented * dailyRate;
 
-        double totalCost = 0.0;
+        return applyDiscountIfEligible(totalCost, vehicle.getRentalContract().idClientWhoRented(), daysRented);
+    }
 
-        double baseCost = switch (vehicle.getType()) {
-            case "SMALL" -> ValidationRentals.BASE_DAILY_RATE_SMALL;
-            case "MEDIUM" -> ValidationRentals.BASE_DAILY_RATE_MEDIUM;
-            case "SUV" -> ValidationRentals.BASE_DAILY_RATE_SUV;
+    private double getDailyRateBasedOnVehicleType(String type) {
+        return switch (type) {
+            case "SMALL" -> ValidationInput.BASE_DAILY_RATE_SMALL;
+            case "MEDIUM" -> ValidationInput.BASE_DAILY_RATE_MEDIUM;
+            case "SUV" -> ValidationInput.BASE_DAILY_RATE_SUV;
             default -> 0.0;
         };
-        totalCost += baseCost * days;
+    }
 
-        if(days >= 3) {
-            ClientDTO clientWhoRented = clientService.findClientByDocument(vehicle.getRentalContract().getIdClientWhoRented());
-            String clientType = clientWhoRented.getClientType();
-            if ("INDIVIDUAL".equals(clientType) && days >= 5) {
-                totalCost *= (1 - ValidationRentals.DISCOUNT_FOR_INDIVIDUAL);
-            } else if ("CORPORATE".equals(clientType)) {
-                totalCost *= (1 - ValidationRentals.DISCOUNT_FOR_CORPORATE);
+    private double applyDiscountIfEligible(double totalCost, String clientId, long daysRented) {
+        try {
+            ClientDTO client = clientService.searchClientByDocument(clientId);
+            if (client.getClientType().equalsIgnoreCase("INDIVIDUAL") && daysRented >= 5) {
+                return totalCost * (1 - ValidationInput.DISCOUNT_FOR_INDIVIDUAL);
+            } else if (client.getClientType().equalsIgnoreCase("CORPORATE")) {
+                return totalCost * (1 - ValidationInput.DISCOUNT_FOR_CORPORATE);
             }
+        } catch (RuntimeException e) {
+            System.err.println("Error while fetching client data: " + e.getMessage());
         }
-
         return totalCost;
     }
 }

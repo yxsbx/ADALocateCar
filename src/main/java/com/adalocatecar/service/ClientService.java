@@ -1,24 +1,21 @@
 package com.adalocatecar.service;
 
 import com.adalocatecar.dto.ClientDTO;
-import com.adalocatecar.model.Client;
-import com.adalocatecar.model.Vehicle;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ClientService {
-    String createClient(ClientDTO clientDTO);
+    void createClient(ClientDTO clientToCreate);
 
-    String updateClient(ClientDTO clientDTO);
+    List<ClientDTO> readAllClients() throws IOException;
 
-    String deleteClient(String id);
+    void updateClient(ClientDTO clientToUpdate);
 
-    List<ClientDTO> findAllClients() throws IOException;
+    String deleteClient(ClientDTO clientToDelete);
 
-    ClientDTO findClientByDocument(String id);
+    ClientDTO searchClientByDocument(String id);
 
-    List<ClientDTO> findClientsByName(String name) throws IOException;
+    List<ClientDTO> searchClientsByName(String name) throws IOException;
 
 }

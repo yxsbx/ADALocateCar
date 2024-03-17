@@ -1,19 +1,18 @@
 package com.adalocatecar.repository;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 public interface GenericsRepository<T, ID> {
-    void create(T client);
+    void create(T clientToCreate);
 
-    void update(T client);
+    List<T> readAll();
 
-    boolean delete(ID id);
+    void update(T clientToUpdate);
 
-    Optional<T> findById(ID id);
+    boolean delete(T clientToDelete);
 
-    Optional<List<T>> findByName(String name);
+    Optional<T> searchById(ID id);
 
-   List<T> findAll();
+    Optional<List<T>> searchByName(String name);
 }

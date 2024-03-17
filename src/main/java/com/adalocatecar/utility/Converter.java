@@ -2,14 +2,10 @@ package com.adalocatecar.utility;
 
 import com.adalocatecar.dto.ClientDTO;
 import com.adalocatecar.dto.RentalDTO;
+import com.adalocatecar.dto.VehicleDTO;
 import com.adalocatecar.model.Client;
 import com.adalocatecar.model.Rental;
 import com.adalocatecar.model.Vehicle;
-import com.adalocatecar.dto.VehicleDTO;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class Converter {
 
@@ -54,19 +50,11 @@ public class Converter {
 
     public static Rental convertToEntity(RentalDTO rentalDTO) {
         Rental rental = new Rental();
-        rental.setRentalStatus(rentalDTO.getRentalStatus());
-        rental.setIdClientWhoRented(rentalDTO.getIdClientWhoRented());
-        rental.setAgencyLocal(rentalDTO.getAgencyLocal());
-        rental.setStartDate(rentalDTO.getStartDate());
+        rental.setRentalStatus(rentalDTO.rentalStatus());
+        rental.setIdClientWhoRented(rentalDTO.idClientWhoRented());
+        rental.setAgencyLocal(rentalDTO.agencyLocal());
+        rental.setStartDate(rentalDTO.startDate());
         return rental;
     }
-
-
-    public static List<VehicleDTO> convertToDTOList(List<Vehicle> all) {
-        List<VehicleDTO> dtos = new ArrayList<>();
-        for (Vehicle vehicle : all) {
-            dtos.add(convertToDTO(vehicle));
-        }
-        return Collections.unmodifiableList(dtos);
-    }
 }
+

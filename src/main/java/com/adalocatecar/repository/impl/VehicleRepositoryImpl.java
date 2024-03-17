@@ -1,58 +1,39 @@
 package com.adalocatecar.repository.impl;
 
 import com.adalocatecar.model.Vehicle;
-import com.adalocatecar.repository.GenericsRepository;
 import com.adalocatecar.repository.VehicleRepository;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
 public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, String> implements VehicleRepository {
 
     private static final File filePath = new File("src/data/vehicles.txt");
-    private static final Logger logger = Logger.getLogger(VehicleRepositoryImpl.class.getName());
 
     public VehicleRepositoryImpl() {
         super(filePath);
-        loadEntities();
-    }
-
-    private void loadEntities() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Vehicle vehicle = stringToObject(line);
-            }
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error loading entities from file", e);
-        }
     }
 
     @Override
-    public Optional<Vehicle> findByLicensePlate(String licensePlate) {
-        List<Vehicle> vehicles = findAll();
+    public Optional<Vehicle> searchByLicensePlate(String licensePlate) {
+        List<Vehicle> vehicles = readAll();
         return vehicles.stream()
                 .filter(vehicle -> vehicle.getLicensePlate().equalsIgnoreCase(licensePlate)).findFirst();
     }
 
     @Override
-    public List<Vehicle> findByType(String type) {
-        List<Vehicle> vehicles = findAll();
+    public List<Vehicle> searchByType(String type) {
+        List<Vehicle> vehicles = readAll();
         return vehicles.stream().filter(vehicle -> vehicle.getType().equalsIgnoreCase(type)).collect(Collectors.toList());
     }
 
     @Override
-    public List<Vehicle> findByModel(String model) {
-        List<Vehicle> vehicles = findAll();
+    public List<Vehicle> searchByModel(String model) {
+        List<Vehicle> vehicles = readAll();
         return vehicles.stream().filter(vehicle -> vehicle.getModel().toLowerCase().contains(model.toLowerCase())).collect(Collectors.toList());
     }
 
@@ -103,6 +84,4 @@ public class VehicleRepositoryImpl extends GenericsRepositoryImpl<Vehicle, Strin
     protected String getName(Vehicle entity) {
         return entity.getModel();
     }
-
-    ;
 }

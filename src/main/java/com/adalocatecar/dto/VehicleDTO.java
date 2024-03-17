@@ -48,14 +48,14 @@ public class VehicleDTO {
     }
 
     public boolean isAvailable() {
-        return !rentalContract.getRentalStatus();
+        return !rentalContract.rentalStatus();
     }
 
     @Override
     public String toString() {
-        return "License Plate ='" + licensePlate + '\'' +
-                ", Model ='" + model + '\'' +
-                ", Type ='" + type + '\'' +
-                ", Available =" + isAvailable();
+        return "License Plate: " + licensePlate +
+                ", Model: " + model +
+                ", Type: " + type +
+                ", Available: " + isAvailable();
     }
 }

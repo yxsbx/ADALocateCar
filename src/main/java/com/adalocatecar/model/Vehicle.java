@@ -45,10 +45,6 @@ public class Vehicle {
         this.rentalContract = rentalContract;
     }
 
-    public void removeRentalContract() {
-        this.rentalContract = null;
-    }
-
     public boolean isAvailable() {
         return !rentalContract.isRentalStatus();
     }

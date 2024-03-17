@@ -23,3 +23,4 @@ ABC1D52,Hilux,SMALL,false,,,null
 ABC1D53,S10,SMALL,false,,,null
 ABC1D54,Strada,SMALL,false,,,null
 ABC1D55,Fiorino,MEDIUM,false,,,null
+ABC1D56,prisma,SMALL,true,12345678900,RJ,2024-12-12T12:12
