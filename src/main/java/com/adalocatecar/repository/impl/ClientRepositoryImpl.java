@@ -7,17 +7,40 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Implementation of the ClientRepository interface using a file-based storage system.
+ */
+
 public class ClientRepositoryImpl extends GenericsRepositoryImpl<Client, String> implements ClientRepository {
     private static final File filePath = new File("src/data/clients.txt");
+
+    /**
+     * Constructs a ClientRepositoryImpl object with the specified file path.
+     */
 
     public ClientRepositoryImpl() {
         super(filePath);
     }
 
+    /**
+     * Converts a Client object to a string representation for storage.
+     *
+     * @param client The Client object to convert.
+     * @return A string representing the Client object.
+     */
+
     @Override
     protected String objectToString(Client client) {
         return String.join(",", client.getId(), client.getName(), client.getClientType(), String.join(",", client.getRentedVehiclesPlates()));
     }
+
+    /**
+     * Converts a string from the storage to a Client object.
+     *
+     * @param str The string representation of the Client object.
+     * @return The Client object parsed from the string.
+     * @throws IllegalArgumentException if the input string is invalid.
+     */
 
     @Override
     protected Client stringToObject(String str) {
